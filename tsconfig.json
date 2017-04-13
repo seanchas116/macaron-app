@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es6",
+        "strict": true,
+        "experimentalDecorators": true,
+        "noUnusedLocals": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "sourceMap": true,
+        "jsx": "react",
+        "lib" :[
+            "es2016",
+            "dom"
+        ],
+        "types": [
+            "electron",
+            "webpack-env"
+        ]
+    },
+    "exclude": [
+        "node_modules",
+        "build"
+    ],
+    "compileOnSave": false
+}
