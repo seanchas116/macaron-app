@@ -7,11 +7,15 @@ module.exports = {
     path: path.resolve(__dirname, "dist/assets"),
     publicPath: "/assets/",
     filename: 'renderer.js',
+    libraryTarget: "commonjs",
   },
   target: "electron-renderer",
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
   },
+  externals: require('webpack-node-externals')({
+    whitelist: ['webpack/hot/dev-server']
+  }),
   module: {
     loaders: [
       {

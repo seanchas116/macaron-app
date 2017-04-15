@@ -11,9 +11,7 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".js"],
   },
-  externals: {
-    'electron-devtools-installer': true
-  },
+  externals: require('webpack-node-externals')(),
   module: {
     loaders: [
       {
