@@ -3,7 +3,7 @@ const styles = require('./RootView.css')
 
 export
 class RootView extends React.Component<{}, {}> {
-  render() {
+  render () {
     return (
       <div className={styles.RootView}>
         Root View
