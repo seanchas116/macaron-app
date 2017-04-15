@@ -6,7 +6,7 @@ let contentBase = argv.development ? 'http://localhost:23000' : `file://${app.ge
 
 let mainWindow: BrowserWindow|undefined
 
-async function openWindow() {
+async function openWindow () {
   if (argv.development) {
     const {default: installExtension, REACT_DEVELOPER_TOOLS} = require('electron-devtools-installer')
     await installExtension(REACT_DEVELOPER_TOOLS)
@@ -15,7 +15,7 @@ async function openWindow() {
   const win = mainWindow = new BrowserWindow({
     width: 1200,
     height: 768,
-    show: false,
+    show: false
   })
 
   win.loadURL(`${contentBase}/index.html`)
