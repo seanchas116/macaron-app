@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import {RootView} from './core/views/RootView'
+import {RootView} from './RootView'
 
 ReactDOM.render(<RootView />, document.getElementById('root'))
 
