@@ -1,6 +1,7 @@
 import {observable} from 'mobx'
 
 export
-class Item {
+abstract class Item {
   @observable name = ''
+  abstract render (): JSX.Element
 }
