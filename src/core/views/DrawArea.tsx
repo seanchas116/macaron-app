@@ -27,7 +27,7 @@ export class DrawArea extends React.Component<{}, {}> {
   render () {
     const {items} = documentManager.document
     return <div className={styles.root} ref={e => this.root = e}>
-      <svg ref={e => this.svg = e}>
+      <svg className={styles.svg} ref={e => this.svg = e}>
         {items.map(item => item.render())}
       </svg>
     </div>
