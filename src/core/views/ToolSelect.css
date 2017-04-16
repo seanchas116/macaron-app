@@ -1,7 +1,18 @@
 .ToolSelect {
+  width: 32px;
+  border-right: 1px solid #D8D8D8;
+  background-color: #F0F0F0;
 }
 .item {
-  width: 20px;
-  height: 20px;
-  background-color: black;
+  width: 32px;
+  height: 32px;
+  background-color: #808080;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+}
+.item:hover {
+  background-color: #606060;
+}
+.item.current {
+  background-color: #2196f3;
 }

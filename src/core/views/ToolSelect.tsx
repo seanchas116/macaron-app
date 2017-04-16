@@ -1,17 +1,22 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
+import * as classNames from 'classnames'
 import {Tool} from '../Tool'
 import {toolRegistry} from '../ToolRegistry'
 const styles = require('./ToolSelect.css')
 
-function ToolSelectItem (props: {tool: Tool}) {
+const ToolSelectItem = observer((props: {tool: Tool}) => {
   const {tool} = props
   const style = {
     WebkitMaskImage: `url("${tool.icon}")`
   }
-  return <div className={styles.item} style={style}>
+  const onClick = () => {
+    toolRegistry.current = tool
+  }
+  const current = toolRegistry.current === tool
+  return <div className={classNames(styles.item, {[styles.current]: current})} style={style} onClick={onClick}>
   </div>
-}
+})
 
 @observer
 export
