@@ -1,7 +1,8 @@
+import {Vec2} from 'paintvec'
 
 export
 abstract class Tool {
   abstract id: string
   abstract icon: string
-  abstract renderOverlay (): JSX.Element
+  abstract renderOverlay (size: Vec2): JSX.Element
 }
