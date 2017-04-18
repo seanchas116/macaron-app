@@ -20,6 +20,7 @@
     "@types/electron": "^1.4.35",
     "@types/react": "^15.0.21",
     "@types/react-dom": "^0.14.23",
+    "@types/uuid": "^2.0.29",
     "@types/webpack-env": "^1.13.0",
     "awesome-typescript-loader": "^3.1.2",
     "css-loader": "^0.28.0",
@@ -44,6 +45,7 @@
     "mobx-react": "^4.1.8",
     "paintvec": "github:sketchglass/paintvec",
     "react": "^15.5.4",
-    "react-dom": "^15.5.4"
+    "react-dom": "^15.5.4",
+    "uuid": "^3.0.1"
   }
 }

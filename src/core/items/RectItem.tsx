@@ -9,6 +9,12 @@ class RectItem extends Item {
 
   render () {
     const {left, top, width, height} = this.rect
-    return <rect x={left} y={top} width={width} height={height} />
+    return <rect
+      key={this.id}
+      x={left} y={top} width={width} height={height}
+      fill={this.fill}
+      stroke={this.stroke}
+      strokeWidth={this.strokeWidth}
+    />
   }
 }
