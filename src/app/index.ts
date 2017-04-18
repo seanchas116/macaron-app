@@ -1,4 +1,4 @@
 import {RectTool} from './tools/rect/RectTool'
-import {toolRegistry} from '../core/ToolRegistry'
+import {toolManager} from '../core/ToolManager'
 
-toolRegistry.add(new RectTool())
+toolManager.add(new RectTool())

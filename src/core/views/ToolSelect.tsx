@@ -2,7 +2,7 @@ import * as React from 'react'
 import {observer} from 'mobx-react'
 import * as classNames from 'classnames'
 import {Tool} from '../Tool'
-import {toolRegistry} from '../ToolRegistry'
+import {toolManager} from '../ToolManager'
 const styles = require('./ToolSelect.css')
 
 const ToolSelectItem = observer((props: {tool: Tool}) => {
@@ -11,9 +11,9 @@ const ToolSelectItem = observer((props: {tool: Tool}) => {
     WebkitMaskImage: `url("${tool.icon}")`
   }
   const onClick = () => {
-    toolRegistry.current = tool
+    toolManager.current = tool
   }
-  const current = toolRegistry.current === tool
+  const current = toolManager.current === tool
   return <div className={classNames(styles.item, {[styles.current]: current})} style={style} onClick={onClick}>
   </div>
 })
@@ -22,7 +22,7 @@ const ToolSelectItem = observer((props: {tool: Tool}) => {
 export
 class ToolSelect extends React.Component<{}, {}> {
   render () {
-    const {tools} = toolRegistry
+    const {tools} = toolManager
     return <div className={styles.ToolSelect}>
       {tools.map(tool => <ToolSelectItem tool={tool} key={tool.id} />)}
     </div>

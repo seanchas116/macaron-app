@@ -2,7 +2,7 @@ import {observable} from 'mobx'
 import {Tool} from './Tool'
 
 export
-class ToolRegistry {
+class ToolManager {
   readonly tools = observable<Tool>([])
   @observable current: Tool|undefined
   add (tool: Tool) {
@@ -10,4 +10,4 @@ class ToolRegistry {
   }
 }
 
-export const toolRegistry = new ToolRegistry()
+export const toolManager = new ToolManager()
