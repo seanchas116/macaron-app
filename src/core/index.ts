@@ -1,1 +1,1 @@
-import './views/mount'
+import './views'
