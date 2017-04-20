@@ -1,6 +1,7 @@
 import {observable} from 'mobx'
 import * as uuid from 'uuid'
 import {Document} from '../Document'
+import {GroupItem} from './GroupItem'
 
 export
 abstract class Item {
@@ -8,7 +9,7 @@ abstract class Item {
   @observable fill = 'gray'
   @observable stroke = 'black'
   @observable strokeWidth = 1
-  @observable parent: Item|undefined
+  @observable parent: GroupItem|undefined
   readonly id = uuid()
 
   constructor (public readonly document: Document) {

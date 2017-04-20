@@ -50,7 +50,20 @@ class ItemTreeDelegate implements TreeDelegate<Item> {
     // TODO
   }
   onMove (src: TreeRowInfo<Item>[], dest: TreeRowInfo<Item>, destIndex: number, destIndexAfter: number) {
-    // TODO
+    const items: Item[] = []
+    for (const info of [...src].reverse()) {
+      const {item} = info
+      const {parent} = item
+      if (parent) {
+        const index = parent.children.indexOf(item)
+        parent.children.splice(index, 1)
+        items.push(item)
+      }
+    }
+    const destItem = dest.item
+    if (destItem instanceof GroupItem) {
+      destItem.children.splice(destIndexAfter, 0, ...items)
+    }
   }
   onCopy (src: TreeRowInfo<Item>[], dest: TreeRowInfo<Item>, destIndex: number) {
     // TODO
