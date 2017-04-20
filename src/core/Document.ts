@@ -1,8 +1,9 @@
 import {observable} from 'mobx'
 import {Item} from './items/Item'
+import {GroupItem} from './items/GroupItem'
 
 export
 class Document {
-  readonly items = observable<Item>([])
+  readonly rootItem = new GroupItem()
   readonly selectedItems = observable<Item>([])
 }

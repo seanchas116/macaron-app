@@ -37,7 +37,7 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     this.startPos = new Vec2(nativeEv.offsetX, nativeEv.offsetY)
     this.item = this.newItem()
     this.item.rect = new Rect(this.startPos, this.startPos)
-    documentManager.document.items.push(this.item)
+    documentManager.document.rootItem.children.push(this.item)
   }
 
   @action private onMouseMove = (event: React.MouseEvent<SVGRectElement>) => {
