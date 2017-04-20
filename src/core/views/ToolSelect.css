@@ -7,12 +7,11 @@
   width: 32px;
   height: 32px;
   background-color: #808080;
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-}
-.item:hover {
-  background-color: #606060;
-}
-.item.current {
-  background-color: #2196f3;
+  mask: var(--icon) center no-repeat;
+  &:hover {
+    background-color: #606060;
+  }
+  &:current {
+    background-color: #2196f3;
+  }
 }

@@ -3,19 +3,19 @@ import {observer} from 'mobx-react'
 import * as classNames from 'classnames'
 import {Tool} from '../Tool'
 import {toolManager} from '../ToolManager'
+import {CSSVariables} from '../../util/components/CSSVariables'
 const styles = require('./ToolSelect.css')
 
 const ToolSelectItem = observer((props: {tool: Tool}) => {
   const {tool} = props
-  const style = {
-    WebkitMaskImage: `url("${tool.icon}")`
-  }
   const onClick = () => {
     toolManager.current = tool
   }
   const current = toolManager.current === tool
-  return <div className={classNames(styles.item, {[styles.current]: current})} style={style} onClick={onClick}>
-  </div>
+  // using absolute path as workaround of https://bugs.chromium.org/p/chromium/issues/detail?id=618165
+  return <CSSVariables icon={`url(http://${location.host}${tool.icon})`}>
+    <div className={classNames(styles.item, {[styles.current]: current})} onClick={onClick} />
+  </CSSVariables>
 })
 
 @observer

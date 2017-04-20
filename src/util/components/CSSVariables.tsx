@@ -6,7 +6,7 @@ interface CSSVariablesProps {
   [key: string]: string|number
 }
 
-export default
+export
 class CSSVariables extends React.Component<CSSVariablesProps, {}> {
   private oldProps: CSSVariablesProps = {}
   private element: HTMLElement|undefined
