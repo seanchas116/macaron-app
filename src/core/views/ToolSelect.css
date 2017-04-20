@@ -11,7 +11,7 @@
   &:hover {
     background-color: #606060;
   }
-  &:current {
+  &Current {
     background-color: #2196f3;
   }
 }
