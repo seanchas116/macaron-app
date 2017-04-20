@@ -20,12 +20,12 @@ export class DrawArea extends React.Component<{}, {}> {
   }
 
   render () {
-    const items = documentManager.document.rootItem.children
+    const {rootItem} = documentManager.document
     const currentTool = toolManager.current
     const {width, height} = this.size
     return <div className={styles.root} ref={e => this.root = e}>
       <svg className={styles.svg} width={width + 'px'} height={height + 'px'}>
-        {items.map(item => item.render())}
+        {rootItem.render()}
         {currentTool && currentTool.renderOverlay(this.size)}
       </svg>
     </div>

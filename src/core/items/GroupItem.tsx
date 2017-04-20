@@ -16,7 +16,7 @@ class GroupItem extends Item {
 
   render () {
     return <g>
-      {this.children.map(c => c.render())}
+      {[...this.children].reverse().map(c => c.render())}
     </g>
   }
 
