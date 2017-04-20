@@ -1,6 +1,8 @@
 const path = require("path")
 const webpack = require("webpack")
 
+const fileRegex = /\.(jpg|png|woff|woff2|eot|ttf|svg)/
+
 module.exports = {
   entry: path.resolve(__dirname, 'src/renderer.ts'),
   output: {
@@ -14,7 +16,7 @@ module.exports = {
     extensions: [".ts", ".tsx", ".js"],
   },
   externals: require('webpack-node-externals')({
-    whitelist: ['webpack/hot/dev-server']
+    whitelist: ['webpack/hot/dev-server', /\.css$/, fileRegex]
   }),
   module: {
     loaders: [
@@ -47,7 +49,7 @@ module.exports = {
         ],
       },
       {
-        test: /\.(jpg|png|woff|woff2|eot|ttf|svg)/,
+        test: fileRegex,
         use: 'file-loader',
       },
     ],
