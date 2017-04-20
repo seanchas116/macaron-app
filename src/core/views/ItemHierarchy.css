@@ -6,3 +6,9 @@
     height: 100%;
   }
 }
+.itemRow {
+  height: 32px;
+  &Selected {
+    background-color: #2196f3;
+  }
+}
