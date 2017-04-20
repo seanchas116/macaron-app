@@ -2,13 +2,17 @@
   width: 240px;
   background-color: #F0F0F0;
   border-right: 1px solid #D8D8D8;
+  & :global(.ReactDraggableTree_row-selected) {
+    background-color: #2196f3;
+  }
   & :global(.ReactDraggableTree) {
     height: 100%;
   }
 }
 .itemRow {
   height: 32px;
+  line-height: 32px;
   &Selected {
-    background-color: #2196f3;
+    color: white;
   }
 }
