@@ -20,6 +20,18 @@ class GroupItem extends Item {
     </g>
   }
 
+  clone () {
+    const cloned = new GroupItem(this.document)
+    cloned.copyPropsFrom(this)
+    cloned.children.replace(this.children.map(c => c.clone()))
+    return cloned
+  }
+
+  copyPropsFrom (other: GroupItem) {
+    super.copyPropsFrom(other)
+    this.collapsed = other.collapsed
+  }
+
   @action private onChildChange (change: IArrayChange<Item>|IArraySplice<Item>) {
     const onAdded = (child: Item) => {
       child.parent = this

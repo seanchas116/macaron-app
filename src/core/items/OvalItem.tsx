@@ -19,4 +19,15 @@ class OvalItem extends Item {
       strokeWidth={this.strokeWidth}
     />
   }
+
+  clone () {
+    const cloned = new OvalItem(this.document)
+    this.copyPropsFrom(cloned)
+    return cloned
+  }
+
+  copyPropsFrom (other: OvalItem) {
+    super.copyPropsFrom(other)
+    other.rect = this.rect
+  }
 }

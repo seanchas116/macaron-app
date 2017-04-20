@@ -66,7 +66,11 @@ class ItemTreeDelegate implements TreeDelegate<Item> {
     }
   }
   onCopy (src: TreeRowInfo<Item>[], dest: TreeRowInfo<Item>, destIndex: number) {
-    // TODO
+    const items = src.map(info => info.item.clone())
+    const destItem = dest.item
+    if (destItem instanceof GroupItem) {
+      destItem.children.splice(destIndex, 0, ...items)
+    }
   }
 }
 

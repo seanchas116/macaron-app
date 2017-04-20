@@ -16,4 +16,11 @@ abstract class Item {
   }
 
   abstract render (): JSX.Element
+  abstract clone (): Item
+  copyPropsFrom (other: Item) {
+    this.name = other.name
+    this.fill = other.fill
+    this.stroke = other.stroke
+    this.strokeWidth = other.strokeWidth
+  }
 }
