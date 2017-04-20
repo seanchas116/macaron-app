@@ -9,14 +9,19 @@ const styles = require('./DrawArea.css')
 @observer
 export class DrawArea extends React.Component<{}, {}> {
   private root: HTMLElement
+  private resizeObserver: any
   @observable private size = new Vec2(0, 0)
 
   componentDidMount () {
     this.resizeSVG()
-    const resizeObserver = new ResizeObserver(() => {
+    this.resizeObserver = new ResizeObserver(() => {
       this.resizeSVG()
     })
-    resizeObserver.observe(this.root)
+    this.resizeObserver.observe(this.root)
+  }
+
+  componentWillUnmount () {
+    this.resizeObserver.unobserve(this.root)
   }
 
   render () {
