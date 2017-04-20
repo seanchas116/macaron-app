@@ -48,7 +48,7 @@
     "paintvec": "github:sketchglass/paintvec",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
-    "react-draggable-tree": "github:seanchas116/react-draggable-tree",
+    "react-draggable-tree": "^0.2.0",
     "uuid": "^3.0.1"
   }
 }

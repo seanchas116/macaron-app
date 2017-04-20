@@ -6,6 +6,7 @@ import {Item} from './Item'
 export
 class RectItem extends Item {
   @observable rect = new Rect()
+  name = 'Rectangle'
 
   render () {
     const {left, top, width, height} = this.rect
@@ -16,5 +17,16 @@ class RectItem extends Item {
       stroke={this.stroke}
       strokeWidth={this.strokeWidth}
     />
+  }
+
+  clone () {
+    const cloned = new RectItem(this.document)
+    this.copyPropsFrom(cloned)
+    return cloned
+  }
+
+  copyPropsFrom (other: RectItem) {
+    super.copyPropsFrom(other)
+    other.rect = this.rect
   }
 }

@@ -20,7 +20,7 @@ export class DrawArea extends React.Component<{}, {}> {
   }
 
   render () {
-    const {items} = documentManager.document
+    const items = documentManager.document.rootItem.children
     const currentTool = toolManager.current
     const {width, height} = this.size
     return <div className={styles.root} ref={e => this.root = e}>

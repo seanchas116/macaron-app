@@ -6,6 +6,7 @@ import {Item} from './Item'
 export
 class OvalItem extends Item {
   @observable rect = new Rect()
+  name = 'Oval'
 
   render () {
     const center = this.rect.center
@@ -17,5 +18,16 @@ class OvalItem extends Item {
       stroke={this.stroke}
       strokeWidth={this.strokeWidth}
     />
+  }
+
+  clone () {
+    const cloned = new OvalItem(this.document)
+    this.copyPropsFrom(cloned)
+    return cloned
+  }
+
+  copyPropsFrom (other: OvalItem) {
+    super.copyPropsFrom(other)
+    other.rect = this.rect
   }
 }
