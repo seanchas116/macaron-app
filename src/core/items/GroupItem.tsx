@@ -5,6 +5,7 @@ import {Item} from './Item'
 export
 class GroupItem extends Item {
   readonly children = observable<Item>([])
+  @observable collapsed = false
 
   render () {
     return <g>
