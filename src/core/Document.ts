@@ -4,6 +4,6 @@ import {GroupItem} from './items/GroupItem'
 
 export
 class Document {
-  readonly rootItem = new GroupItem()
+  readonly rootItem = new GroupItem(this)
   readonly selectedItems = observable<Item>([])
 }

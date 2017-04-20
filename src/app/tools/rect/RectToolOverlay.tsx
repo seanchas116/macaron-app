@@ -1,6 +1,7 @@
 import * as React from 'react'
 import {action} from 'mobx'
 import {Vec2, Rect} from 'paintvec'
+import {Document} from '../../../core/Document'
 import {documentManager} from '../../../core/DocumentManager'
 import {toolManager} from '../../../core/ToolManager'
 import {RectItem} from '../../../core/items/RectItem'
@@ -22,22 +23,23 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     />
   }
 
-  private newItem () {
+  private newItem (document: Document) {
     switch (this.props.type) {
       case 'oval':
-        return new OvalItem()
+        return new OvalItem(document)
       case 'rect':
       default:
-        return new RectItem()
+        return new RectItem(document)
     }
   }
 
   @action private onMouseDown = (event: React.MouseEvent<SVGRectElement>) => {
     const nativeEv = event.nativeEvent as MouseEvent
     this.startPos = new Vec2(nativeEv.offsetX, nativeEv.offsetY)
-    this.item = this.newItem()
+    const {document} = documentManager
+    this.item = this.newItem(document)
     this.item.rect = new Rect(this.startPos, this.startPos)
-    documentManager.document.rootItem.children.push(this.item)
+    document.rootItem.children.push(this.item)
   }
 
   @action private onMouseMove = (event: React.MouseEvent<SVGRectElement>) => {

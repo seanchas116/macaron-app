@@ -41,12 +41,15 @@ class ItemTreeDelegate implements TreeDelegate<Item> {
     documentManager.document.selectedItems.replace(selectedNodeInfos.map(info => info.item))
   }
   onCollapsedChange (info: TreeRowInfo<Item>, collapsed: boolean) {
-    // TODO
+    const {item} = info
+    if (item instanceof GroupItem) {
+      item.collapsed = collapsed
+    }
   }
   onContextMenu (info: TreeRowInfo<Item>|undefined, ev: React.MouseEvent<HTMLElement>) {
     // TODO
   }
-  onMove (src: TreeRowInfo<Item>[], dest: TreeRowInfo<Item>, destIndex: number) {
+  onMove (src: TreeRowInfo<Item>[], dest: TreeRowInfo<Item>, destIndex: number, destIndexAfter: number) {
     // TODO
   }
   onCopy (src: TreeRowInfo<Item>[], dest: TreeRowInfo<Item>, destIndex: number) {
