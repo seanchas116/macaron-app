@@ -6,8 +6,6 @@ import {documentManager} from '../DocumentManager'
 import {toolManager} from '../ToolManager'
 const styles = require('./DrawArea.css')
 
-declare var ResizeObserver: any
-
 @observer
 export class DrawArea extends React.Component<{}, {}> {
   private root: HTMLElement
