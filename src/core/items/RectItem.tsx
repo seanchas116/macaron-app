@@ -6,6 +6,7 @@ import {Item} from './Item'
 export
 class RectItem extends Item {
   @observable rect = new Rect()
+  name = 'Rectangle'
 
   render () {
     const {left, top, width, height} = this.rect

@@ -1,0 +1,8 @@
+.root {
+  width: 240px;
+  background-color: #F0F0F0;
+  border-right: 1px solid #D8D8D8;
+  & :global(.ReactDraggableTree) {
+    height: 100%;
+  }
+}

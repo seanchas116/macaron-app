@@ -6,6 +6,7 @@ export
 class GroupItem extends Item {
   readonly children = observable<Item>([])
   @observable collapsed = false
+  name = 'Group'
 
   render () {
     return <g>

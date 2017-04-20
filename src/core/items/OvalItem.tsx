@@ -6,6 +6,7 @@ import {Item} from './Item'
 export
 class OvalItem extends Item {
   @observable rect = new Rect()
+  name = 'Oval'
 
   render () {
     const center = this.rect.center
