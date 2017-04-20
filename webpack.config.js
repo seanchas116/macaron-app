@@ -16,7 +16,11 @@ module.exports = {
     extensions: [".ts", ".tsx", ".js"],
   },
   externals: require('webpack-node-externals')({
-    whitelist: ['webpack/hot/dev-server', /\.css$/, fileRegex]
+    whitelist: [
+      /^webpack/,
+      /\.css$/,
+      fileRegex
+    ]
   }),
   module: {
     loaders: [
