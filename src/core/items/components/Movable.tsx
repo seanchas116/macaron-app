@@ -18,7 +18,9 @@ class Movable extends React.Component<{item: Item}, {}> {
       onPointerMove={this.onPointerMove}
       onPointerUp={this.onPointerUp}
       >
-      {this.props.children}
+      {React.cloneElement(React.Children.only(this.props.children), {
+        onClick: this.onClick
+      })}
     </PointerEvents>
   }
 
@@ -49,5 +51,8 @@ class Movable extends React.Component<{item: Item}, {}> {
     this.dragging = false
     this.items = new Set()
     this.origins = new Map()
+  }
+  @autobind @action private onClick (event: React.MouseEvent<Element>) {
+    event.stopPropagation()
   }
 }

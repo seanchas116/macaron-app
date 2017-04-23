@@ -14,4 +14,8 @@ class Document {
       this.selectedItems = new Set([item])
     }
   }
+
+  deselectItems () {
+    this.selectedItems = new Set()
+  }
 }
