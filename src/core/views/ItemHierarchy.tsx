@@ -38,7 +38,7 @@ class ItemTreeDelegate implements TreeDelegate<Item> {
     return <ItemRow item={info.item} selected={info.selected} />
   }
   onSelectedKeysChange (selectedKeys: Set<number>, selectedNodeInfos: TreeRowInfo<Item>[]) {
-    documentManager.document.selectedItems.replace(selectedNodeInfos.map(info => info.item))
+    documentManager.document.selectedItems = new Set(selectedNodeInfos.map(info => info.item))
   }
   onCollapsedChange (info: TreeRowInfo<Item>, collapsed: boolean) {
     const {item} = info
@@ -90,7 +90,7 @@ export class ItemHierarchy extends React.Component<{}, {}> {
     console.log('render')
     const ItemTreeView = TreeView as new () => TreeView<Item>
     const document = documentManager.document
-    const selectedKeys = new Set(document.selectedItems.map(item => item.id))
+    const selectedKeys = new Set([...document.selectedItems].map(item => item.id))
 
     // FIXME: need to peek all items in ItemHierarchy#render to cause re-render
     //        bacause TreeView in react-draggable-tree is not mobx observer.

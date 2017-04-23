@@ -1,22 +1,33 @@
 import * as React from 'react'
-import {Rect} from 'paintvec'
+import {Rect, Vec2} from 'paintvec'
 import {observable} from 'mobx'
 import {Item} from './Item'
+import {Movable} from './components/Movable'
 
 export
 class RectItem extends Item {
-  @observable rect = new Rect()
+  @observable size = new Vec2()
   name = 'Rectangle'
 
-  render () {
-    const {left, top, width, height} = this.rect
-    return <rect
-      key={this.id}
-      x={left} y={top} width={width} height={height}
-      fill={this.fill}
-      stroke={this.stroke}
-      strokeWidth={this.strokeWidth}
-    />
+  get rect() {
+    return Rect.fromSize(this.position, this.size)
+  }
+  set rect(rect: Rect) {
+    this.position = rect.topLeft
+    this.size = rect.size
+  }
+
+  render (): JSX.Element {
+    const {x, y} = this.position
+    const {width, height} = this.size
+    return <Movable item={this} key={this.id}>
+      <rect
+        x={x} y={y} width={width} height={height}
+        fill={this.fill}
+        stroke={this.stroke}
+        strokeWidth={this.strokeWidth}
+      />
+    </Movable>
   }
 
   clone () {
@@ -27,6 +38,6 @@ class RectItem extends Item {
 
   copyPropsFrom (other: RectItem) {
     super.copyPropsFrom(other)
-    other.rect = this.rect
+    other.size = this.size
   }
 }

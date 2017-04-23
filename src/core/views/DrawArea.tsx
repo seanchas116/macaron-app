@@ -2,6 +2,7 @@ import * as React from 'react'
 import {observable, action} from 'mobx'
 import {observer} from 'mobx-react'
 import {Vec2} from 'paintvec'
+import {autobind} from 'core-decorators'
 import {documentManager} from '../DocumentManager'
 import {toolManager} from '../ToolManager'
 const styles = require('./DrawArea.css')
@@ -29,11 +30,15 @@ export class DrawArea extends React.Component<{}, {}> {
     const currentTool = toolManager.current
     const {width, height} = this.size
     return <div className={styles.root} ref={e => this.root = e}>
-      <svg className={styles.svg} width={width + 'px'} height={height + 'px'}>
+      <svg className={styles.svg} width={width + 'px'} height={height + 'px'} onClick={this.deselect}>
         {rootItem.render()}
         {currentTool && currentTool.renderOverlay(this.size)}
       </svg>
     </div>
+  }
+
+  @autobind @action deselect () {
+    documentManager.document.deselectItems()
   }
 
   @action private resizeSVG () {
