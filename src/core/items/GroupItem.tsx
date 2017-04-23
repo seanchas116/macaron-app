@@ -38,12 +38,9 @@ class GroupItem extends Item {
     }
     const onRemoved = (child: Item) => {
       child.parent = undefined
-      const selected = this.document.selectedItems
-      for (let i = selected.length - 1; i >= 0; --i) {
-        if (selected[i] === child) {
-          selected.splice(i, 1)
-        }
-      }
+      const selectedItems = new Set(this.document.selectedItems)
+      selectedItems.delete(child)
+      this.document.selectedItems = selectedItems
     }
     if (change.type === 'splice') {
       change.added.forEach(onAdded)

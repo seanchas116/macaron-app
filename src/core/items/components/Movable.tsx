@@ -8,8 +8,9 @@ import {Item} from '../Item'
 export
 class Movable extends React.Component<{item: Item}, {}> {
   private dragOrigin = new Vec2()
-  private posOrigin = new Vec2()
   private dragging = false
+  private items = new Set<Item>()
+  private origins = new Map<Item, Vec2>()
 
   render () {
     return <PointerEvents
@@ -22,13 +23,17 @@ class Movable extends React.Component<{item: Item}, {}> {
   }
 
   @autobind @action private onPointerDown (event: PointerEvent) {
-    const {item} = this.props
     const target = event.currentTarget as Element
     target.setPointerCapture(event.pointerId)
     this.dragOrigin = new Vec2(event.clientX, event.clientY)
-    this.posOrigin = item.position
     this.dragging = true
-    item.document.selectedItems.replace([item])
+
+    const {document} = this.props.item
+    document.selectItem(this.props.item, event.shiftKey)
+    this.items = document.selectedItems
+    for (const item of this.items) {
+      this.origins.set(item, item.position)
+    }
   }
   @autobind @action private onPointerMove (event: PointerEvent) {
     if (!this.dragging) {
@@ -36,9 +41,13 @@ class Movable extends React.Component<{item: Item}, {}> {
     }
     const pos = new Vec2(event.clientX, event.clientY)
     const offset = pos.sub(this.dragOrigin)
-    this.props.item.position = this.posOrigin.add(offset)
+    for (const item of this.items) {
+      item.position = this.origins.get(item)!.add(offset)
+    }
   }
   @autobind @action private onPointerUp (event: PointerEvent) {
     this.dragging = false
+    this.items = new Set()
+    this.origins = new Map()
   }
 }
