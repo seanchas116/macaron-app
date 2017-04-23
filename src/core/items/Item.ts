@@ -24,5 +24,6 @@ abstract class Item {
     this.fill = other.fill
     this.stroke = other.stroke
     this.strokeWidth = other.strokeWidth
+    this.position = other.position
   }
 }
