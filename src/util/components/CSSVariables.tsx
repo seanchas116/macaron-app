@@ -12,6 +12,7 @@ class CSSVariables extends React.Component<CSSVariablesProps, {}> {
   private element: HTMLElement|undefined
 
   componentDidMount () {
+    this.element = ReactDOM.findDOMNode(this) as HTMLElement
     this.setProperties(this.props)
   }
   componentWillReceiveProps (props: CSSVariablesProps) {
@@ -22,7 +23,6 @@ class CSSVariables extends React.Component<CSSVariablesProps, {}> {
   }
 
   private setProperties (props: {[key: string]: string|number}) {
-    this.element = ReactDOM.findDOMNode(this) as HTMLElement
     if (this.element) {
       for (const key in props) {
         if (['key', 'ref', 'children'].indexOf(key) < 0) {
