@@ -1,5 +1,6 @@
 import {observable} from 'mobx'
 import * as uuid from 'uuid'
+import {Vec2} from 'paintvec'
 import {Document} from '../Document'
 import {GroupItem} from './GroupItem'
 
@@ -9,6 +10,7 @@ abstract class Item {
   @observable fill = 'gray'
   @observable stroke = 'black'
   @observable strokeWidth = 1
+  @observable position = new Vec2()
   @observable parent: GroupItem|undefined
   readonly id = uuid()
 
