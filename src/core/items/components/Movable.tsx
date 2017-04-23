@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {Vec2} from 'paintvec'
+import {action} from 'mobx'
 import {autobind} from 'core-decorators'
 import {PointerEvents} from '../../../util/components/PointerEvents'
 import {Item} from '../Item'
@@ -20,14 +21,14 @@ class Movable extends React.Component<{item: Item}, {}> {
     </PointerEvents>
   }
 
-  @autobind private onPointerDown (event: PointerEvent) {
+  @autobind @action private onPointerDown (event: PointerEvent) {
     const target = event.currentTarget as Element
     target.setPointerCapture(event.pointerId)
     this.dragOrigin = new Vec2(event.clientX, event.clientY)
     this.posOrigin = this.props.item.position
     this.dragging = true
   }
-  @autobind private onPointerMove (event: PointerEvent) {
+  @autobind @action private onPointerMove (event: PointerEvent) {
     if (!this.dragging) {
       return
     }
@@ -35,7 +36,7 @@ class Movable extends React.Component<{item: Item}, {}> {
     const offset = pos.sub(this.dragOrigin)
     this.props.item.position = this.posOrigin.add(offset)
   }
-  @autobind private onPointerUp (event: PointerEvent) {
+  @autobind @action private onPointerUp (event: PointerEvent) {
     this.dragging = false
   }
 }
