@@ -6,6 +6,7 @@ import {documentManager} from '../../../core/DocumentManager'
 import {toolManager} from '../../../core/ToolManager'
 import {RectItem} from '../../../core/items/RectItem'
 import {OvalItem} from '../../../core/items/OvalItem'
+import {PointerEvents} from '../../../util/components/PointerEvents'
 import {RectToolType} from './RectTool'
 
 export
@@ -15,12 +16,13 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
 
   render () {
     const {width, height} = this.props.size
-    return <rect
-      width={width} height={height} fill='transparent'
-      onMouseDown={this.onMouseDown}
-      onMouseMove={this.onMouseMove}
-      onMouseUp={this.onMouseUp}
-    />
+    return <PointerEvents
+      onPointerDown={this.onPointerDown}
+      onPointerMove={this.onPointerMove}
+      onPointerUp={this.onPointerUp}
+    >
+      <rect width={width} height={height} fill='transparent' />
+    </PointerEvents>
   }
 
   private newItem (document: Document) {
@@ -33,9 +35,11 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     }
   }
 
-  @action private onMouseDown = (event: React.MouseEvent<SVGRectElement>) => {
-    const nativeEv = event.nativeEvent as MouseEvent
-    this.startPos = new Vec2(nativeEv.offsetX, nativeEv.offsetY)
+  @action private onPointerDown = (event: PointerEvent) => {
+    const elem = event.currentTarget as SVGRectElement
+    elem.setPointerCapture(event.pointerId)
+
+    this.startPos = new Vec2(event.offsetX, event.offsetY)
     const {document} = documentManager
     this.item = this.newItem(document)
     this.item.rect = new Rect(this.startPos, this.startPos)
@@ -43,15 +47,14 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     document.selectedItems.replace([this.item])
   }
 
-  @action private onMouseMove = (event: React.MouseEvent<SVGRectElement>) => {
+  @action private onPointerMove = (event: PointerEvent) => {
     if (this.startPos && this.item) {
-      const nativeEv = event.nativeEvent as MouseEvent
-      const pos = new Vec2(nativeEv.offsetX, nativeEv.offsetY)
+      const pos = new Vec2(event.offsetX, event.offsetY)
       this.item.rect = Rect.fromTwoPoints(this.startPos, pos)
     }
   }
 
-  @action private onMouseUp = (event: React.MouseEvent<SVGRectElement>) => {
+  @action private onPointerUp = (event: PointerEvent) => {
     this.startPos = undefined
     this.item = undefined
     toolManager.current = undefined
