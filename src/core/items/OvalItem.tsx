@@ -20,9 +20,8 @@ class OvalItem extends Item {
   render (): JSX.Element {
     const center = this.rect.center
     const radius = this.rect.size.mulScalar(0.5)
-    return <Movable item={this}>
+    return <Movable item={this} key={this.id}>
       <ellipse
-        key={this.id}
         cx={center.x} cy={center.y} rx={radius.x} ry={radius.y}
         fill={this.fill}
         stroke={this.stroke}

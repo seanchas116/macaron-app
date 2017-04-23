@@ -20,9 +20,8 @@ class RectItem extends Item {
   render (): JSX.Element {
     const {x, y} = this.position
     const {width, height} = this.size
-    return <Movable item={this}>
+    return <Movable item={this} key={this.id}>
       <rect
-        key={this.id}
         x={x} y={y} width={width} height={height}
         fill={this.fill}
         stroke={this.stroke}
