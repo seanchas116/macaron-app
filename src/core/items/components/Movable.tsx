@@ -22,11 +22,13 @@ class Movable extends React.Component<{item: Item}, {}> {
   }
 
   @autobind @action private onPointerDown (event: PointerEvent) {
+    const {item} = this.props
     const target = event.currentTarget as Element
     target.setPointerCapture(event.pointerId)
     this.dragOrigin = new Vec2(event.clientX, event.clientY)
-    this.posOrigin = this.props.item.position
+    this.posOrigin = item.position
     this.dragging = true
+    item.document.selectedItems.replace([item])
   }
   @autobind @action private onPointerMove (event: PointerEvent) {
     if (!this.dragging) {
