@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {observable, action} from 'mobx'
+import {observable, action, reaction} from 'mobx'
 import {observer} from 'mobx-react'
 import {autobind} from 'core-decorators'
 import {Movable} from './Movable'
@@ -10,6 +10,19 @@ export
 class TextItemView extends React.Component<{item: TextItem}, {}> {
   @observable private focus = false
   private editor: HTMLElement|undefined
+
+  constructor () {
+    super()
+    reaction(() => this.focus, focus => {
+      if (this.editor) {
+        if (focus) {
+          this.editor.focus()
+        } else {
+          this.editor.blur()
+        }
+      }
+    })
+  }
 
   render () {
     const {item} = this.props
@@ -40,9 +53,6 @@ class TextItemView extends React.Component<{item: TextItem}, {}> {
 
   @autobind @action onDoubleClick () {
     this.focus = true
-    if (this.editor) {
-      this.editor.focus()
-    }
   }
   @autobind @action onBlur () {
     this.focus = false
@@ -50,9 +60,6 @@ class TextItemView extends React.Component<{item: TextItem}, {}> {
   @autobind @action onKeyDown (e: React.KeyboardEvent<HTMLElement>) {
     if (e.key === 'Escape') {
       this.focus = false
-      if (this.editor) {
-        this.editor.blur()
-      }
     }
   }
 }
