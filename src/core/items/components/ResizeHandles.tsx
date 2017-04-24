@@ -60,6 +60,7 @@ class ResizeHandle extends React.Component<ResizeHandleProps, {}> {
 }
 
 interface ResizeHandlesProps {
+  showBoundingBox: boolean
   p1: Vec2
   p2: Vec2
   onChangeBegin: () => void
@@ -78,9 +79,9 @@ class ResizeHandles extends React.Component<ResizeHandlesProps, {}> {
     const width = Math.max(x1, x2) - x
     const y = Math.min(y1, y2)
     const height = Math.max(y1, y2) - y
-    const {onChange, onChangeBegin, onChangeEnd} = this.props
+    const {onChange, onChangeBegin, onChangeEnd, showBoundingBox} = this.props
     return <g>
-      <rect x={x} y={y} width={width} height={height} stroke='lightgrey' fill='transparent' pointerEvents='none' />
+      <rect visibility={showBoundingBox ? 'visible' : 'hidden'} x={x} y={y} width={width} height={height} stroke='lightgrey' fill='transparent' pointerEvents='none' />
       <ResizeHandle
         x={x1} y={y1}
         onChange={(x1, y1) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
