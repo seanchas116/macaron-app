@@ -2,7 +2,7 @@ import * as React from 'react'
 import {Vec2} from 'paintvec'
 import {PointerEvents} from '../../../util/components/PointerEvents'
 
-const handleSize = 4
+const handleSize = 6
 
 interface ResizeHandleProps {
   x: number
@@ -29,6 +29,7 @@ class ResizeHandle extends React.Component<ResizeHandleProps, {}> {
       <rect
         x={x - handleSize / 2} y={y - handleSize / 2}
         width={handleSize} height={handleSize}
+        onClick={e => e.stopPropagation()}
         stroke='grey'
         fill='white'
       />
