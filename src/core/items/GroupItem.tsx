@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {observable, action, IArrayChange, IArraySplice} from 'mobx'
+import {Rect} from 'paintvec'
 import {Item} from './Item'
 import {Document} from '../Document'
 
@@ -8,6 +9,18 @@ class GroupItem extends Item {
   readonly children = observable<Item>([])
   @observable collapsed = false
   name = 'Group'
+
+  get position () {
+    return this.rect.topLeft
+  }
+
+  get size () {
+    return this.rect.size
+  }
+
+  get rect () {
+    return Rect.union(...this.children.map(i => i.rect)) || new Rect()
+  }
 
   constructor (document: Document) {
     super(document)

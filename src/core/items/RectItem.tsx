@@ -1,21 +1,14 @@
 import * as React from 'react'
-import {Rect, Vec2} from 'paintvec'
+import {Vec2} from 'paintvec'
 import {observable} from 'mobx'
 import {Item} from './Item'
 import {Movable} from './components/Movable'
 
 export
 class RectItem extends Item {
+  @observable position = new Vec2()
   @observable size = new Vec2()
   name = 'Rectangle'
-
-  get rect() {
-    return Rect.fromSize(this.position, this.size)
-  }
-  set rect(rect: Rect) {
-    this.position = rect.topLeft
-    this.size = rect.size
-  }
 
   render (): JSX.Element {
     const {x, y} = this.position
