@@ -9,6 +9,7 @@ import {TextItem} from '../items/TextItem'
 export
 class TextItemView extends React.Component<{item: TextItem}, {}> {
   @observable private focus = false
+  private editor: HTMLElement|undefined
 
   render () {
     const {item} = this.props
@@ -27,8 +28,10 @@ class TextItemView extends React.Component<{item: TextItem}, {}> {
             outline: 'none'
           }}
           contentEditable={this.focus} suppressContentEditableWarning
+          tabIndex={-1}
           onBlur={this.onBlur}
-          onKeyDown={this.onKeyDown}>
+          onKeyDown={this.onKeyDown}
+          ref={e => this.editor = e}>
           {item.text}
         </div>
       </foreignObject>
@@ -37,6 +40,9 @@ class TextItemView extends React.Component<{item: TextItem}, {}> {
 
   @autobind @action onDoubleClick () {
     this.focus = true
+    if (this.editor) {
+      this.editor.focus()
+    }
   }
   @autobind @action onBlur () {
     this.focus = false
@@ -44,6 +50,9 @@ class TextItemView extends React.Component<{item: TextItem}, {}> {
   @autobind @action onKeyDown (e: React.KeyboardEvent<HTMLElement>) {
     if (e.key === 'Escape') {
       this.focus = false
+      if (this.editor) {
+        this.editor.blur()
+      }
     }
   }
 }
