@@ -5,6 +5,7 @@ import {Vec2} from 'paintvec'
 import {autobind} from 'core-decorators'
 import {documentManager} from '../DocumentManager'
 import {toolManager} from '../ToolManager'
+import {ItemResizeHandles} from '../items/components/ItemResizeHandles'
 const styles = require('./DrawArea.css')
 
 @observer
@@ -26,12 +27,13 @@ export class DrawArea extends React.Component<{}, {}> {
   }
 
   render () {
-    const {rootItem} = documentManager.document
+    const {rootItem, selectedItems} = documentManager.document
     const currentTool = toolManager.current
     const {width, height} = this.size
     return <div className={styles.root} ref={e => this.root = e}>
       <svg className={styles.svg} width={width + 'px'} height={height + 'px'} onClick={this.deselect}>
         {rootItem.render()}
+        {[...selectedItems].map(item => <ItemResizeHandles item={item} key={item.id} />)}
         {currentTool && currentTool.renderOverlay(this.size)}
       </svg>
     </div>
