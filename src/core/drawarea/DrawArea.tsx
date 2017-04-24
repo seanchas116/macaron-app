@@ -5,7 +5,7 @@ import {Vec2} from 'paintvec'
 import {autobind} from 'core-decorators'
 import {documentManager} from '../DocumentManager'
 import {toolManager} from '../ToolManager'
-import {ItemResizeHandles} from '../items/components/ItemResizeHandles'
+import {ItemResizeHandles} from './ItemResizeHandles'
 const styles = require('./DrawArea.css')
 
 @observer

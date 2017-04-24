@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {Vec2} from 'paintvec'
-import {PointerEvents} from '../../../util/components/PointerEvents'
+import {PointerEvents} from '../../util/components/PointerEvents'
 
 const handleSize = 6
 
