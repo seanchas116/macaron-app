@@ -87,7 +87,6 @@ export class ItemHierarchy extends React.Component<{}, {}> {
   private delegate = new ItemTreeDelegate()
 
   render () {
-    console.log('render')
     const ItemTreeView = TreeView as new () => TreeView<Item>
     const document = documentManager.document
     const selectedKeys = new Set([...document.selectedItems].map(item => item.id))
