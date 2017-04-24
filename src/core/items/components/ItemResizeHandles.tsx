@@ -19,6 +19,7 @@ class ItemResizeHandles extends React.Component<{item: Item}, {}> {
   }
 
   componentDidMount () {
+    this.updatePositions()
     this.disposers.push(
       reaction(() => this.rect, () => {
         if (!this.dragging) {
