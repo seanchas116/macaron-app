@@ -31,7 +31,8 @@ export class DrawArea extends React.Component<{}, {}> {
     const currentTool = toolManager.current
     const {width, height} = this.size
     return <div className={styles.root} ref={e => this.root = e}>
-      <svg className={styles.svg} width={width + 'px'} height={height + 'px'} onClick={this.deselect}>
+      <svg className={styles.svg} width={width + 'px'} height={height + 'px'}>
+        <rect x={0} y={0} width={width} height={height} onClick={this.deselect} fill='white' />
         {rootItem.render()}
         {[...selectedItems].map(item => <ItemResizeHandles item={item} key={item.id} />)}
         {currentTool && currentTool.renderOverlay(this.size)}
