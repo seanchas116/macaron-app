@@ -2,8 +2,8 @@ import * as React from 'react'
 import {Vec2} from 'paintvec'
 import {action} from 'mobx'
 import {autobind} from 'core-decorators'
-import {PointerEvents} from '../../../util/components/PointerEvents'
-import {Item} from '../Item'
+import {PointerEvents} from '../../util/components/PointerEvents'
+import {Item} from '../items/Item'
 
 export
 class Movable extends React.Component<{item: Item}, {}> {

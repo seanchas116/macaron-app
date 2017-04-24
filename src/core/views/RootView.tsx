@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {ToolSelect} from './ToolSelect'
 import {ItemHierarchy} from './ItemHierarchy'
-import {DrawArea} from './DrawArea'
+import {DrawArea} from '../drawarea/DrawArea'
 const styles = require('./RootView.css')
 
 export

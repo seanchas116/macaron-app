@@ -4,7 +4,7 @@ import {action, reaction, computed, observable} from 'mobx'
 import {autobind} from 'core-decorators'
 import {Rect, Vec2} from 'paintvec'
 import {ResizeHandles} from './ResizeHandles'
-import {Item} from '../Item'
+import {Item} from '../items/Item'
 
 @observer
 export

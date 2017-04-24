@@ -2,7 +2,7 @@ import * as React from 'react'
 import {Vec2} from 'paintvec'
 import {observable} from 'mobx'
 import {Item} from './Item'
-import {Movable} from './components/Movable'
+import {Movable} from '../drawarea/Movable'
 
 export
 class OvalItem extends Item {
