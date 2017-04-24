@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {Rect} from 'paintvec'
+import {Vec2} from 'paintvec'
 import {PointerEvents} from '../../../util/components/PointerEvents'
 
 const handleSize = 4
@@ -58,25 +58,21 @@ class ResizeHandle extends React.Component<ResizeHandleProps, {}> {
   }
 }
 
-export
-interface ResizeHandlesPositions {
-  x1: number
-  x2: number
-  y1: number
-  y2: number
-}
-
 interface ResizeHandlesProps {
-  positions: ResizeHandlesPositions
+  p1: Vec2
+  p2: Vec2
   onChangeBegin: () => void
-  onChange: (positions: ResizeHandlesPositions) => void
+  onChange: (p1: Vec2, p2: Vec2) => void
   onChangeEnd: () => void
 }
 
 export
 class ResizeHandles extends React.Component<ResizeHandlesProps, {}> {
   render () {
-    const {x1, x2, y1, y2} = this.props.positions
+    const x1 = this.props.p1.x
+    const y1 = this.props.p1.y
+    const x2 = this.props.p2.x
+    const y2 = this.props.p2.y
     const x = Math.min(x1, x2)
     const width = Math.max(x1, x2) - x
     const y = Math.min(y1, y2)
@@ -86,42 +82,42 @@ class ResizeHandles extends React.Component<ResizeHandlesProps, {}> {
       <rect x={x} y={y} width={width} height={height} stroke='lightgrey' fill='transparent' pointerEvents='none' />
       <ResizeHandle
         x={x1} y={y1}
-        onChange={(x1, y1) => onChange({x1, y1, x2, y2})}
+        onChange={(x1, y1) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         x={(x1 + x2) / 2} y={y1}
-        onChange={(_, y1) => onChange({x1, y1, x2, y2})}
+        onChange={(_, y1) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         x={x2} y={y1}
-        onChange={(x2, y1) => onChange({x1, y1, x2, y2})}
+        onChange={(x2, y1) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         x={x2} y={(y1 + y2) / 2}
-        onChange={(x2, _) => onChange({x1, y1, x2, y2})}
+        onChange={(x2, _) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         x={x2} y={y2}
-        onChange={(x2, y2) => onChange({x1, y1, x2, y2})}
+        onChange={(x2, y2) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         x={(x1 + x2) / 2} y={y2}
-        onChange={(_, y2) => onChange({x1, y1, x2, y2})}
+        onChange={(_, y2) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         x={x1} y={y2}
-        onChange={(x1, y2) => onChange({x1, y1, x2, y2})}
+        onChange={(x1, y2) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         x={x1} y={(y1 + y2) / 2}
-        onChange={(x1, _) => onChange({x1, y1, x2, y2})}
+        onChange={(x1, _) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
     </g>
