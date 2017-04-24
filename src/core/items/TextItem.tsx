@@ -16,7 +16,7 @@ class TextItem extends Item {
     return <Movable item={this} key={this.id}>
       <foreignObject
         x={x} y={y} width={this.size.width} height={this.size.height}>
-        <div style={{width: '100%'}} contentEditable>{this.text}</div>
+        <div style={{width: '100%'}} contentEditable suppressContentEditableWarning>{this.text}</div>
       </foreignObject>
     </Movable>
   }
