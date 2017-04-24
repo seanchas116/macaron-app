@@ -8,7 +8,7 @@ export
 class TextItem extends Item {
   @observable position = new Vec2()
   @observable size = new Vec2()
-  name = 'Rectangle'
+  name = 'Text'
 
   render (): JSX.Element {
     const {x, y} = this.position
