@@ -22,7 +22,7 @@ class TextItem extends Item {
   }
 
   clone () {
-    const cloned = new TextItem(this.document, this.originalSize)
+    const cloned = new TextItem(this.document)
     this.copyPropsFrom(cloned)
     return cloned
   }

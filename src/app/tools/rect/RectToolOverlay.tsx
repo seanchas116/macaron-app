@@ -31,7 +31,7 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
       case 'oval':
         return new OvalItem(document)
       case 'text':
-        return new TextItem(document, new Vec2(10, 10))
+        return new TextItem(document)
       case 'rect':
       default:
         return new RectItem(document)

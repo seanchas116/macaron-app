@@ -24,7 +24,7 @@ abstract class Item {
     this.size = rect.size
   }
 
-  constructor (public readonly document: Document, public originalSize?: Vec2) {
+  constructor (public readonly document: Document) {
   }
 
   abstract render (): JSX.Element
