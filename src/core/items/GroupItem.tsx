@@ -1,4 +1,5 @@
 import * as React from 'react'
+import {Vec2} from 'paintvec'
 import {observable, action, IArrayChange, IArraySplice} from 'mobx'
 import {Rect} from 'paintvec'
 import {Item} from './Item'
@@ -22,8 +23,8 @@ class GroupItem extends Item {
     return Rect.union(...this.children.map(i => i.rect)) || new Rect()
   }
 
-  constructor (document: Document) {
-    super(document)
+  constructor (document: Document, originalSize?: Vec2) {
+    super(document, originalSize)
     this.children.observe(change => this.onChildChange(change))
   }
 
