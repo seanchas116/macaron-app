@@ -12,11 +12,12 @@ class RectTool extends Tool {
   get icon () {
     switch (this.type) {
       case 'rect':
-      case 'text':
       default:
         return require('./rect.svg')
       case 'oval':
         return require('./oval.svg')
+      case 'text':
+        return require('./text.svg')
     }
   }
 
