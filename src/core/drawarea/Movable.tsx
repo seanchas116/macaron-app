@@ -6,7 +6,7 @@ import {PointerEvents} from '../../util/components/PointerEvents'
 import {Item} from '../items/Item'
 
 export
-class Movable extends React.Component<{item: Item}, {}> {
+class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
   private dragOrigin = new Vec2()
   private dragging = false
   private items = new Set<Item>()
@@ -23,16 +23,19 @@ class Movable extends React.Component<{item: Item}, {}> {
   }
 
   @autobind @action private onPointerDown (event: PointerEvent) {
-    const target = event.currentTarget as Element
-    target.setPointerCapture(event.pointerId)
-    this.dragOrigin = new Vec2(event.clientX, event.clientY)
-    this.dragging = true
-
     const {document} = this.props.item
     document.selectItem(this.props.item, event.shiftKey)
     this.items = document.selectedItems
     for (const item of this.items) {
       this.origins.set(item, item.position)
+    }
+
+    const movable = this.props.movable !== false
+    if (movable) {
+      const target = event.currentTarget as Element
+      target.setPointerCapture(event.pointerId)
+      this.dragOrigin = new Vec2(event.clientX, event.clientY)
+      this.dragging = true
     }
   }
   @autobind @action private onPointerMove (event: PointerEvent) {
@@ -46,6 +49,9 @@ class Movable extends React.Component<{item: Item}, {}> {
     }
   }
   @autobind @action private onPointerUp (event: PointerEvent) {
+    if (!this.dragging) {
+      return
+    }
     this.dragging = false
     this.items = new Set()
     this.origins = new Map()

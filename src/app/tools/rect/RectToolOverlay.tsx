@@ -5,6 +5,7 @@ import {Document} from '../../../core/Document'
 import {documentManager} from '../../../core/DocumentManager'
 import {toolManager} from '../../../core/ToolManager'
 import {RectItem} from '../../../core/items/RectItem'
+import {TextItem} from '../../../core/items/TextItem'
 import {OvalItem} from '../../../core/items/OvalItem'
 import {PointerEvents} from '../../../util/components/PointerEvents'
 import {RectToolType} from './RectTool'
@@ -29,6 +30,8 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     switch (this.props.type) {
       case 'oval':
         return new OvalItem(document)
+      case 'text':
+        return new TextItem(document)
       case 'rect':
       default:
         return new RectItem(document)
