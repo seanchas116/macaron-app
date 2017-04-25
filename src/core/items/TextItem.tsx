@@ -12,7 +12,7 @@ class TextItem extends Item {
   @observable text = 'Text'
 
   render (): JSX.Element {
-    return <TextItemView item={this} />
+    return <TextItemView item={this} key={this.id}/>
   }
 
   clone () {

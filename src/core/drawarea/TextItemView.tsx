@@ -28,7 +28,7 @@ class TextItemView extends React.Component<{item: TextItem}, {}> {
     const {item} = this.props
     const {x, y} = item.position
     const {width, height} = item.size
-    return <Movable movable={!this.focus} item={item} key={item.id}>
+    return <Movable movable={!this.focus} item={item}>
       <foreignObject
         x={x} y={y} width={width} height={height}
         onDoubleClick={this.onDoubleClick}>
