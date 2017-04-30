@@ -68,7 +68,7 @@ function snapLine (snapping: RectSnapping): [Vec2, Vec2] {
       self.rect.bottom
     ]
     const y0 = Math.min(...ys)
-    const y1 = Math.min(...ys)
+    const y1 = Math.max(...ys)
     return [new Vec2(x, y0), new Vec2(x, y1)]
   } else {
     const y = snapping.targetValue
@@ -79,7 +79,7 @@ function snapLine (snapping: RectSnapping): [Vec2, Vec2] {
       self.rect.right
     ]
     const x0 = Math.min(...xs)
-    const x1 = Math.min(...xs)
+    const x1 = Math.max(...xs)
     return [new Vec2(x0, y), new Vec2(x1, y)]
   }
 }
@@ -101,7 +101,7 @@ export class Snapper {
     const xSnappings = snapRect(this.targetItems, item, itemPos, 'horizontal')
     const xOffset = xSnappings.length > 0 ? xSnappings[0].targetValue - xSnappings[0].selfValue : 0
     const ySnappings = snapRect(this.targetItems, item, itemPos, 'vertical')
-    const yOffset = xSnappings.length > 0 ? ySnappings[0].targetValue - ySnappings[0].selfValue : 0
+    const yOffset = ySnappings.length > 0 ? ySnappings[0].targetValue - ySnappings[0].selfValue : 0
     this.snappings.replace([...xSnappings, ...ySnappings])
     return itemPos.add(new Vec2(xOffset, yOffset))
   }
