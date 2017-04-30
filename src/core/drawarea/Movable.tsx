@@ -4,6 +4,7 @@ import {action} from 'mobx'
 import {autobind} from 'core-decorators'
 import {PointerEvents} from '../../util/components/PointerEvents'
 import {Item} from '../items/Item'
+import {snapper} from './Snapper'
 
 export
 class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
@@ -36,6 +37,8 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
       target.setPointerCapture(event.pointerId)
       this.dragOrigin = new Vec2(event.clientX, event.clientY)
       this.dragging = true
+      snapper.item = this.props.item
+      snapper.targetItems.replace(this.props.item.parent!.children.filter(f => f !== this.props.item))
     }
   }
   @autobind @action private onPointerMove (event: PointerEvent) {
@@ -44,8 +47,9 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     }
     const pos = new Vec2(event.clientX, event.clientY)
     const offset = pos.sub(this.dragOrigin)
+    const snapOffset = snapper.snap(this.props.item, this.origins.get(this.props.item)!.add(offset))
     for (const item of this.items) {
-      item.position = this.origins.get(item)!.add(offset)
+      item.position = this.origins.get(item)!.add(offset).add(snapOffset)
     }
   }
   @autobind @action private onPointerUp (event: PointerEvent) {
@@ -55,5 +59,6 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     this.dragging = false
     this.items = new Set()
     this.origins = new Map()
+    snapper.clear()
   }
 }

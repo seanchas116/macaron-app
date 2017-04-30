@@ -6,6 +6,7 @@ import {autobind} from 'core-decorators'
 import {documentManager} from '../DocumentManager'
 import {toolManager} from '../ToolManager'
 import {ItemResizeHandles} from './ItemResizeHandles'
+import {SnapLines} from './SnapLines'
 const styles = require('./DrawArea.css')
 
 @observer
@@ -34,6 +35,7 @@ export class DrawArea extends React.Component<{}, {}> {
       <svg className={styles.svg} width={width + 'px'} height={height + 'px'}>
         <rect x={0} y={0} width={width} height={height} onClick={this.deselect} fill='white' />
         {rootItem.render()}
+        <SnapLines />
         {[...selectedItems].map(item => <ItemResizeHandles item={item} key={item.id} />)}
         {currentTool && currentTool.renderOverlay(this.size)}
       </svg>
