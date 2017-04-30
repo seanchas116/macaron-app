@@ -1,5 +1,5 @@
-import {Vec2} from 'paintvec'
-import {observable, computed} from 'mobx'
+import {Vec2, Rect} from 'paintvec'
+import {observable, computed, action} from 'mobx'
 import {Item} from '../items/Item'
 import {Arrangement, Direction} from '../../util/types'
 
@@ -15,9 +15,10 @@ interface RectSnapping {
   selfAt: Arrangement
 }
 
-function edges (item: Item, direction: Direction): {value: number, at: Arrangement}[] {
-  const begin = direction === 'horizontal' ? item.rect.left : item.rect.top
-  const end = direction === 'horizontal' ? item.rect.right : item.rect.bottom
+function edges (item: Item, pos: Vec2, direction: Direction): {value: number, at: Arrangement}[] {
+  const rect = Rect.fromSize(pos, item.size)
+  const begin = direction === 'horizontal' ? rect.left : rect.top
+  const end = direction === 'horizontal' ? rect.right : rect.bottom
   const center = (begin + end) / 2
   return [
     {value: begin, at: 'begin'},
@@ -26,13 +27,13 @@ function edges (item: Item, direction: Direction): {value: number, at: Arrangeme
   ]
 }
 
-function snapRect (targets: Item[], self: Item, direction: Direction) {
+function snapRect (targets: Item[], self: Item, selfPos: Vec2, direction: Direction) {
   const snappings: RectSnapping[] = []
 
-  const selfEdges = edges(self, direction)
+  const selfEdges = edges(self, selfPos, direction)
 
   for (const target of targets) {
-    const targetEdges = edges(target, direction)
+    const targetEdges = edges(target, target.rect.topLeft, direction)
     for (const {value: selfValue, at: selfAt} of selfEdges) {
       for (const {value: targetValue, at: targetAt} of targetEdges) {
         snappings.push({
@@ -86,13 +87,24 @@ function snapLine (snapping: RectSnapping): [Vec2, Vec2] {
 export class Snapper {
   @observable item: Item|undefined
   readonly targetItems = observable<Item>([])
-
-  @computed get snappings () {
-    const {item, targetItems} = this
-    return [...snapRect(targetItems, item, 'horizontal'), ...snapRect(targetItems, item, 'vertical')]
-  }
+  readonly snappings = observable<RectSnapping>([])
 
   @computed get snapLines () {
     return this.snappings.map(snapLine)
   }
+
+  /**
+   * @return The snapped position of item
+   */
+  @action snap (item: Item, itemPos: Vec2) {
+    this.item = item
+    const xSnappings = snapRect(this.targetItems, item, itemPos, 'horizontal')
+    const xOffset = xSnappings.length > 0 ? xSnappings[0].targetValue - xSnappings[0].selfValue : 0
+    const ySnappings = snapRect(this.targetItems, item, itemPos, 'vertical')
+    const yOffset = xSnappings.length > 0 ? ySnappings[0].targetValue - ySnappings[0].selfValue : 0
+    this.snappings.replace([...xSnappings, ...ySnappings])
+    return itemPos.add(new Vec2(xOffset, yOffset))
+  }
 }
+
+export const snapper = new Snapper()
