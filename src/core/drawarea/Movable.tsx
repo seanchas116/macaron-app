@@ -49,7 +49,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     const offset = pos.sub(this.dragOrigin)
     for (const item of this.items) {
       item.position = this.origins.get(item)!.add(offset)
-      snapper.snap(this.props.item, this.props.item.rect.topLeft.add(offset))
+      snapper.snap(this.props.item, this.origins.get(this.props.item)!.add(offset))
     }
   }
   @autobind @action private onPointerUp (event: PointerEvent) {
