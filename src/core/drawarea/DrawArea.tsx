@@ -31,7 +31,7 @@ export class DrawArea extends React.Component<{}, {}> {
     const {rootItem, selectedItems} = documentManager.document
     const currentTool = toolManager.current
     const {width, height} = this.size
-    return <div className={styles.root} ref={e => this.root = e} tabIndex={-1}>
+    return <div className={styles.root} ref={e => this.root = e}>
       <svg className={styles.svg} width={width + 'px'} height={height + 'px'}>
         <rect x={0} y={0} width={width} height={height} onClick={this.deselect} fill='white' />
         {rootItem.render()}

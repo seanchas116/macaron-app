@@ -1,4 +1,4 @@
-import {observable} from 'mobx'
+import {observable, action} from 'mobx'
 import {Item} from './items/Item'
 import {GroupItem} from './items/GroupItem'
 
@@ -17,5 +17,14 @@ class Document {
 
   deselectItems () {
     this.selectedItems = new Set()
+  }
+
+  @action deleteItems () {
+    for (const item of this.selectedItems) {
+      const {parent} = item
+      if (parent) {
+        parent.children.remove(item)
+      }
+    }
   }
 }
