@@ -105,6 +105,12 @@ export class Snapper {
     this.snappings.replace([...xSnappings, ...ySnappings])
     return itemPos.add(new Vec2(xOffset, yOffset))
   }
+
+  @action clear () {
+    this.item = undefined
+    this.targetItems.clear()
+    this.snappings.clear()
+  }
 }
 
 export const snapper = new Snapper()
