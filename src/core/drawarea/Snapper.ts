@@ -93,9 +93,6 @@ export class Snapper {
     return this.snappings.map(snapLine)
   }
 
-  /**
-   * @return The snapped position of item
-   */
   @action snap (item: Item, itemPos: Vec2) {
     this.item = item
     const xSnappings = snapRect(this.targetItems, item, itemPos, 'horizontal')
@@ -103,7 +100,7 @@ export class Snapper {
     const ySnappings = snapRect(this.targetItems, item, itemPos, 'vertical')
     const yOffset = ySnappings.length > 0 ? ySnappings[0].targetValue - ySnappings[0].selfValue : 0
     this.snappings.replace([...xSnappings, ...ySnappings])
-    return itemPos.add(new Vec2(xOffset, yOffset))
+    return new Vec2(xOffset, yOffset)
   }
 
   @action clear () {

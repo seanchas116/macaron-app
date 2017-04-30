@@ -47,9 +47,9 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     }
     const pos = new Vec2(event.clientX, event.clientY)
     const offset = pos.sub(this.dragOrigin)
+    const snapOffset = snapper.snap(this.props.item, this.origins.get(this.props.item)!.add(offset))
     for (const item of this.items) {
-      item.position = this.origins.get(item)!.add(offset)
-      snapper.snap(this.props.item, this.origins.get(this.props.item)!.add(offset))
+      item.position = this.origins.get(item)!.add(offset).add(snapOffset)
     }
   }
   @autobind @action private onPointerUp (event: PointerEvent) {
