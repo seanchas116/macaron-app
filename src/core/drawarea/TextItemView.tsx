@@ -61,6 +61,8 @@ class TextItemView extends React.Component<{item: TextItem}, {}> {
     if (e.key === 'Escape') {
       this.focus = false
     }
-    e.stopPropagation()
+    if (this.focus) {
+      e.stopPropagation()
+    }
   }
 }
