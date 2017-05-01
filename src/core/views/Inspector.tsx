@@ -28,18 +28,22 @@ export class Inspector extends React.Component<{}, {}> {
     }
     const {left, top, width, height} = item.rect
     return <div className={styles.root}>
-      <div>
+      <div className={styles.rect} >
         <ValueInput value={left} onChange={left => item.rect = Rect.fromWidthHeight(left, top, width, height)} />
         <ValueInput value={top} onChange={top => item.rect = Rect.fromWidthHeight(left, top, width, height)} />
-      </div>
-      <div>
+        <div className={styles.rectLabel}>X</div>
+        <div className={styles.rectLabel}>Y</div>
         <ValueInput value={width} onChange={width => item.rect = Rect.fromWidthHeight(left, top, width, height)} />
         <ValueInput value={height} onChange={height => item.rect = Rect.fromWidthHeight(left, top, width, height)} />
+        <div className={styles.rectLabel}>Width</div>
+        <div className={styles.rectLabel}>Height</div>
       </div>
-      <div>
+      <div className={styles.fill}>
+        <div className={styles.fillTitle}>Fill</div>
         <ColorInput value={item.fill} onChange={fill => item.fill = fill} />
       </div>
-      <div>
+      <div className={styles.stroke}>
+        <div className={styles.strokeTitle}>Stroke</div>
         <ColorInput value={item.stroke} onChange={stroke => item.stroke = stroke} />
         <ValueInput value={item.strokeWidth} onChange={width => item.strokeWidth = width} />
       </div>
