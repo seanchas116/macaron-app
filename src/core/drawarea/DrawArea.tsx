@@ -34,8 +34,8 @@ export class DrawArea extends React.Component<{}, {}> {
     // TODO: improve scroll performance
     return <div className={styles.root} ref={e => this.root = e}>
       <svg className={styles.svg} width={width + 'px'} height={height + 'px'} onWheel={this.onWheel} >
+        <rect x={0} y={0} width={width} height={height} onClick={this.deselect} fill='white' />
         <g transform={`translate(${-scroll.x}, ${-scroll.y})`} >
-          <rect x={0} y={0} width={width} height={height} onClick={this.deselect} fill='white' />
           {rootItem.render()}
           <SnapLines />
           {[...selectedItems].map(item => <ItemResizeHandles item={item} key={item.id} />)}
