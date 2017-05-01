@@ -1,0 +1,35 @@
+.root {
+  width: 240px;
+  background-color: #F0F0F0;
+  border-left: 1px solid #D8D8D8;
+  padding: 8px;
+  box-sizing: border-box;
+}
+.rect {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-gap: 0 10px;
+  grid-template-rows: auto auto auto auto;
+  justify-content: center;
+  margin-bottom: 8px;
+
+  & input {
+    width: 64px;
+  }
+}
+.rectLabel {
+  text-align: center;
+}
+.fillTitle, .strokeTitle {
+  width: 64px;
+}
+.fill, .stroke {
+  display: flex;
+  align-items: center;
+  & input[type="color"] {
+    width: 32px;
+  }
+  & input[type="number"] {
+    width: 64px;
+  }
+}
