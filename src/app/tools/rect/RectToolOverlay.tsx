@@ -45,15 +45,16 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     this.startPos = new Vec2(event.offsetX, event.offsetY)
     const {document} = documentManager
     this.item = this.newItem(document)
-    this.item.rect = new Rect(this.startPos, this.startPos)
+    this.item.rect = new Rect(this.startPos, this.startPos).translate(document.scroll)
     document.rootItem.children.unshift(this.item)
     document.selectedItems = new Set([this.item])
   }
 
   @action private onPointerMove = (event: PointerEvent) => {
     if (this.startPos && this.item) {
+      const {document} = documentManager
       const pos = new Vec2(event.offsetX, event.offsetY)
-      this.item.rect = Rect.fromTwoPoints(this.startPos, pos)
+      this.item.rect = Rect.fromTwoPoints(this.startPos, pos).translate(document.scroll)
     }
   }
 

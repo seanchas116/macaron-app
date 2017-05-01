@@ -1,4 +1,5 @@
 import {observable, action} from 'mobx'
+import {Vec2} from 'paintvec'
 import {Item} from './items/Item'
 import {GroupItem} from './items/GroupItem'
 
@@ -6,6 +7,7 @@ export
 class Document {
   readonly rootItem = new GroupItem(this)
   @observable selectedItems = new Set<Item>()
+  @observable scroll = new Vec2()
 
   selectItem (item: Item, add: boolean) {
     if (add) {
