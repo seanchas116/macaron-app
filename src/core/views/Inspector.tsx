@@ -11,6 +11,13 @@ function ValueInput (props: {value: number, onChange: (value: number) => void}) 
   return <input type='number' value={props.value} onChange={onChange} />
 }
 
+function ColorInput (props: {value: string, onChange: (value: string) => void}) {
+  const onChange = (e: React.FormEvent<HTMLInputElement>) => {
+    props.onChange(e.currentTarget.value)
+  }
+  return <input type='color' value={props.value} onChange={onChange} />
+}
+
 @observer
 export class Inspector extends React.Component<{}, {}> {
   render () {
@@ -21,10 +28,21 @@ export class Inspector extends React.Component<{}, {}> {
     }
     const {left, top, width, height} = item.rect
     return <div className={styles.root}>
-      <ValueInput value={left} onChange={left => item.rect = Rect.fromWidthHeight(left, top, width, height)} />
-      <ValueInput value={top} onChange={top => item.rect = Rect.fromWidthHeight(left, top, width, height)} />
-      <ValueInput value={width} onChange={width => item.rect = Rect.fromWidthHeight(left, top, width, height)} />
-      <ValueInput value={height} onChange={height => item.rect = Rect.fromWidthHeight(left, top, width, height)} />
+      <div>
+        <ValueInput value={left} onChange={left => item.rect = Rect.fromWidthHeight(left, top, width, height)} />
+        <ValueInput value={top} onChange={top => item.rect = Rect.fromWidthHeight(left, top, width, height)} />
+      </div>
+      <div>
+        <ValueInput value={width} onChange={width => item.rect = Rect.fromWidthHeight(left, top, width, height)} />
+        <ValueInput value={height} onChange={height => item.rect = Rect.fromWidthHeight(left, top, width, height)} />
+      </div>
+      <div>
+        <ColorInput value={item.fill} onChange={fill => item.fill = fill} />
+      </div>
+      <div>
+        <ColorInput value={item.stroke} onChange={stroke => item.stroke = stroke} />
+        <ValueInput value={item.strokeWidth} onChange={width => item.strokeWidth = width} />
+      </div>
     </div>
   }
 }

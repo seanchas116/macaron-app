@@ -7,8 +7,8 @@ import {GroupItem} from './GroupItem'
 export
 abstract class Item {
   @observable name = ''
-  @observable fill = 'gray'
-  @observable stroke = 'black'
+  @observable fill = '#888888'
+  @observable stroke = '#000000'
   @observable strokeWidth = 1
   @observable parent: GroupItem|undefined
   readonly id = uuid()
