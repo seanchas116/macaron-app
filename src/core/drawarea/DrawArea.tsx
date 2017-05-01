@@ -28,15 +28,18 @@ export class DrawArea extends React.Component<{}, {}> {
   }
 
   render () {
-    const {rootItem, selectedItems} = documentManager.document
+    const {rootItem, selectedItems, scroll} = documentManager.document
     const currentTool = toolManager.current
     const {width, height} = this.size
+    // TODO: improve scroll performance
     return <div className={styles.root} ref={e => this.root = e}>
-      <svg className={styles.svg} width={width + 'px'} height={height + 'px'}>
-        <rect x={0} y={0} width={width} height={height} onClick={this.deselect} fill='white' />
-        {rootItem.render()}
-        <SnapLines />
-        {[...selectedItems].map(item => <ItemResizeHandles item={item} key={item.id} />)}
+      <svg className={styles.svg} width={width + 'px'} height={height + 'px'} onWheel={this.onWheel} >
+        <g transform={`translate(${-scroll.x}, ${-scroll.y})`} >
+          <rect x={0} y={0} width={width} height={height} onClick={this.deselect} fill='white' />
+          {rootItem.render()}
+          <SnapLines />
+          {[...selectedItems].map(item => <ItemResizeHandles item={item} key={item.id} />)}
+        </g>
         {currentTool && currentTool.renderOverlay(this.size)}
       </svg>
     </div>
@@ -49,5 +52,10 @@ export class DrawArea extends React.Component<{}, {}> {
   @action private resizeSVG () {
     const {width, height} = this.root.getBoundingClientRect()
     this.size = new Vec2(width, height)
+  }
+
+  @autobind @action private onWheel (event: React.WheelEvent<SVGElement>) {
+    const {document} = documentManager
+    document.scroll = document.scroll.add(new Vec2(event.deltaX, event.deltaY)).round()
   }
 }
