@@ -2,6 +2,7 @@ import * as React from 'react'
 import {action} from 'mobx'
 import {ToolSelect} from './ToolSelect'
 import {ItemHierarchy} from './ItemHierarchy'
+import {Inspector} from './Inspector'
 import {DrawArea} from '../drawarea/DrawArea'
 import {documentManager} from '../DocumentManager'
 const styles = require('./RootView.css')
@@ -14,6 +15,7 @@ class RootView extends React.Component<{}, {}> {
         <ToolSelect />
         <ItemHierarchy />
         <DrawArea />
+        <Inspector />
       </div>
     )
   }
