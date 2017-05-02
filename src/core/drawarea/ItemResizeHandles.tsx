@@ -52,7 +52,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
 
   @autobind private snap (pos: Vec2) {
     if (this.rect) {
-      return pos.add(snapper.snapRectPos(this.rect, pos))
+      return snapper.snapRectPos(this.rect, pos)
     } else {
       return pos
     }

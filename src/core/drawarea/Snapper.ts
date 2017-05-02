@@ -122,16 +122,16 @@ export class Snapper {
     const ySnappings = snapRect(this.targets, rect, 'vertical')
     const yOffset = ySnappings.length > 0 ? ySnappings[0].targetValue - ySnappings[0].selfValue : 0
     this.snappings.replace([...xSnappings, ...ySnappings])
-    return new Vec2(xOffset, yOffset)
+    return rect.translate(new Vec2(xOffset, yOffset))
   }
 
   @action snapRectPos (rect: Rect, pos: Vec2) {
     const xSnappings = snapRectPos(this.targets, rect, pos, 'horizontal')
-    const xOffset = xSnappings.length > 0 ? xSnappings[0].targetValue - pos.x : 0
+    const newX = xSnappings.length > 0 ? xSnappings[0].targetValue : pos.x
     const ySnappings = snapRectPos(this.targets, rect, pos, 'vertical')
-    const yOffset = ySnappings.length > 0 ? ySnappings[0].targetValue - pos.y : 0
+    const newY = ySnappings.length > 0 ? ySnappings[0].targetValue : pos.y
     this.snappings.replace([...xSnappings, ...ySnappings])
-    return new Vec2(xOffset, yOffset)
+    return new Vec2(newX, newY)
   }
 
   @action clear () {
