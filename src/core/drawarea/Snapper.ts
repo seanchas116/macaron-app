@@ -90,7 +90,7 @@ export class Snapper {
     return this.snappings.map(snapLine)
   }
 
-  @action snap (rect: Rect) {
+  @action snapRect (rect: Rect) {
     const xSnappings = snapRect(this.targets, rect, 'horizontal')
     const xOffset = xSnappings.length > 0 ? xSnappings[0].targetValue - xSnappings[0].selfValue : 0
     const ySnappings = snapRect(this.targets, rect, 'vertical')
