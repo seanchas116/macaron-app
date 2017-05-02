@@ -5,6 +5,7 @@ import {ItemHierarchy} from './ItemHierarchy'
 import {Inspector} from './Inspector'
 import {DrawArea} from '../drawarea/DrawArea'
 import {documentManager} from '../DocumentManager'
+import {isTextInput} from '../../util/isTextInput'
 const styles = require('./RootView.css')
 
 export
@@ -21,6 +22,9 @@ class RootView extends React.Component<{}, {}> {
   }
 
   @action private onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (isTextInput(document.activeElement)) {
+      return
+    }
     if (e.key === 'Delete' || e.key === 'Backspace') {
       documentManager.document.deleteItems()
     }
