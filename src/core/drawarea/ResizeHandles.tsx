@@ -8,6 +8,7 @@ interface ResizeHandleProps {
   x: number
   y: number
   cursor: string
+  snap: (pos: Vec2) => Vec2
   onChangeBegin: () => void
   onChange: (x: number, y: number) => void
   onChangeEnd: () => void
@@ -52,7 +53,8 @@ class ResizeHandle extends React.Component<ResizeHandleProps, {}> {
     }
     const x = e.clientX - this.origClientX + this.origX
     const y = e.clientY - this.origClientY + this.origY
-    this.props.onChange(x, y)
+    const snapped = this.props.snap(new Vec2(x, y))
+    this.props.onChange(snapped.x, snapped.y)
   }
   private onPointerUp = (e: PointerEvent) => {
     this.dragged = false
@@ -63,6 +65,7 @@ class ResizeHandle extends React.Component<ResizeHandleProps, {}> {
 interface ResizeHandlesProps {
   p1: Vec2
   p2: Vec2
+  snap: (pos: Vec2) => Vec2
   onChangeBegin: () => void
   onChange: (p1: Vec2, p2: Vec2) => void
   onChangeEnd: () => void
@@ -79,54 +82,62 @@ class ResizeHandles extends React.Component<ResizeHandlesProps, {}> {
     const width = Math.max(x1, x2) - x
     const y = Math.min(y1, y2)
     const height = Math.max(y1, y2) - y
-    const {onChange, onChangeBegin, onChangeEnd} = this.props
+    const {onChange, onChangeBegin, onChangeEnd, snap} = this.props
     return <g>
       <rect x={x + 0.5} y={y + 0.5} width={width - 1} height={height - 1} stroke='lightgray' fill='transparent' pointerEvents='none' />
       <ResizeHandle
         cursor='nwse-resize'
         x={x1} y={y1}
+        snap={snap}
         onChange={(x1, y1) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         cursor='ns-resize'
         x={(x1 + x2) / 2} y={y1}
+        snap={snap}
         onChange={(_, y1) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         cursor='nesw-resize'
         x={x2} y={y1}
+        snap={snap}
         onChange={(x2, y1) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         cursor='ew-resize'
         x={x2} y={(y1 + y2) / 2}
+        snap={snap}
         onChange={(x2, _) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         cursor='nwse-resize'
         x={x2} y={y2}
+        snap={snap}
         onChange={(x2, y2) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         cursor='ns-resize'
         x={(x1 + x2) / 2} y={y2}
+        snap={snap}
         onChange={(_, y2) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         cursor='nesw-resize'
         x={x1} y={y2}
+        snap={snap}
         onChange={(x1, y2) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         cursor='ew-resize'
         x={x1} y={(y1 + y2) / 2}
+        snap={snap}
         onChange={(x1, _) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
