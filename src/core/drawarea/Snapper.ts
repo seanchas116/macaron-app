@@ -25,6 +25,14 @@ function edges (rect: Rect, direction: Direction): {value: number, at: Arrangeme
   ]
 }
 
+function validSnappings(snappings: RectSnapping[]) {
+  const minDistance = Math.min(...snappings.map(s => Math.abs(s.selfValue - s.targetValue)))
+  if (minDistance > snapDistance) {
+    return []
+  }
+  return snappings.filter(s => Math.abs(s.selfValue - s.targetValue) === minDistance)
+}
+
 function snapRect (targets: Rect[], self: Rect, direction: Direction) {
   const snappings: RectSnapping[] = []
 
@@ -47,12 +55,30 @@ function snapRect (targets: Rect[], self: Rect, direction: Direction) {
     }
   }
 
-  const minDistance = Math.min(...snappings.map(s => Math.abs(s.selfValue - s.targetValue)))
-  if (minDistance > snapDistance) {
-    return []
+  return validSnappings(snappings)
+}
+
+function snapRectPos (targets: Rect[], self: Rect, pos: Vec2, direction: Direction) {
+  const snappings: RectSnapping[] = []
+
+  const selfValue = direction === 'horizontal' ? pos.x : pos.y
+
+  for (const target of targets) {
+    const targetEdges = edges(target, direction)
+    for (const {value: targetValue, at: targetAt} of targetEdges) {
+      snappings.push({
+        direction,
+        target,
+        targetValue,
+        targetAt,
+        self,
+        selfValue,
+        selfAt: 'center'
+      })
+    }
   }
 
-  return snappings.filter(s => Math.abs(s.selfValue - s.targetValue) === minDistance)
+  return validSnappings(snappings)
 }
 
 function snapLine (snapping: RectSnapping): [Vec2, Vec2] {
@@ -90,16 +116,26 @@ export class Snapper {
     return this.snappings.map(snapLine)
   }
 
-  @action snap (rect: Rect) {
+  @action snapRect (rect: Rect) {
     const xSnappings = snapRect(this.targets, rect, 'horizontal')
     const xOffset = xSnappings.length > 0 ? xSnappings[0].targetValue - xSnappings[0].selfValue : 0
     const ySnappings = snapRect(this.targets, rect, 'vertical')
     const yOffset = ySnappings.length > 0 ? ySnappings[0].targetValue - ySnappings[0].selfValue : 0
     this.snappings.replace([...xSnappings, ...ySnappings])
-    return new Vec2(xOffset, yOffset)
+    return rect.translate(new Vec2(xOffset, yOffset))
+  }
+
+  @action snapRectPos (rect: Rect, pos: Vec2) {
+    const xSnappings = snapRectPos(this.targets, rect, pos, 'horizontal')
+    const newX = xSnappings.length > 0 ? xSnappings[0].targetValue : pos.x
+    const ySnappings = snapRectPos(this.targets, rect, pos, 'vertical')
+    const newY = ySnappings.length > 0 ? ySnappings[0].targetValue : pos.y
+    this.snappings.replace([...xSnappings, ...ySnappings])
+    return new Vec2(newX, newY)
   }
 
   @action clear () {
+    this.targets = []
     this.snappings.clear()
   }
 }

@@ -5,6 +5,7 @@ import {autobind} from 'core-decorators'
 import {Rect, Vec2} from 'paintvec'
 import {ResizeHandles} from './ResizeHandles'
 import {Item} from '../items/Item'
+import {snapper} from './Snapper'
 
 @observer
 export
@@ -42,10 +43,19 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
     return <ResizeHandles
       p1={positions[0]}
       p2={positions[1]}
+      snap={this.snap}
       onChangeBegin={this.onChangeBegin}
       onChange={this.onChange}
       onChangeEnd={this.onChangeEnd}
     />
+  }
+
+  @autobind private snap (pos: Vec2) {
+    if (this.rect) {
+      return snapper.snapRectPos(this.rect, pos)
+    } else {
+      return pos
+    }
   }
 
   @autobind @action private onChangeBegin () {
@@ -54,6 +64,18 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
     for (const item of this.props.items) {
       this.originalRects.set(item, item.rect)
     }
+    const snapTargets: Rect[] = []
+    for (const item of this.props.items) {
+      const {parent} = item
+      if (parent) {
+        for (const child of parent.children) {
+          if (!this.props.items.includes(child)) {
+            snapTargets.push(child.rect)
+          }
+        }
+      }
+    }
+    snapper.targets = snapTargets
   }
 
   @autobind @action private onChange (p1: Vec2, p2: Vec2) {
@@ -79,6 +101,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
     this.originalPositions = undefined
     this.originalRects = new Map()
     this.updatePositions()
+    snapper.clear()
   }
 
   private updatePositions () {
