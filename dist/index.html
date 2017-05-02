@@ -8,12 +8,7 @@
     <div id="root"></div>
   </body>
   <script>
-    (() => {
-      const {app} = require('electron').remote
-      // workaround for https://github.com/electron/electron/pull/9095
-      module.paths = module.paths.concat(require('module')._nodeModulePaths(app.getAppPath()))
-      exports = {}
-    })()
+    exports = {}
   </script>
   <script src="./assets/renderer.js"></script>
 </html>
