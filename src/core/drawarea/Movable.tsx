@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {Vec2} from 'paintvec'
+import {Vec2, Rect} from 'paintvec'
 import {action} from 'mobx'
 import {autobind} from 'core-decorators'
 import {PointerEvents} from '../../util/components/PointerEvents'
@@ -11,7 +11,8 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
   private dragOrigin = new Vec2()
   private dragging = false
   private items = new Set<Item>()
-  private origins = new Map<Item, Vec2>()
+  private originalRects = new Map<Item, Rect>()
+  private originalRect: Rect|undefined
 
   render () {
     return <PointerEvents
@@ -28,8 +29,9 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     document.selectItem(this.props.item, event.shiftKey)
     this.items = document.selectedItems
     for (const item of this.items) {
-      this.origins.set(item, item.position)
+      this.originalRects.set(item, item.rect)
     }
+    this.originalRect = Rect.union(...this.originalRects.values())
 
     const movable = this.props.movable !== false
     if (movable) {
@@ -37,19 +39,18 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
       target.setPointerCapture(event.pointerId)
       this.dragOrigin = new Vec2(event.clientX, event.clientY)
       this.dragging = true
-      snapper.item = this.props.item
-      snapper.targetItems.replace(this.props.item.parent!.children.filter(f => f !== this.props.item))
+      snapper.targets = this.props.item.parent!.children.filter(i => !this.items.has(i)).map(i => i.rect)
     }
   }
   @autobind @action private onPointerMove (event: PointerEvent) {
-    if (!this.dragging) {
+    if (!this.dragging || !this.originalRect) {
       return
     }
     const pos = new Vec2(event.clientX, event.clientY)
     const offset = pos.sub(this.dragOrigin)
-    const snapOffset = snapper.snap(this.props.item, this.origins.get(this.props.item)!.add(offset))
+    const snapOffset = snapper.snap(this.originalRect.translate(offset))
     for (const item of this.items) {
-      item.position = this.origins.get(item)!.add(offset).add(snapOffset)
+      item.position = this.originalRects.get(item)!.topLeft.add(offset).add(snapOffset)
     }
   }
   @autobind @action private onPointerUp (event: PointerEvent) {
@@ -58,7 +59,8 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     }
     this.dragging = false
     this.items = new Set()
-    this.origins = new Map()
+    this.originalRects = new Map()
+    this.originalRect = undefined
     snapper.clear()
   }
 }

@@ -38,7 +38,7 @@ export class DrawArea extends React.Component<{}, {}> {
         <g transform={`translate(${-scroll.x}, ${-scroll.y})`} >
           {rootItem.render()}
           <SnapLines />
-          {[...selectedItems].map(item => <ItemResizeHandles item={item} key={item.id} />)}
+          <ItemResizeHandles items={[...selectedItems]} />
         </g>
         {currentTool && currentTool.renderOverlay(this.size)}
       </svg>

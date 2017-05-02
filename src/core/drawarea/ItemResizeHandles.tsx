@@ -8,13 +8,15 @@ import {Item} from '../items/Item'
 
 @observer
 export
-class ItemResizeHandles extends React.Component<{item: Item}, {}> {
+class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
   private dragging = false
   private disposers: (() => void)[] = []
   @observable private positions: [Vec2, Vec2]|undefined
+  private originalPositions: [Vec2, Vec2]|undefined
+  private originalRects = new Map<Item, Rect>()
 
   @computed get rect () {
-    return this.props.item.rect
+    return Rect.union(...this.props.items.map(i => i.rect))
   }
 
   componentDidMount () {
@@ -48,24 +50,43 @@ class ItemResizeHandles extends React.Component<{item: Item}, {}> {
 
   @autobind @action private onChangeBegin () {
     this.dragging = true
+    this.originalPositions = this.positions
+    for (const item of this.props.items) {
+      this.originalRects.set(item, item.rect)
+    }
   }
 
   @autobind @action private onChange (p1: Vec2, p2: Vec2) {
-    const rect = Rect.fromTwoPoints(p1, p2)
-    const {item} = this.props
-    item.rect = rect
-    // TODO: handle flipping
+    if (!this.originalPositions) {
+      return
+    }
+    const {items} = this.props
+    for (const item of items) {
+      const origRect = this.originalRects.get(item)!
+      const [origP1, origP2] = this.originalPositions
+      const ratio = p2.sub(p1).div(origP2.sub(origP1))
+      const topLeft = origRect.topLeft.sub(origP1).mul(ratio).add(p1)
+      const bottomRight = origRect.bottomRight.sub(origP1).mul(ratio).add(p1)
+      const rect = Rect.fromTwoPoints(topLeft, bottomRight)
+      item.rect = rect
+    }
 
     this.positions = [p1, p2]
   }
 
   @autobind @action private onChangeEnd () {
     this.dragging = false
+    this.originalPositions = undefined
+    this.originalRects = new Map()
     this.updatePositions()
   }
 
   private updatePositions () {
-    const {rect} = this.props.item
-    this.positions = [rect.topLeft, rect.bottomRight]
+    const {rect} = this
+    if (rect) {
+      this.positions = [rect.topLeft, rect.bottomRight]
+    } else {
+      this.positions = undefined
+    }
   }
 }

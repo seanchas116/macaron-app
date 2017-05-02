@@ -1,22 +1,20 @@
 import {Vec2, Rect} from 'paintvec'
 import {observable, computed, action} from 'mobx'
-import {Item} from '../items/Item'
 import {Arrangement, Direction} from '../../util/types'
 
 const snapDistance = 8
 
 interface RectSnapping {
   direction: Direction
-  target: Item
+  target: Rect
   targetValue: number
   targetAt: Arrangement
-  self: Item
+  self: Rect
   selfValue: number
   selfAt: Arrangement
 }
 
-function edges (item: Item, pos: Vec2, direction: Direction): {value: number, at: Arrangement}[] {
-  const rect = Rect.fromSize(pos, item.size)
+function edges (rect: Rect, direction: Direction): {value: number, at: Arrangement}[] {
   const begin = direction === 'horizontal' ? rect.left : rect.top
   const end = direction === 'horizontal' ? rect.right : rect.bottom
   const center = (begin + end) / 2
@@ -27,13 +25,13 @@ function edges (item: Item, pos: Vec2, direction: Direction): {value: number, at
   ]
 }
 
-function snapRect (targets: Item[], self: Item, selfPos: Vec2, direction: Direction) {
+function snapRect (targets: Rect[], self: Rect, direction: Direction) {
   const snappings: RectSnapping[] = []
 
-  const selfEdges = edges(self, selfPos, direction)
+  const selfEdges = edges(self, direction)
 
   for (const target of targets) {
-    const targetEdges = edges(target, target.rect.topLeft, direction)
+    const targetEdges = edges(target, direction)
     for (const {value: selfValue, at: selfAt} of selfEdges) {
       for (const {value: targetValue, at: targetAt} of targetEdges) {
         snappings.push({
@@ -62,10 +60,10 @@ function snapLine (snapping: RectSnapping): [Vec2, Vec2] {
   if (snapping.direction === 'horizontal') {
     const x = snapping.targetValue
     const ys = [
-      target.rect.top,
-      target.rect.bottom,
-      self.rect.top,
-      self.rect.bottom
+      target.top,
+      target.bottom,
+      self.top,
+      self.bottom
     ]
     const y0 = Math.min(...ys)
     const y1 = Math.max(...ys)
@@ -73,10 +71,10 @@ function snapLine (snapping: RectSnapping): [Vec2, Vec2] {
   } else {
     const y = snapping.targetValue
     const xs = [
-      target.rect.left,
-      target.rect.right,
-      self.rect.left,
-      self.rect.right
+      target.left,
+      target.right,
+      self.left,
+      self.right
     ]
     const x0 = Math.min(...xs)
     const x1 = Math.max(...xs)
@@ -85,27 +83,23 @@ function snapLine (snapping: RectSnapping): [Vec2, Vec2] {
 }
 
 export class Snapper {
-  @observable item: Item|undefined
-  readonly targetItems = observable<Item>([])
+  targets: Rect[] = []
   readonly snappings = observable<RectSnapping>([])
 
   @computed get snapLines () {
     return this.snappings.map(snapLine)
   }
 
-  @action snap (item: Item, itemPos: Vec2) {
-    this.item = item
-    const xSnappings = snapRect(this.targetItems, item, itemPos, 'horizontal')
+  @action snap (rect: Rect) {
+    const xSnappings = snapRect(this.targets, rect, 'horizontal')
     const xOffset = xSnappings.length > 0 ? xSnappings[0].targetValue - xSnappings[0].selfValue : 0
-    const ySnappings = snapRect(this.targetItems, item, itemPos, 'vertical')
+    const ySnappings = snapRect(this.targets, rect, 'vertical')
     const yOffset = ySnappings.length > 0 ? ySnappings[0].targetValue - ySnappings[0].selfValue : 0
     this.snappings.replace([...xSnappings, ...ySnappings])
     return new Vec2(xOffset, yOffset)
   }
 
   @action clear () {
-    this.item = undefined
-    this.targetItems.clear()
     this.snappings.clear()
   }
 }
