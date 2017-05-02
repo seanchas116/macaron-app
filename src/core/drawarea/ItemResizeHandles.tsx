@@ -77,7 +77,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
   @autobind @action private onChangeEnd () {
     this.dragging = false
     this.originalPositions = undefined
-    this.originalRects.clear()
+    this.originalRects = new Map()
     this.updatePositions()
   }
 
