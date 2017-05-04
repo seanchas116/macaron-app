@@ -10,7 +10,11 @@ export async function save (document: Document, filePath: string) {
     driver: {
       type: 'sqlite',
       storage: tempPath
-    }
+    },
+    entities: [
+      ItemModel
+    ],
+    autoSchemaSync: true
   })
   const itemModels: ItemModel[] = []
   document.rootItem.forEachDescendant(item => {
