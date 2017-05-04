@@ -1,5 +1,6 @@
 import {Action} from '../../core/Action'
 import {addAction} from '../../core/ActionManager'
+import {ipcRenderer} from 'electron'
 
 @addAction
 export class FileNewAction extends Action {
@@ -7,6 +8,6 @@ export class FileNewAction extends Action {
   title = 'New'
   enabled = true
   run () {
-    // TODO
+    ipcRenderer.send('newWindow')
   }
 }

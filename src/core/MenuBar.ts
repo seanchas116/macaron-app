@@ -32,13 +32,30 @@ export class MenuBar {
 
   constructor () {
     autorun(() => {
-      const menu = Menu.buildFromTemplate(this.render())
-      Menu.setApplicationMenu(menu)
+      this.updateMenu()
     })
+    if (process.platform === 'darwin') {
+      window.addEventListener('focus', () => {
+        this.updateMenu()
+      })
+    }
   }
 
   render () {
     return this.template.map(menuDescriptionToElectron)
+  }
+
+  updateMenu () {
+    const win = remote.getCurrentWindow()
+    if (process.platform === 'darwin') {
+      if (win.isFocused()) {
+        const menu = Menu.buildFromTemplate(this.render())
+        Menu.setApplicationMenu(menu)
+      }
+    } else {
+      const menu = Menu.buildFromTemplate(this.render())
+      win.setMenu(menu)
+    }
   }
 }
 

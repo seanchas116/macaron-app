@@ -1,4 +1,5 @@
-import {app, BrowserWindow} from 'electron'
+import {app, BrowserWindow, ipcMain} from 'electron'
+import * as qs from 'querystring'
 type BrowserWindow = Electron.BrowserWindow
 const argv = require('minimist')(process.argv.slice(2))
 
@@ -6,7 +7,7 @@ let contentBase = argv.development ? 'http://localhost:23000' : `file://${app.ge
 
 let mainWindow: BrowserWindow|undefined
 
-async function openWindow () {
+async function openWindow (filePath?: string) {
   if (argv.development) {
     const {default: installExtension, REACT_DEVELOPER_TOOLS} = require('electron-devtools-installer')
     await installExtension(REACT_DEVELOPER_TOOLS)
@@ -18,7 +19,9 @@ async function openWindow () {
     show: false
   })
 
-  win.loadURL(`${contentBase}/index.html`)
+  const query = qs.stringify({filePath})
+
+  win.loadURL(`${contentBase}/index.html#${query}`)
   if (argv.development) {
     win.webContents.openDevTools()
   }
@@ -35,5 +38,9 @@ async function openWindow () {
 app.commandLine.appendSwitch('enable-experimental-web-platform-features')
 
 app.on('ready', async () => {
-  await openWindow()
+  openWindow()
+
+  ipcMain.on('newWindow', (e: Electron.IpcMainEvent, filePath?: string) => {
+    openWindow(filePath)
+  })
 })
