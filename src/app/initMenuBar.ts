@@ -6,11 +6,11 @@ const template: MenuDescription[] = [
   {
     label: 'File',
     submenu: [
-      {action: 'file.new'},
-      {action: 'file.open'},
+      {action: 'file.new', accelerator: 'CommandOrControl+N'},
+      {action: 'file.open', accelerator: 'CommandOrControl+O'},
       {type: 'separator'},
-      {action: 'file.save'},
-      {action: 'file.saveAs'}
+      {action: 'file.save', accelerator: 'CommandOrControl+S'},
+      {action: 'file.saveAs', accelerator: 'Shift+CommandOrControl+S'}
     ]
   },
   {
