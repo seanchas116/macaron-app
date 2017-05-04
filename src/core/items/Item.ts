@@ -55,4 +55,13 @@ abstract class Item {
       strokeWidth
     }
   }
+
+  forEachDescendant (action: (item: Item) => void) {
+    action(this)
+    if (this instanceof GroupItem) {
+      for (const child of this.children) {
+        child.forEachDescendant(action)
+      }
+    }
+  }
 }
