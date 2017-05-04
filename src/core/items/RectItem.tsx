@@ -1,13 +1,13 @@
 import * as React from 'react'
-import {Vec2} from 'paintvec'
-import {observable} from 'mobx'
-import {Item} from './Item'
+import {RectLikeItem, RectLikeItemData} from './RectLikeItem'
 import {Movable} from '../drawarea/Movable'
 
+export interface RectItemData extends RectLikeItemData {
+  type: 'rect'
+}
+
 export
-class RectItem extends Item {
-  @observable position = new Vec2()
-  @observable size = new Vec2()
+class RectItem extends RectLikeItem {
   name = 'Rectangle'
 
   render (): JSX.Element {
@@ -24,13 +24,13 @@ class RectItem extends Item {
   }
 
   clone () {
-    const cloned = new RectItem(this.document)
-    this.copyPropsFrom(cloned)
-    return cloned
+    return new RectItem(this.document, this.toData())
   }
 
-  copyPropsFrom (other: RectItem) {
-    super.copyPropsFrom(other)
-    other.size = this.size
+  toData (): RectItemData {
+    return {
+      ...super.toData(),
+      type: 'rect'
+    }
   }
 }
