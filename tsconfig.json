@@ -3,6 +3,7 @@
         "module": "commonjs",
         "target": "es6",
         "strict": true,
+        "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "noUnusedLocals": true,
         "suppressImplicitAnyIndexErrors": true,
