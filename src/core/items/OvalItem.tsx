@@ -1,13 +1,13 @@
 import * as React from 'react'
-import {Vec2} from 'paintvec'
-import {observable} from 'mobx'
-import {Item} from './Item'
+import {RectLikeItem, RectLikeItemData} from './RectLikeItem'
 import {Movable} from '../drawarea/Movable'
 
+export interface OvalItemData extends RectLikeItemData {
+  type: 'oval'
+}
+
 export
-class OvalItem extends Item {
-  @observable position = new Vec2()
-  @observable size = new Vec2()
+class OvalItem extends RectLikeItem {
   name = 'Oval'
 
   render (): JSX.Element {
@@ -24,13 +24,13 @@ class OvalItem extends Item {
   }
 
   clone () {
-    const cloned = new OvalItem(this.document)
-    this.copyPropsFrom(cloned)
-    return cloned
+    return new OvalItem(this.document, this.toData())
   }
 
-  copyPropsFrom (other: OvalItem) {
-    super.copyPropsFrom(other)
-    other.size = this.size
+  toData (): OvalItemData {
+    return {
+      ...super.toData(),
+      type: 'oval'
+    }
   }
 }

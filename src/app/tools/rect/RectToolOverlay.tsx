@@ -4,6 +4,7 @@ import {Vec2, Rect} from 'paintvec'
 import {Document} from '../../../core/Document'
 import {documentManager} from '../../../core/DocumentManager'
 import {toolManager} from '../../../core/ToolManager'
+import {RectLikeItem} from '../../../core/items/RectLikeItem'
 import {RectItem} from '../../../core/items/RectItem'
 import {TextItem} from '../../../core/items/TextItem'
 import {OvalItem} from '../../../core/items/OvalItem'
@@ -13,7 +14,7 @@ import {RectToolType} from './RectTool'
 export
 class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, {}> {
   startPos: Vec2|undefined
-  item: RectItem|OvalItem|undefined
+  item: RectLikeItem|undefined
 
   render () {
     const {width, height} = this.props.size
@@ -27,14 +28,33 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
   }
 
   private newItem (document: Document) {
+    const baseProps = {
+      fill: '#888888',
+      stroke: '#000000',
+      strokeWidth: 1,
+      x: 0, y: 0, width: 0, height: 0
+    }
     switch (this.props.type) {
       case 'oval':
-        return new OvalItem(document)
+        return new OvalItem(document, {
+          ...baseProps,
+          type: 'oval',
+          name: 'Oval'
+        })
       case 'text':
-        return new TextItem(document)
+        return new TextItem(document, {
+          ...baseProps,
+          type: 'text',
+          name: 'Text',
+          text: 'Text'
+        })
       case 'rect':
       default:
-        return new RectItem(document)
+        return new RectItem(document, {
+          ...baseProps,
+          type: 'rect',
+          name: 'Rect'
+        })
     }
   }
 

@@ -5,7 +5,15 @@ import {GroupItem} from './items/GroupItem'
 
 export
 class Document {
-  readonly rootItem = new GroupItem(this)
+  readonly rootItem = new GroupItem(this, {
+    type: 'group',
+    name: 'root',
+    fill: '#000000',
+    stroke: '#000000',
+    strokeWidth: 1,
+    children: [],
+    collapsed: false
+  })
   @observable selectedItems = new Set<Item>()
   @observable scroll = new Vec2()
 
