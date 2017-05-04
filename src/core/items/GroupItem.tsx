@@ -1,14 +1,20 @@
 import * as React from 'react'
 import {observable, action, IArrayChange, IArraySplice} from 'mobx'
 import {Rect} from 'paintvec'
-import {Item} from './Item'
+import {Item, ItemData} from './Item'
 import {Document} from '../Document'
+import {createItem} from './createItem'
+
+export interface GroupItemData extends ItemData {
+  type: 'group'
+  children: ItemData[]
+  collapsed: boolean
+}
 
 export
 class GroupItem extends Item {
   readonly children = observable<Item>([])
-  @observable collapsed = false
-  name = 'Group'
+  @observable collapsed: boolean
 
   get position () {
     return this.rect.topLeft
@@ -22,8 +28,10 @@ class GroupItem extends Item {
     return Rect.union(...this.children.map(i => i.rect)) || new Rect()
   }
 
-  constructor (document: Document) {
-    super(document)
+  constructor (document: Document, data: GroupItemData) {
+    super(document, data)
+    this.collapsed = data.collapsed
+    this.children.replace(data.children.map(c => createItem(document, c)))
     this.children.observe(change => this.onChildChange(change))
   }
 
@@ -34,15 +42,18 @@ class GroupItem extends Item {
   }
 
   clone () {
-    const cloned = new GroupItem(this.document)
-    cloned.copyPropsFrom(this)
-    cloned.children.replace(this.children.map(c => c.clone()))
-    return cloned
+    return new GroupItem(this.document, this.toData())
   }
 
-  copyPropsFrom (other: GroupItem) {
-    super.copyPropsFrom(other)
-    this.collapsed = other.collapsed
+  toData (): GroupItemData {
+    const {collapsed} = this
+    const children = this.children.peek().map(c => c.toData())
+    return {
+      ...super.toData(),
+      type: 'group',
+      collapsed,
+      children
+    }
   }
 
   @action private onChildChange (change: IArrayChange<Item>|IArraySplice<Item>) {
@@ -63,5 +74,4 @@ class GroupItem extends Item {
       onAdded(change.newValue)
     }
   }
-
 }

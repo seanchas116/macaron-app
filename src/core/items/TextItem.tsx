@@ -1,28 +1,38 @@
 import * as React from 'react'
-import {Vec2} from 'paintvec'
 import {observable} from 'mobx'
-import {Item} from './Item'
+import {RectLikeItem, RectLikeItemData} from './RectLikeItem'
 import {TextItemView} from '../drawarea/TextItemView'
+import {Document} from '../Document'
+
+export interface TextItemData extends RectLikeItemData {
+  type: 'text'
+  text: string
+}
 
 export
-class TextItem extends Item {
-  @observable position = new Vec2()
-  @observable size = new Vec2()
+class TextItem extends RectLikeItem {
   name = 'Text'
-  @observable text = 'Text'
+  @observable text: string
+
+  constructor (public readonly document: Document, data: TextItemData) {
+    super(document, data)
+    this.text = data.text
+  }
 
   render (): JSX.Element {
     return <TextItemView item={this} key={this.id}/>
   }
 
   clone () {
-    const cloned = new TextItem(this.document)
-    this.copyPropsFrom(cloned)
-    return cloned
+    return new TextItem(this.document, this.toData())
   }
 
-  copyPropsFrom (other: TextItem) {
-    super.copyPropsFrom(other)
-    other.size = this.size
+  toData (): TextItemData {
+    const {text} = this
+    return {
+      ...super.toData(),
+      type: 'text',
+      text
+    }
   }
 }
