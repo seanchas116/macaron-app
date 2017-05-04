@@ -4,6 +4,7 @@ interface DocumentModelData {
   selectedItemIds: string[]
   scrollX: number
   scrollY: number
+  version: number
 }
 
 @Entity('document')

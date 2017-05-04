@@ -32,6 +32,7 @@ export async function save (document: Document, filePath: string) {
   })
   const documentModel = new DocumentModel()
   documentModel.data = {
+    version: 1,
     scrollX: document.scroll.x,
     scrollY: document.scroll.y,
     selectedItemIds: [...document.selectedItems].map(item => item.id)
