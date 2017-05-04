@@ -1,9 +1,13 @@
 import {Entity, PrimaryColumn, Column} from 'typeorm'
 
+interface DocumentModelData {
+  selectedItemIds: string[]
+  scrollX: number
+  scrollY: number
+}
+
 @Entity('document')
 export class DocumentModel {
   @PrimaryColumn('int', { generated: true }) id: number
-  @Column('json') selectedItemIds: string[]
-  @Column('int') scrollX: number
-  @Column('int') scrollY: number
+  @Column('json') data: DocumentModelData
 }

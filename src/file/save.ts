@@ -31,9 +31,11 @@ export async function save (document: Document, filePath: string) {
     itemModels.push(model)
   })
   const documentModel = new DocumentModel()
-  documentModel.scrollX = document.scroll.x
-  documentModel.scrollY = document.scroll.y
-  documentModel.selectedItemIds = [...document.selectedItems].map(item => item.id)
+  documentModel.data = {
+    scrollX: document.scroll.x,
+    scrollY: document.scroll.y,
+    selectedItemIds: [...document.selectedItems].map(item => item.id)
+  }
 
   await connection.entityManager.persist(itemModels)
   await connection.entityManager.persist(documentModel)
