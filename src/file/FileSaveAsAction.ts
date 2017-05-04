@@ -30,6 +30,7 @@ export class FileSaveAsAction extends Action {
       await save(documentManager.document, filePath)
       return true
     } catch (e) {
+      console.error(e)
       dialog.showErrorBox('Error', 'Failed to save file.')
       return false
     }
