@@ -1,8 +1,8 @@
 import {remote} from 'electron'
-import {Action} from '../core/Action'
-import {addAction} from '../core/ActionManager'
-import {documentManager} from '../core/DocumentManager'
-import {save} from './save'
+import {Action} from '../../core/Action'
+import {addAction} from '../../core/ActionManager'
+import {documentManager} from '../../core/DocumentManager'
+import {save} from '../save'
 const {dialog} = remote
 
 @addAction

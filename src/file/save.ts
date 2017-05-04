@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import {createConnection} from 'typeorm'
 import * as temp from 'temp'
 import {Document} from '../core/Document'
-import {ItemModel} from './ItemModel'
+import {ItemModel} from './models/ItemModel'
 
 export async function save (document: Document, filePath: string) {
   const tempPath = temp.path()

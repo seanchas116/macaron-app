@@ -1,5 +1,5 @@
 import {Entity, PrimaryColumn, Column} from 'typeorm'
-import {ItemData} from '../core/items/Item'
+import {ItemData} from '../../core/items/Item'
 
 @Entity('item')
 export class ItemModel {

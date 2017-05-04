@@ -1,5 +1,5 @@
-import {Action} from '../core/Action'
-import {addAction} from '../core/ActionManager'
+import {Action} from '../../core/Action'
+import {addAction} from '../../core/ActionManager'
 
 @addAction
 export class FileNewAction extends Action {
