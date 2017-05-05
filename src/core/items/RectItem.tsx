@@ -27,7 +27,7 @@ class RectItem extends RectLikeItem {
     return new RectItem(this.document, this.toProps())
   }
 
-  toProps(): RectItemProps {
+  toProps (): RectItemProps {
     return {
       ...super.toProps(),
       type: 'rect'
