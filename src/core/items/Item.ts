@@ -4,7 +4,7 @@ import {Vec2, Rect} from 'paintvec'
 import {Document} from '../Document'
 import {GroupItem} from './GroupItem'
 
-export interface ItemData {
+export interface ItemProps {
   type: string
   name: string
   fill: string
@@ -22,7 +22,7 @@ abstract class Item {
   @observable stroke: string
   @observable strokeWidth: number
   @observable parent: GroupItem_|undefined
-  readonly id = uuid()
+  readonly id: string
 
   abstract position: Vec2
   abstract size: Vec2
@@ -35,17 +35,18 @@ abstract class Item {
     this.size = rect.size
   }
 
-  constructor (public readonly document: Document, data: ItemData) {
-    this.name = data.name
-    this.fill = data.fill
-    this.stroke = data.stroke
-    this.strokeWidth = data.strokeWidth
+  constructor (public readonly document: Document, props: ItemProps, id?: string) {
+    this.id = id || uuid()
+    this.name = props.name
+    this.fill = props.fill
+    this.stroke = props.stroke
+    this.strokeWidth = props.strokeWidth
   }
 
   abstract render (): JSX.Element
   abstract clone (): Item
 
-  toData (): ItemData {
+  toProps (): ItemProps {
     const {name, fill, stroke, strokeWidth} = this
     return {
       type: 'none',

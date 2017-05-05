@@ -1,9 +1,9 @@
 import {Vec2} from 'paintvec'
 import {observable} from 'mobx'
-import {Item, ItemData} from './Item'
+import {Item, ItemProps} from './Item'
 import {Document} from '../Document'
 
-export interface RectLikeItemData extends ItemData {
+export interface RectLikeItemProps extends ItemProps {
   x: number
   y: number
   width: number
@@ -15,17 +15,17 @@ abstract class RectLikeItem extends Item {
   @observable position: Vec2
   @observable size: Vec2
 
-  constructor (public readonly document: Document, data: RectLikeItemData) {
-    super(document, data)
-    this.position = new Vec2(data.x, data.y)
-    this.size = new Vec2(data.width, data.height)
+  constructor (public readonly document: Document, props: RectLikeItemProps) {
+    super(document, props)
+    this.position = new Vec2(props.x, props.y)
+    this.size = new Vec2(props.width, props.height)
   }
 
-  toData (): RectLikeItemData {
+  toProps (): RectLikeItemProps {
     const {x, y} = this.position
     const {width, height} = this.size
     return {
-      ...super.toData(),
+      ...super.toProps(),
       x, y,
       width, height
     }

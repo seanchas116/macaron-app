@@ -1,13 +1,11 @@
 import * as React from 'react'
 import {observable, action, IArrayChange, IArraySplice} from 'mobx'
 import {Rect} from 'paintvec'
-import {Item, ItemData} from './Item'
+import {Item, ItemProps} from './Item'
 import {Document} from '../Document'
-import {createItem} from './createItem'
 
-export interface GroupItemData extends ItemData {
+export interface GroupItemProps extends ItemProps {
   type: 'group'
-  children: ItemData[]
   collapsed: boolean
 }
 
@@ -28,10 +26,9 @@ class GroupItem extends Item {
     return Rect.union(...this.children.map(i => i.rect)) || new Rect()
   }
 
-  constructor (document: Document, data: GroupItemData) {
-    super(document, data)
-    this.collapsed = data.collapsed
-    this.children.replace(data.children.map(c => createItem(document, c)))
+  constructor (document: Document, props: GroupItemProps) {
+    super(document, props)
+    this.collapsed = props.collapsed
     this.children.observe(change => this.onChildChange(change))
   }
 
@@ -42,17 +39,18 @@ class GroupItem extends Item {
   }
 
   clone () {
-    return new GroupItem(this.document, this.toData())
+    const item = new GroupItem(this.document, this.toProps())
+    const children = this.children.map(c => c.clone())
+    item.children.replace(children)
+    return item
   }
 
-  toData (): GroupItemData {
+  toProps (): GroupItemProps {
     const {collapsed} = this
-    const children = this.children.peek().map(c => c.toData())
     return {
-      ...super.toData(),
+      ...super.toProps(),
       type: 'group',
-      collapsed,
-      children
+      collapsed
     }
   }
 

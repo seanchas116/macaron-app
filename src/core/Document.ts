@@ -11,7 +11,6 @@ class Document {
     fill: '#000000',
     stroke: '#000000',
     strokeWidth: 1,
-    children: [],
     collapsed: false
   })
   @observable selectedItems = new Set<Item>()

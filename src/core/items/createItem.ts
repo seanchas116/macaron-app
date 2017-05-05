@@ -1,21 +1,21 @@
-import {ItemData} from './Item'
-import {RectItem, RectItemData} from './RectItem'
-import {OvalItem, OvalItemData} from './OvalItem'
-import {TextItem, TextItemData} from './TextItem'
-import {GroupItem, GroupItemData} from './GroupItem'
+import {ItemProps} from './Item'
+import {RectItem, RectItemProps} from './RectItem'
+import {OvalItem, OvalItemProps} from './OvalItem'
+import {TextItem, TextItemProps} from './TextItem'
+import {GroupItem, GroupItemProps} from './GroupItem'
 import {Document} from '../Document'
 
-export function createItem (document: Document, data: ItemData) {
-  switch (data.type) {
+export function createItem (document: Document, props: ItemProps) {
+  switch (props.type) {
     case 'rect':
-      return new RectItem(document, data as RectItemData)
+      return new RectItem(document, props as RectItemProps)
     case 'oval':
-      return new OvalItem(document, data as OvalItemData)
+      return new OvalItem(document, props as OvalItemProps)
     case 'text':
-      return new TextItem(document, data as TextItemData)
+      return new TextItem(document, props as TextItemProps)
     case 'group':
-      return new GroupItem(document, data as GroupItemData)
+      return new GroupItem(document, props as GroupItemProps)
     default:
-      return new RectItem(document, {...data, x: 0, y: 0, width: 0, height: 0})
+      return new RectItem(document, {...props, x: 0, y: 0, width: 0, height: 0})
   }
 }
