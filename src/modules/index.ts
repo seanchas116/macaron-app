@@ -1,0 +1,6 @@
+import './document'
+import './drawarea'
+import './file'
+import './menu'
+import './recttool'
+import './ui'

@@ -1,3 +1,2 @@
-import './core'
-import './file'
-import './app'
+import './modules'
+import './init'
