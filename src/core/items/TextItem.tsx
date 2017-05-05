@@ -1,10 +1,10 @@
 import * as React from 'react'
 import {observable} from 'mobx'
-import {RectLikeItem, RectLikeItemData} from './RectLikeItem'
+import {RectLikeItem, RectLikeItemProps} from './RectLikeItem'
 import {TextItemView} from '../drawarea/TextItemView'
 import {Document} from '../Document'
 
-export interface TextItemData extends RectLikeItemData {
+export interface TextItemProps extends RectLikeItemProps {
   type: 'text'
   text: string
 }
@@ -14,8 +14,8 @@ class TextItem extends RectLikeItem {
   name = 'Text'
   @observable text: string
 
-  constructor (public readonly document: Document, data: TextItemData) {
-    super(document, data)
+  constructor (public readonly document: Document, data: TextItemProps, id?: string) {
+    super(document, data, id)
     this.text = data.text
   }
 
@@ -24,13 +24,13 @@ class TextItem extends RectLikeItem {
   }
 
   clone () {
-    return new TextItem(this.document, this.toData())
+    return new TextItem(this.document, this.toProps())
   }
 
-  toData (): TextItemData {
+  toProps (): TextItemProps {
     const {text} = this
     return {
-      ...super.toData(),
+      ...super.toProps(),
       type: 'text',
       text
     }

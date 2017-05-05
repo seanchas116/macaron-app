@@ -1,21 +1,32 @@
-import {observable, action} from 'mobx'
+import * as path from 'path'
+import {observable, action, computed} from 'mobx'
 import {Vec2} from 'paintvec'
 import {Item} from './items/Item'
 import {GroupItem} from './items/GroupItem'
 
 export
 class Document {
-  readonly rootItem = new GroupItem(this, {
+  @observable rootItem = new GroupItem(this, {
     type: 'group',
     name: 'root',
     fill: '#000000',
     stroke: '#000000',
     strokeWidth: 1,
-    children: [],
     collapsed: false
   })
   @observable selectedItems = new Set<Item>()
   @observable scroll = new Vec2()
+
+  @observable filePath = ''
+  @observable tempName = 'Untitled'
+
+  @computed get fileName() {
+    if (this.filePath) {
+      return path.basename(this.filePath)
+    } else {
+      return this.tempName
+    }
+  }
 
   selectItem (item: Item, add: boolean) {
     if (add) {

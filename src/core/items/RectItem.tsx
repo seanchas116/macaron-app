@@ -1,8 +1,8 @@
 import * as React from 'react'
-import {RectLikeItem, RectLikeItemData} from './RectLikeItem'
+import {RectLikeItem, RectLikeItemProps} from './RectLikeItem'
 import {Movable} from '../drawarea/Movable'
 
-export interface RectItemData extends RectLikeItemData {
+export interface RectItemProps extends RectLikeItemProps {
   type: 'rect'
 }
 
@@ -24,12 +24,12 @@ class RectItem extends RectLikeItem {
   }
 
   clone () {
-    return new RectItem(this.document, this.toData())
+    return new RectItem(this.document, this.toProps())
   }
 
-  toData (): RectItemData {
+  toProps (): RectItemProps {
     return {
-      ...super.toData(),
+      ...super.toProps(),
       type: 'rect'
     }
   }
