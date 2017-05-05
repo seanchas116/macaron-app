@@ -1,4 +1,5 @@
-import {observable, action} from 'mobx'
+import * as path from 'path'
+import {observable, action, computed} from 'mobx'
 import {Vec2} from 'paintvec'
 import {Item} from './items/Item'
 import {GroupItem} from './items/GroupItem'
@@ -17,6 +18,15 @@ class Document {
   @observable scroll = new Vec2()
 
   @observable filePath = ''
+  @observable tempName = 'Untitled'
+
+  @computed get fileName() {
+    if (this.filePath) {
+      return path.basename(this.filePath)
+    } else {
+      return this.tempName
+    }
+  }
 
   selectItem (item: Item, add: boolean) {
     if (add) {
