@@ -5,17 +5,17 @@ import {TextItem, TextItemProps} from './TextItem'
 import {GroupItem, GroupItemProps} from './GroupItem'
 import {Document} from '../Document'
 
-export function createItem (document: Document, props: ItemProps) {
+export function createItem (document: Document, props: ItemProps, id?: string) {
   switch (props.type) {
     case 'rect':
-      return new RectItem(document, props as RectItemProps)
+      return new RectItem(document, props as RectItemProps, id)
     case 'oval':
-      return new OvalItem(document, props as OvalItemProps)
+      return new OvalItem(document, props as OvalItemProps, id)
     case 'text':
-      return new TextItem(document, props as TextItemProps)
+      return new TextItem(document, props as TextItemProps, id)
     case 'group':
-      return new GroupItem(document, props as GroupItemProps)
+      return new GroupItem(document, props as GroupItemProps, id)
     default:
-      return new RectItem(document, {...props, x: 0, y: 0, width: 0, height: 0})
+      return new RectItem(document, {...props, x: 0, y: 0, width: 0, height: 0}, id)
   }
 }

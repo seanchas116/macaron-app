@@ -14,8 +14,8 @@ class TextItem extends RectLikeItem {
   name = 'Text'
   @observable text: string
 
-  constructor (public readonly document: Document, data: TextItemProps) {
-    super(document, data)
+  constructor (public readonly document: Document, data: TextItemProps, id?: string) {
+    super(document, data, id)
     this.text = data.text
   }
 

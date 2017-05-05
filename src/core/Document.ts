@@ -5,7 +5,7 @@ import {GroupItem} from './items/GroupItem'
 
 export
 class Document {
-  readonly rootItem = new GroupItem(this, {
+  @observable rootItem = new GroupItem(this, {
     type: 'group',
     name: 'root',
     fill: '#000000',

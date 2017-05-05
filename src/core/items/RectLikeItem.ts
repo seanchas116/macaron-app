@@ -15,8 +15,8 @@ abstract class RectLikeItem extends Item {
   @observable position: Vec2
   @observable size: Vec2
 
-  constructor (public readonly document: Document, props: RectLikeItemProps) {
-    super(document, props)
+  constructor (public readonly document: Document, props: RectLikeItemProps, id?: string) {
+    super(document, props, id)
     this.position = new Vec2(props.x, props.y)
     this.size = new Vec2(props.width, props.height)
   }

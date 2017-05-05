@@ -26,8 +26,8 @@ class GroupItem extends Item {
     return Rect.union(...this.children.map(i => i.rect)) || new Rect()
   }
 
-  constructor (document: Document, props: GroupItemProps) {
-    super(document, props)
+  constructor (document: Document, props: GroupItemProps, id?: string) {
+    super(document, props, id)
     this.collapsed = props.collapsed
     this.children.observe(change => this.onChildChange(change))
   }

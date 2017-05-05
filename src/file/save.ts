@@ -1,33 +1,9 @@
 import * as fs from 'fs'
 import * as temp from 'temp'
 import * as JSZip from 'jszip'
-import {Document} from '../core/Document'
-import {Item, ItemProps} from '../core/items/Item'
-import {GroupItem} from '../core/items/GroupItem'
 import * as msgpack from 'msgpack-lite'
-
-interface DocumentData {
-  version: number
-  selectedItemIds: string[]
-  scrollX: number
-  scrollY: number
-  pages: {name: string, path: string}[]
-}
-
-interface ItemData extends ItemProps {
-  id: string
-  children?: ItemData[]
-}
-
-function itemToData (item: Item): ItemData {
-  const props = item.toProps()
-  const {id} = item
-  if (item instanceof GroupItem) {
-    return {...props, id, children: item.children.map(itemToData)}
-  } else {
-    return {...props, id}
-  }
-}
+import {Document} from '../core/Document'
+import {DocumentData, itemToData} from './serialize'
 
 export async function save (document: Document, filePath: string) {
   const zip = new JSZip()
