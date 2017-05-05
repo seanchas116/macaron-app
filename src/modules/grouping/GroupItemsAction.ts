@@ -1,4 +1,4 @@
-import {computed} from 'mobx'
+import {computed, action} from 'mobx'
 import {Action} from '../menu/Action'
 import {addAction} from '../menu/ActionManager'
 import {documentManager} from '../document/DocumentManager'
@@ -13,7 +13,7 @@ export class GroupItemsAction extends Action {
     return documentManager.document.selectedItems.size > 0
   }
 
-  run () {
+  @action run () {
     const {document} = documentManager
     const items = [...document.selectedItems]
     if (items.length === 0) {

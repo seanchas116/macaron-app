@@ -30,7 +30,8 @@ const template: MenuDescription[] = [
   {
     label: 'Item',
     submenu: [
-      {action: 'item.group', accelerator: 'CommandOrControl+G'}
+      {action: 'item.group', accelerator: 'CommandOrControl+G'},
+      {action: 'item.ungroup', accelerator: 'Shift+CommandOrControl+G'}
     ]
   },
   {
