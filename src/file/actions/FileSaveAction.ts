@@ -1,12 +1,21 @@
 import {Action} from '../../core/Action'
 import {addAction} from '../../core/ActionManager'
+import {documentManager} from '../../core/DocumentManager'
+import {FileSaveAsAction} from './FileSaveAsAction'
+import {save} from '../save'
 
 @addAction
 export class FileSaveAction extends Action {
   id = 'file.save'
   title = 'Save'
   enabled = true
-  run () {
-    // TODO
+
+  async run () {
+    const {document} = documentManager
+    if (document.filePath) {
+      await save(document, document.filePath)
+    } else {
+      new FileSaveAsAction().run()
+    }
   }
 }

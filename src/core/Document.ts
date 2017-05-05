@@ -16,6 +16,8 @@ class Document {
   @observable selectedItems = new Set<Item>()
   @observable scroll = new Vec2()
 
+  @observable filePath = ''
+
   selectItem (item: Item, add: boolean) {
     if (add) {
       this.selectedItems = new Set(this.selectedItems).add(item)

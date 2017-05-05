@@ -25,5 +25,7 @@ export async function open (filePath: string) {
   document.rootItem = rootItem
   document.scroll = new Vec2(documentData.scrollX, documentData.scrollY)
   // TODO: selected items
+
+  document.filePath = filePath
   return document
 }

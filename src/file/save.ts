@@ -35,4 +35,6 @@ export async function save (document: Document, filePath: string) {
   await new Promise((resolve, reject) => {
     fs.rename(tempPath, filePath, err => err ? reject(err) : resolve())
   })
+
+  document.filePath = filePath
 }
