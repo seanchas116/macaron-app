@@ -6,6 +6,8 @@ import {GroupItem} from './GroupItem'
 
 export
 class Document {
+  itemForId = new Map<string, Item>()
+
   @observable rootItem = new GroupItem(this, {
     type: 'group',
     name: 'root',
