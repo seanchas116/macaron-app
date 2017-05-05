@@ -6,6 +6,8 @@ import {GroupItem} from './GroupItem'
 
 export
 class Document {
+  itemForId = new Map<string, Item>()
+
   @observable rootItem = new GroupItem(this, {
     type: 'group',
     name: 'root',
@@ -19,8 +21,6 @@ class Document {
 
   @observable filePath = ''
   @observable tempName = 'Untitled'
-
-  itemForId = new Map<string, Item>()
 
   @computed get fileName() {
     if (this.filePath) {

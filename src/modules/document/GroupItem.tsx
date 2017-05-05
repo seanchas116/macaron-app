@@ -32,6 +32,11 @@ class GroupItem extends Item {
     this.children.observe(change => this.onChildChange(change))
   }
 
+  dispose () {
+    this.children.forEach(c => c.dispose())
+    super.dispose()
+  }
+
   render () {
     return <g key={this.id}>
       {[...this.children].reverse().map(c => c.render())}
