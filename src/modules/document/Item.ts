@@ -41,6 +41,11 @@ abstract class Item {
     this.fill = props.fill
     this.stroke = props.stroke
     this.strokeWidth = props.strokeWidth
+    document.itemForId.set(this.id, this)
+  }
+
+  dispose () {
+    this.document.itemForId.delete(this.id)
   }
 
   abstract render (): JSX.Element

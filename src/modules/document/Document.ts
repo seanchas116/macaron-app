@@ -20,6 +20,8 @@ class Document {
   @observable filePath = ''
   @observable tempName = 'Untitled'
 
+  itemForId = new Map<string, Item>()
+
   @computed get fileName() {
     if (this.filePath) {
       return path.basename(this.filePath)
