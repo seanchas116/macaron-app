@@ -28,6 +28,12 @@ const template: MenuDescription[] = [
     ]
   },
   {
+    label: 'Item',
+    submenu: [
+      {action: 'item.group', accelerator: 'CommandOrControl+G'}
+    ]
+  },
+  {
     label: 'View',
     submenu: [
       {role: 'reload'},
@@ -88,7 +94,7 @@ if (process.platform === 'darwin') {
   )
 
   // Window menu
-  template[3].submenu = [
+  template[4].submenu = [
     {role: 'close'},
     {role: 'minimize'},
     {role: 'zoom'},
