@@ -1,6 +1,7 @@
 import './document'
 import './drawarea'
 import './file'
+import './grouping'
 import './menu'
 import './recttool'
 import './ui'
