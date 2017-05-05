@@ -46,14 +46,15 @@ export class MenuBar {
   }
 
   updateMenu () {
+    const template = this.render()
     const win = remote.getCurrentWindow()
     if (process.platform === 'darwin') {
       if (win.isFocused()) {
-        const menu = Menu.buildFromTemplate(this.render())
+        const menu = Menu.buildFromTemplate(template)
         Menu.setApplicationMenu(menu)
       }
     } else {
-      const menu = Menu.buildFromTemplate(this.render())
+      const menu = Menu.buildFromTemplate(template)
       win.setMenu(menu)
     }
   }
