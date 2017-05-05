@@ -8,7 +8,7 @@ import {DocumentData, dataToItem} from './serialize'
 
 export async function open (filePath: string) {
   const fileData = await new Promise<Buffer>((resolve, reject) => {
-    fs.readFile(filePath, err => err ? reject(err) : resolve())
+    fs.readFile(filePath, (err, data) => err ? reject(err) : resolve(data))
   })
   const zip = new JSZip()
   await zip.loadAsync(fileData)
