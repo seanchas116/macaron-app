@@ -6,6 +6,7 @@ import {Rect, Vec2} from 'paintvec'
 import {ResizeHandles} from './ResizeHandles'
 import {Item} from '../document/Item'
 import {snapper} from './Snapper'
+import {itemPreview} from './ItemPreview'
 
 @observer
 export
@@ -17,7 +18,8 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
   private originalRects = new Map<Item, Rect>()
 
   @computed get rect () {
-    return Rect.union(...this.props.items.map(i => i.rect))
+    const previews = this.props.items.map(item => itemPreview.getOrOriginal(item))
+    return Rect.union(...previews.map(i => i.rect))
   }
 
   componentDidMount () {
