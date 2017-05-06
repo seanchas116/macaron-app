@@ -6,12 +6,12 @@ export class ItemInsertCommand extends Command {
   title = 'Insert Item'
   originalBeforeAnchor: Item|undefined
 
-  constructor (public parent: GroupItem, public item: Item, public beforeAnchor: Item|undefined) {
+  constructor (public parent: GroupItem, public item: Item, public beforeReference: Item|undefined) {
     super()
   }
 
   redo () {
-    this.parent.insertBefore(this.item, this.beforeAnchor)
+    this.parent.insertBefore(this.item, this.beforeReference)
   }
 
   undo () {

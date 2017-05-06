@@ -4,9 +4,9 @@ import {GroupItem} from '../document/GroupItem'
 
 export class ItemMoveCommand extends Command {
   title = 'Move Item'
-  originalBeforeAnchor: Item|undefined
+  originalBeforeReference: Item|undefined
 
-  constructor (public parent: GroupItem, public item: Item, public beforeAnchor: Item|undefined) {
+  constructor (public parent: GroupItem, public item: Item, public beforeReference: Item|undefined) {
     super()
   }
 
@@ -15,11 +15,11 @@ export class ItemMoveCommand extends Command {
     if (!origParent) {
       throw new Error('item is root and cannot be moved')
     }
-    this.originalBeforeAnchor = origParent.childAt(origParent.children.indexOf(this.item) + 1)
-    this.parent.insertBefore(this.item, this.beforeAnchor)
+    this.originalBeforeReference = origParent.childAt(origParent.children.indexOf(this.item) + 1)
+    this.parent.insertBefore(this.item, this.beforeReference)
   }
 
   undo () {
-    this.parent.insertBefore(this.item, this.originalBeforeAnchor)
+    this.parent.insertBefore(this.item, this.originalBeforeReference)
   }
 }
