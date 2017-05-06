@@ -59,6 +59,13 @@ class GroupItem extends Item {
     }
   }
 
+  removeChild (item: Item) {
+    const index = this.children.indexOf(item)
+    if (index >= 0) {
+      this.children.splice(index, 1)
+    }
+  }
+
   insertBefore (item: Item, reference: Item|undefined) {
     if (reference && !this.children.includes(reference)) {
       throw new Error('reference item is not a child of the group')
