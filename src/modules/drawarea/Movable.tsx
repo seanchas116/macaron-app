@@ -4,7 +4,11 @@ import {action} from 'mobx'
 import {autobind} from 'core-decorators'
 import {PointerEvents} from '../../util/components/PointerEvents'
 import {Item} from '../document/Item'
+import {CompositeCommand} from '../document/CompositeCommand'
+import {ItemChangeCommand} from '../document/ItemChangeCommand'
+import {documentManager} from '../document/DocumentManager'
 import {snapper} from './Snapper'
+import {previewOverride} from './PreviewOverride'
 
 export
 class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
@@ -13,6 +17,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
   private items = new Set<Item>()
   private originalRects = new Map<Item, Rect>()
   private originalRect: Rect|undefined
+  private newPositions = new Map<Item, Vec2>()
 
   render () {
     return <PointerEvents
@@ -51,17 +56,31 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     const snappedRect = snapper.snapRect(this.originalRect.translate(offset))
     const snappedOffset = snappedRect.topLeft.sub(this.originalRect.topLeft)
     for (const item of this.items) {
-      item.position = this.originalRects.get(item)!.topLeft.add(snappedOffset)
+      const position = this.originalRects.get(item)!.topLeft.add(snappedOffset)
+      previewOverride.set(item, {position})
+      this.newPositions.set(item, position)
     }
   }
   @autobind @action private onPointerUp (event: PointerEvent) {
     if (!this.dragging) {
       return
     }
+
+    const commands: ItemChangeCommand[] = []
+    for (const item of this.items) {
+      const position = this.newPositions.get(item)
+      if (position) {
+        commands.push(new ItemChangeCommand('Move Item', item, {position}))
+      }
+    }
+    documentManager.document.history.push(new CompositeCommand('Move Items', commands))
+
     this.dragging = false
     this.items = new Set()
     this.originalRects = new Map()
     this.originalRect = undefined
+    this.newPositions = new Map()
     snapper.clear()
+    previewOverride.clear()
   }
 }

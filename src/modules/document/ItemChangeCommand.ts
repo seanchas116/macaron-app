@@ -1,10 +1,10 @@
 import {Command} from './Command'
-import {Item, ItemProps} from '../document/Item'
+import {Item} from '../document/Item'
 
 export class ItemChangeCommand extends Command {
-  oldProps: Partial<ItemProps> = {}
+  oldProps: Partial<Item> = {}
 
-  constructor (public title: string, public item: Item, public props: Partial<ItemProps>) {
+  constructor (public title: string, public item: Item, public props: Partial<Item>) {
     super()
   }
 

@@ -1,8 +1,12 @@
-import {Item, ItemProps} from '../document/Item'
+import {Item} from '../document/Item'
 import {ObservableMap} from '../../util/ObservableMap'
 
 export class PreviewOverride {
-  readonly overrides = new ObservableMap<Item, Partial<ItemProps>>()
+  readonly overrides = new ObservableMap<Item, {}>()
+
+  set<T extends Item> (item: T, props: Partial<T>) {
+    this.overrides.set(item, props)
+  }
 
   proxy (item: Item) {
     if (this.overrides.has(item)) {
@@ -10,6 +14,10 @@ export class PreviewOverride {
     } else {
       return item
     }
+  }
+
+  clear () {
+    this.overrides.clear()
   }
 }
 
