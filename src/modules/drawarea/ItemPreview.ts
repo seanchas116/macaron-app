@@ -18,6 +18,10 @@ export class ItemPreview {
     return this.items.get(item)
   }
 
+  getOrOriginal<T extends Item> (item: T) {
+    return this.items.get(item) as T || item
+  }
+
   clear () {
     for (const preview of this.items.values()) {
       preview.dispose()
