@@ -8,7 +8,7 @@ import {CompositeCommand} from '../document/CompositeCommand'
 import {ItemChangeCommand} from '../document/ItemChangeCommand'
 import {documentManager} from '../document/DocumentManager'
 import {snapper} from './Snapper'
-import {previewOverride} from './PreviewOverride'
+import {itemPreview} from './ItemPreview'
 
 export
 class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
@@ -17,7 +17,6 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
   private items = new Set<Item>()
   private originalRects = new Map<Item, Rect>()
   private originalRect: Rect|undefined
-  private newPositions = new Map<Item, Vec2>()
 
   render () {
     return <PointerEvents
@@ -35,6 +34,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     this.items = document.selectedItems.peek()
     for (const item of this.items) {
       this.originalRects.set(item, item.rect)
+      itemPreview.add(item)
     }
     this.originalRect = Rect.union(...this.originalRects.values())
 
@@ -57,8 +57,10 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     const snappedOffset = snappedRect.topLeft.sub(this.originalRect.topLeft)
     for (const item of this.items) {
       const position = this.originalRects.get(item)!.topLeft.add(snappedOffset)
-      previewOverride.set(item, {position})
-      this.newPositions.set(item, position)
+      const preview = itemPreview.get(item)
+      if (preview) {
+        preview.position = position
+      }
     }
   }
   @autobind @action private onPointerUp (event: PointerEvent) {
@@ -68,9 +70,9 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
 
     const commands: ItemChangeCommand[] = []
     for (const item of this.items) {
-      const position = this.newPositions.get(item)
-      if (position) {
-        commands.push(new ItemChangeCommand('Move Item', item, {position}))
+      const preview = itemPreview.get(item)
+      if (preview) {
+        commands.push(new ItemChangeCommand('Move Item', item, {position: preview.position}))
       }
     }
     documentManager.document.history.push(new CompositeCommand('Move Items', commands))
@@ -79,8 +81,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     this.items = new Set()
     this.originalRects = new Map()
     this.originalRect = undefined
-    this.newPositions = new Map()
     snapper.clear()
-    previewOverride.clear()
+    itemPreview.clear()
   }
 }
