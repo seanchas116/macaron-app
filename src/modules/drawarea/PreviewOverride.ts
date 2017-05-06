@@ -1,13 +1,14 @@
-import {observable} from 'mobx'
 import {Item, ItemProps} from '../document/Item'
+import {ObservableMap} from '../../util/ObservableMap'
 
 export class PreviewOverride {
-  @observable item: Item|undefined
-  @observable overrides: Partial<ItemProps> = {}
+  readonly overrides = new ObservableMap<Item, Partial<ItemProps>>()
 
   proxy (item: Item) {
-    if (item === this.item) {
+    if (this.overrides.has(item)) {
       return new Proxy<Item>(item, proxyHandler)
+    } else {
+      return item
     }
   }
 }
