@@ -93,9 +93,7 @@ class GroupItem extends Item {
     }
     const onRemoved = (child: Item) => {
       child.parent = undefined
-      const selectedItems = new Set(this.document.selectedItems)
-      selectedItems.delete(child)
-      this.document.selectedItems = selectedItems
+      this.document.selectedItems.delete(child)
     }
     if (change.type === 'splice') {
       change.added.forEach(onAdded)

@@ -43,7 +43,7 @@ class ItemTreeDelegate implements TreeDelegate<Item> {
     return <ItemRow item={info.item} selected={info.selected} />
   }
   onSelectedKeysChange (selectedKeys: Set<number>, selectedNodeInfos: TreeRowInfo<Item>[]) {
-    documentManager.document.selectedItems = new Set(selectedNodeInfos.map(info => info.item))
+    documentManager.document.selectedItems.replace(selectedNodeInfos.map(info => info.item))
   }
   onCollapsedChange (info: TreeRowInfo<Item>, collapsed: boolean) {
     const {item} = info
