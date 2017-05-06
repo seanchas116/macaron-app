@@ -59,6 +59,12 @@ class GroupItem extends Item {
     }
   }
 
+  childAt (i: number) {
+    if (0 <= i && i < this.children.length) {
+      return this.children[i]
+    }
+  }
+
   removeChild (item: Item) {
     const index = this.children.indexOf(item)
     if (index >= 0) {
@@ -72,11 +78,10 @@ class GroupItem extends Item {
     }
 
     const oldParent = item.parent
-    if (!oldParent) {
-      throw new Error('item is root and cannot be moved')
+    if (oldParent) {
+      const oldIndex = oldParent.children.indexOf(item)
+      oldParent.children.splice(oldIndex, 1)
     }
-    const oldIndex = oldParent.children.indexOf(item)
-    oldParent.children.splice(oldIndex, 1)
 
     const index = reference ? this.children.indexOf(reference) : this.children.length
     this.children.splice(index, 0, item)

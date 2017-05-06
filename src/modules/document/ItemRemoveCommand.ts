@@ -13,9 +13,9 @@ export class ItemRemoveCommand extends Command {
   redo () {
     const origParent = this.item.parent
     if (!origParent) {
-      throw new Error('item is root and cannot be moved')
+      throw new Error('item is root and cannot be removed')
     }
-    this.originalBeforeAnchor = origParent.children[origParent.children.indexOf(this.item) + 1]
+    this.originalBeforeAnchor = origParent.childAt(origParent.children.indexOf(this.item) + 1)
     this.parent.removeChild(this.item)
   }
 

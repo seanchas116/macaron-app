@@ -2,9 +2,14 @@ import * as React from 'react'
 import {TreeView, TreeDelegate, TreeRowInfo} from 'react-draggable-tree'
 import {observer} from 'mobx-react'
 import * as classNames from 'classnames'
+
 import {Item} from '../document/Item'
 import {GroupItem} from '../document/GroupItem'
 import {documentManager} from '../document/DocumentManager'
+import {CompositeCommand} from '../document/CompositeCommand'
+import {ItemMoveCommand} from '../document/ItemMoveCommand'
+import {ItemInsertCommand} from '../document/ItemInsertCommand'
+
 const styles = require('./ItemHierarchy.css')
 require('react-draggable-tree/lib/index.css')
 
@@ -50,27 +55,22 @@ class ItemTreeDelegate implements TreeDelegate<Item> {
     // TODO
   }
   onMove (src: TreeRowInfo<Item>[], dest: TreeRowInfo<Item>, destIndex: number, destIndexAfter: number) {
-    const items: Item[] = []
-    for (const info of [...src].reverse()) {
-      const {item} = info
-      const {parent} = item
-      if (parent) {
-        const index = parent.children.indexOf(item)
-        parent.children.splice(index, 1)
-        items.push(item)
-      }
+    const parent = dest.item
+    if (!(parent instanceof GroupItem)) {
+      return
     }
-    const destItem = dest.item
-    if (destItem instanceof GroupItem) {
-      destItem.children.splice(destIndexAfter, 0, ...items)
-    }
+    const beforeReference = parent.childAt(destIndex)
+    const commands = src.map(info => new ItemMoveCommand(parent, info.item, beforeReference))
+    documentManager.document.history.push(new CompositeCommand('Move Items', commands))
   }
   onCopy (src: TreeRowInfo<Item>[], dest: TreeRowInfo<Item>, destIndex: number) {
-    const items = src.map(info => info.item.clone())
-    const destItem = dest.item
-    if (destItem instanceof GroupItem) {
-      destItem.children.splice(destIndex, 0, ...items)
+    const parent = dest.item
+    if (!(parent instanceof GroupItem)) {
+      return
     }
+    const beforeReference = parent.childAt(destIndex)
+    const commands = src.map(info => new ItemInsertCommand(parent, info.item.clone(), beforeReference))
+    documentManager.document.history.push(new CompositeCommand('Move Items', commands))
   }
 }
 

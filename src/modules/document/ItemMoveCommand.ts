@@ -15,7 +15,7 @@ export class ItemMoveCommand extends Command {
     if (!origParent) {
       throw new Error('item is root and cannot be moved')
     }
-    this.originalBeforeAnchor = origParent.children[origParent.children.indexOf(this.item) + 1]
+    this.originalBeforeAnchor = origParent.childAt(origParent.children.indexOf(this.item) + 1)
     this.parent.insertBefore(this.item, this.beforeAnchor)
   }
 
