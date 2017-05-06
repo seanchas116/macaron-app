@@ -38,9 +38,8 @@ async function openWindow (filePath?: string) {
 app.commandLine.appendSwitch('enable-experimental-web-platform-features')
 
 app.on('ready', async () => {
-  openWindow()
-
-  ipcMain.on('newWindow', (e: Electron.IpcMainEvent, filePath?: string) => {
-    openWindow(filePath)
+  ipcMain.on('newWindow', async (e: Electron.IpcMainEvent, filePath?: string) => {
+    await openWindow(filePath)
   })
+  await openWindow()
 })
