@@ -7,6 +7,7 @@ import {documentManager} from '../document/DocumentManager'
 import {toolManager} from './ToolManager'
 import {ItemResizeHandles} from './ItemResizeHandles'
 import {SnapLines} from './SnapLines'
+import {GroupItemView} from './GroupItemView'
 const styles = require('./DrawArea.css')
 
 @observer
@@ -36,7 +37,7 @@ export class DrawArea extends React.Component<{}, {}> {
       <svg className={styles.svg} width={width + 'px'} height={height + 'px'} onWheel={this.onWheel} >
         <rect x={0} y={0} width={width} height={height} onClick={this.deselect} fill='white' />
         <g transform={`translate(${-scroll.x}, ${-scroll.y})`} >
-          {rootItem.render()}
+          <GroupItemView item={rootItem} />
           <SnapLines />
           <ItemResizeHandles items={[...selectedItems]} />
         </g>

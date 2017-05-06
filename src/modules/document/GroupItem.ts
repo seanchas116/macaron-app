@@ -1,4 +1,3 @@
-import * as React from 'react'
 import {observable, action, IArrayChange, IArraySplice} from 'mobx'
 import {Rect} from 'paintvec'
 import {Item, ItemProps} from './Item'
@@ -35,12 +34,6 @@ class GroupItem extends Item {
   dispose () {
     this.children.forEach(c => c.dispose())
     super.dispose()
-  }
-
-  render () {
-    return <g key={this.id}>
-      {[...this.children].reverse().map(c => c.render())}
-    </g>
   }
 
   clone () {

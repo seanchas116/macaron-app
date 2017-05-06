@@ -1,7 +1,5 @@
-import * as React from 'react'
 import {observable} from 'mobx'
 import {RectLikeItem, RectLikeItemProps} from './RectLikeItem'
-import {TextItemView} from '../drawarea/TextItemView'
 import {Document} from './Document'
 
 export interface TextItemProps extends RectLikeItemProps {
@@ -17,10 +15,6 @@ class TextItem extends RectLikeItem {
   constructor (public readonly document: Document, data: TextItemProps, id?: string) {
     super(document, data, id)
     this.text = data.text
-  }
-
-  render (): JSX.Element {
-    return <TextItemView item={this} key={this.id}/>
   }
 
   clone () {
