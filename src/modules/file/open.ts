@@ -1,13 +1,13 @@
 import * as fs from 'fs'
 import * as JSZip from 'jszip'
 import * as msgpack from 'msgpack-lite'
+import {action} from 'mobx'
 import {Vec2} from 'paintvec'
 import {Document} from '../document/Document'
-import {Item} from '../document/Item'
 import {GroupItem} from '../document/GroupItem'
 import {DocumentData, dataToItem} from './serialize'
 
-export async function open (filePath: string) {
+export const open = action(async (filePath: string) => {
   const fileData = await new Promise<Buffer>((resolve, reject) => {
     fs.readFile(filePath, (err, data) => err ? reject(err) : resolve(data))
   })
@@ -26,15 +26,14 @@ export async function open (filePath: string) {
   document.rootItem.dispose()
   document.rootItem = rootItem
   document.scroll = new Vec2(documentData.scrollX, documentData.scrollY)
-  const selectedItems = new Set<Item>()
+  document.selectedItems.clear()
   for (const id of documentData.selectedItemIds) {
     const item = document.itemForId.get(id)
     if (item) {
-      selectedItems.add(item)
+      document.selectedItems.add(item)
     }
   }
-  document.selectedItems = selectedItems
 
   document.filePath = filePath
   return document
-}
+})

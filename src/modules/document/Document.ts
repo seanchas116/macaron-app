@@ -3,6 +3,7 @@ import {observable, action, computed} from 'mobx'
 import {Vec2} from 'paintvec'
 import {Item} from './Item'
 import {GroupItem} from './GroupItem'
+import {ObservableSet} from '../../util/ObservableSet'
 
 export
 class Document {
@@ -16,7 +17,7 @@ class Document {
     strokeWidth: 1,
     collapsed: false
   })
-  @observable selectedItems = new Set<Item>()
+  readonly selectedItems = new ObservableSet<Item>()
   @observable scroll = new Vec2()
 
   @observable filePath = ''
@@ -32,14 +33,14 @@ class Document {
 
   selectItem (item: Item, add: boolean) {
     if (add) {
-      this.selectedItems = new Set(this.selectedItems).add(item)
+      this.selectedItems.add(item)
     } else if (!this.selectedItems.has(item)) {
-      this.selectedItems = new Set([item])
+      this.selectedItems.replace([item])
     }
   }
 
   deselectItems () {
-    this.selectedItems = new Set()
+    this.selectedItems.clear()
   }
 
   @action deleteItems () {

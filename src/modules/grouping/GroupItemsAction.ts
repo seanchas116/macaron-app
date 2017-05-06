@@ -43,6 +43,6 @@ export class GroupItemsAction extends Action {
     group.children.replace(items)
 
     parent.children.splice(index, 0, group)
-    document.selectedItems = new Set([group])
+    document.selectedItems.replace([group])
   }
 }

@@ -34,6 +34,6 @@ export class UngroupItemsAction extends Action {
       parent.children.splice(index, 1, ...children)
       newSelectedItems.push(...children)
     }
-    document.selectedItems = new Set(newSelectedItems)
+    document.selectedItems.replace(newSelectedItems)
   }
 }
