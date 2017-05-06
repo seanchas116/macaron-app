@@ -4,22 +4,24 @@ import {GroupItem} from '../document/GroupItem'
 
 export class ItemRemoveCommand extends Command {
   title = 'Remove Item'
+  originalParent: GroupItem
   originalBeforeAnchor: Item|undefined
 
-  constructor (public parent: GroupItem, public item: Item) {
+  constructor (public item: Item) {
     super()
   }
 
   redo () {
-    const origParent = this.item.parent
-    if (!origParent) {
+    const {parent} = this.item
+    if (!parent) {
       throw new Error('item is root and cannot be removed')
     }
-    this.originalBeforeAnchor = origParent.childAt(origParent.children.indexOf(this.item) + 1)
-    this.parent.removeChild(this.item)
+    this.originalParent = parent
+    this.originalBeforeAnchor = parent.childAt(parent.children.indexOf(this.item) + 1)
+    parent.removeChild(this.item)
   }
 
   undo () {
-    this.parent.insertBefore(this.item, this.originalBeforeAnchor)
+    this.originalParent.insertBefore(this.item, this.originalBeforeAnchor)
   }
 }

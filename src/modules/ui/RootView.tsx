@@ -5,6 +5,8 @@ import {ItemHierarchy} from './ItemHierarchy'
 import {Inspector} from './Inspector'
 import {DrawArea} from '../drawarea/DrawArea'
 import {documentManager} from '../document/DocumentManager'
+import {CompositeCommand} from '../document/CompositeCommand'
+import {ItemRemoveCommand} from '../document/ItemRemoveCommand'
 import {isTextInput} from '../../util/isTextInput'
 const styles = require('./RootView.css')
 
@@ -26,7 +28,13 @@ class RootView extends React.Component<{}, {}> {
       return
     }
     if (e.key === 'Delete' || e.key === 'Backspace') {
-      documentManager.document.deleteItems()
+      this.removeItems()
     }
+  }
+
+  private removeItems () {
+    const {document} = documentManager
+    const commands = [...document.selectedItems].map(item => new ItemRemoveCommand(item))
+    document.history.push(new CompositeCommand('Delete Items', commands))
   }
 }
