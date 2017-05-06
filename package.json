@@ -13,7 +13,7 @@
     "watch": "npm-run-all --parallel watch:*",
     "lint": "tslint --type-check --project tsconfig.json src/**",
     "start": "npm-run-all --parallel watch app",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm-run-all lint build",
     "postinstall": "electron-rebuild"
   },
   "author": "",
