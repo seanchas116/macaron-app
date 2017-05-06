@@ -36,10 +36,12 @@ class GroupItem extends Item {
     super.dispose()
   }
 
-  clone () {
+  clone ({shallow = false} = {}) {
     const item = new GroupItem(this.document, this.toProps())
-    const children = this.children.map(c => c.clone())
-    item.children.replace(children)
+    if (!shallow) {
+      const children = this.children.map(c => c.clone())
+      item.children.replace(children)
+    }
     return item
   }
 

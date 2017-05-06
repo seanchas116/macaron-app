@@ -48,7 +48,7 @@ abstract class Item {
     this.document.itemForId.delete(this.id)
   }
 
-  abstract clone (): Item
+  abstract clone (opts?: {shallow?: boolean}): Item
 
   toProps (): ItemProps {
     const {name, fill, stroke, strokeWidth} = this

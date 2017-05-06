@@ -9,7 +9,9 @@ export class ItemPreview {
     if (oldPreview) {
       oldPreview.dispose()
     }
-    this.items.set(item, item.clone())
+    const preview = item.clone({shallow: true})
+    this.items.set(item, preview)
+    return preview
   }
 
   get (item: Item) {
