@@ -48,7 +48,6 @@ abstract class Item {
     this.document.itemForId.delete(this.id)
   }
 
-  abstract render (): JSX.Element
   abstract clone (): Item
 
   toProps (): ItemProps {
