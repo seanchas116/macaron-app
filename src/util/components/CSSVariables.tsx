@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom'
 const decamelize = require('decamelize')
 
 interface CSSVariablesProps {
-  [key: string]: string|number
+  [key: string]: string|number|React.ReactChild
 }
 
 export
@@ -22,7 +22,7 @@ class CSSVariables extends React.Component<CSSVariablesProps, {}> {
     return React.Children.only(this.props.children)
   }
 
-  private setProperties (props: {[key: string]: string|number}) {
+  private setProperties (props: CSSVariablesProps) {
     if (this.element) {
       for (const key in props) {
         if (['key', 'ref', 'children'].indexOf(key) < 0) {
