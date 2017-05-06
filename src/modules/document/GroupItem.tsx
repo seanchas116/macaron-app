@@ -59,6 +59,22 @@ class GroupItem extends Item {
     }
   }
 
+  insertBefore (item: Item, reference: Item|undefined) {
+    if (reference && !this.children.includes(reference)) {
+      throw new Error('reference item is not a child of the group')
+    }
+
+    const oldParent = item.parent
+    if (!oldParent) {
+      throw new Error('item is root and cannot be moved')
+    }
+    const oldIndex = oldParent.children.indexOf(item)
+    oldParent.children.splice(oldIndex, 1)
+
+    const index = reference ? this.children.indexOf(reference) : this.children.length
+    this.children.splice(index, 0, item)
+  }
+
   @action private onChildChange (change: IArrayChange<Item>|IArraySplice<Item>) {
     const onAdded = (child: Item) => {
       child.parent = this
