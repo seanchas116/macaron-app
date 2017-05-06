@@ -5,6 +5,9 @@ import {autobind} from 'core-decorators'
 import {Rect, Vec2} from 'paintvec'
 import {ResizeHandles} from './ResizeHandles'
 import {Item} from '../document/Item'
+import {CompositeCommand} from '../document/CompositeCommand'
+import {ItemChangeCommand} from '../document/ItemChangeCommand'
+import {documentManager} from '../document/DocumentManager'
 import {snapper} from './Snapper'
 import {itemPreview} from './ItemPreview'
 
@@ -13,6 +16,7 @@ export
 class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
   private dragging = false
   private disposers: (() => void)[] = []
+  private items: Item[] = []
   @observable private positions: [Vec2, Vec2]|undefined
   private originalPositions: [Vec2, Vec2]|undefined
   private originalRects = new Map<Item, Rect>()
@@ -63,11 +67,12 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
   @autobind @action private onChangeBegin () {
     this.dragging = true
     this.originalPositions = this.positions
-    for (const item of this.props.items) {
+    this.items = this.props.items
+    for (const item of this.items) {
       this.originalRects.set(item, item.rect)
     }
     const snapTargets: Rect[] = []
-    for (const item of this.props.items) {
+    for (const item of this.items) {
       const {parent} = item
       if (parent) {
         for (const child of parent.children) {
@@ -76,6 +81,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
           }
         }
       }
+      itemPreview.add(item)
     }
     snapper.targets = snapTargets
   }
@@ -84,26 +90,45 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
     if (!this.originalPositions) {
       return
     }
-    const {items} = this.props
-    for (const item of items) {
+    for (const item of this.items) {
+      const preview = itemPreview.get(item)
+      if (!preview) {
+        return
+      }
       const origRect = this.originalRects.get(item)!
       const [origP1, origP2] = this.originalPositions
       const ratio = p2.sub(p1).div(origP2.sub(origP1))
       const topLeft = origRect.topLeft.sub(origP1).mul(ratio).add(p1)
       const bottomRight = origRect.bottomRight.sub(origP1).mul(ratio).add(p1)
       const rect = Rect.fromTwoPoints(topLeft, bottomRight)
-      item.rect = rect
+      preview.rect = rect
     }
 
     this.positions = [p1, p2]
   }
 
   @autobind @action private onChangeEnd () {
+    this.commit()
+
     this.dragging = false
+    this.items = []
     this.originalPositions = undefined
     this.originalRects = new Map()
+
     this.updatePositions()
     snapper.clear()
+    itemPreview.clear()
+  }
+
+  private commit () {
+    const commands: ItemChangeCommand[] = []
+    for (const item of this.items) {
+      const preview = itemPreview.get(item)
+      if (preview) {
+        commands.push(new ItemChangeCommand('Resize Item', item, {rect: preview.rect}))
+      }
+    }
+    documentManager.document.history.push(new CompositeCommand('Resize Items', commands))
   }
 
   private updatePositions () {

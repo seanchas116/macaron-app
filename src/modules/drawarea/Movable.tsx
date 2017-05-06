@@ -68,6 +68,16 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
       return
     }
 
+    this.commit()
+    this.dragging = false
+    this.items = new Set()
+    this.originalRects = new Map()
+    this.originalRect = undefined
+    snapper.clear()
+    itemPreview.clear()
+  }
+
+  private commit () {
     const commands: ItemChangeCommand[] = []
     for (const item of this.items) {
       const preview = itemPreview.get(item)
@@ -76,12 +86,5 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
       }
     }
     documentManager.document.history.push(new CompositeCommand('Move Items', commands))
-
-    this.dragging = false
-    this.items = new Set()
-    this.originalRects = new Map()
-    this.originalRect = undefined
-    snapper.clear()
-    itemPreview.clear()
   }
 }
