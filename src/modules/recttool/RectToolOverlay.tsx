@@ -67,7 +67,7 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     this.item = this.newItem(document)
     this.item.rect = new Rect(this.startPos, this.startPos).translate(document.scroll)
     document.rootItem.children.unshift(this.item)
-    document.selectedItems = new Set([this.item])
+    document.selectedItems.replace([this.item])
   }
 
   @action private onPointerMove = (event: PointerEvent) => {
