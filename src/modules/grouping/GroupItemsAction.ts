@@ -1,6 +1,5 @@
 import {computed, action} from 'mobx'
-import {Action} from '../menu/Action'
-import {addAction} from '../menu/ActionManager'
+import {Action, addAction} from '../menu'
 import {documentManager, CompositeCommand, ItemInsertCommand, ItemMoveCommand, GroupItem} from '../document'
 
 @addAction

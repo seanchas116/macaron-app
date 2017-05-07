@@ -1,6 +1,5 @@
 import {remote} from 'electron'
-import {Action} from '../../menu/Action'
-import {addAction} from '../../menu/ActionManager'
+import {Action, addAction} from '../../menu'
 import {documentManager} from '../../document'
 import {save} from '../save'
 const {dialog} = remote
