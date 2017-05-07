@@ -6,7 +6,11 @@ import {documentManager} from '../document/DocumentManager'
 @addAction
 export class UndoAction extends Action {
   id = 'edit.redo'
-  title = 'Redo'
+
+  @computed get title () {
+    const {commandToRedo} = documentManager.document.history
+    return commandToRedo ? `Redo ${commandToRedo.title}` : 'Redo'
+  }
 
   @computed get enabled () {
     return documentManager.document.history.canRedo
