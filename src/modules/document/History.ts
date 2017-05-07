@@ -1,5 +1,5 @@
 import {observable, action, computed} from 'mobx'
-import {Command} from './Command'
+import {Command} from './commands/Command'
 
 export class History {
   private readonly commands = observable<Command>([])

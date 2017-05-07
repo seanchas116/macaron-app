@@ -1,6 +1,6 @@
 import {observable} from 'mobx'
 import {RectLikeItem, RectLikeItemProps} from './RectLikeItem'
-import {Document} from './Document'
+import {Document} from '../Document'
 
 export interface TextItemProps extends RectLikeItemProps {
   type: 'text'
