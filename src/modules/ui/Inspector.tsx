@@ -1,8 +1,7 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 import {Rect} from 'paintvec'
-import {documentManager} from '../document/DocumentManager'
-import {ItemChangeCommand} from '../document/ItemChangeCommand'
+import {documentManager, ItemChangeCommand} from '../document'
 const styles = require('./Inspector.css')
 
 interface ValueInputProps {

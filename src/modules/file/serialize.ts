@@ -1,7 +1,4 @@
-import {Document} from '../document/Document'
-import {createItem} from '../document/createItem'
-import {Item, ItemProps} from '../document/Item'
-import {GroupItem} from '../document/GroupItem'
+import {Document, createItem, Item, ItemProps, GroupItem} from '../document'
 
 export interface DocumentData {
   version: number

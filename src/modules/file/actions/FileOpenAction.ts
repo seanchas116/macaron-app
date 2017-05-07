@@ -1,6 +1,5 @@
 import {remote, ipcRenderer} from 'electron'
-import {Action} from '../../menu/Action'
-import {addAction} from '../../menu/ActionManager'
+import {Action, addAction} from '../../menu'
 const {dialog} = remote
 
 @addAction

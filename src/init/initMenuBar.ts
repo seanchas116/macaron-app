@@ -1,5 +1,5 @@
 import {remote} from 'electron'
-import {menuBar, MenuDescription} from '../modules/menu/MenuBar'
+import {menuBar, MenuDescription} from '../modules/menu'
 const {app} = remote
 
 const template: MenuDescription[] = [

@@ -3,10 +3,8 @@ import {action} from 'mobx'
 import {ToolSelect} from './ToolSelect'
 import {ItemHierarchy} from './ItemHierarchy'
 import {Inspector} from './Inspector'
-import {DrawArea} from '../drawarea/DrawArea'
-import {documentManager} from '../document/DocumentManager'
-import {CompositeCommand} from '../document/CompositeCommand'
-import {ItemRemoveCommand} from '../document/ItemRemoveCommand'
+import {DrawArea} from '../drawarea'
+import {documentManager, CompositeCommand, ItemRemoveCommand} from '../document'
 import {isTextInput} from '../../util/isTextInput'
 const styles = require('./RootView.css')
 

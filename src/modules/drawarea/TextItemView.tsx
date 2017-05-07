@@ -3,7 +3,7 @@ import {observable, action, reaction} from 'mobx'
 import {observer} from 'mobx-react'
 import {autobind} from 'core-decorators'
 import {Movable} from './Movable'
-import {TextItem} from '../document/TextItem'
+import {TextItem} from '../document'
 import {itemPreview} from './ItemPreview'
 
 @observer

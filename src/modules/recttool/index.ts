@@ -1,5 +1,5 @@
 import {RectTool} from './RectTool'
-import {toolManager} from '../drawarea/ToolManager'
+import {toolManager} from '../drawarea'
 
 toolManager.add(new RectTool('rect'))
 toolManager.add(new RectTool('oval'))
