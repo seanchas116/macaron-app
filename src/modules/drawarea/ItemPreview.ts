@@ -3,8 +3,8 @@ import {Item} from '../document/Item'
 import {GroupItem} from '../document/GroupItem'
 
 export class ItemPreview {
-  readonly items = new ObservableMap<Item, Item>()
-  readonly childrens = new ObservableMap<GroupItem, Item[]>()
+  private readonly items = new ObservableMap<Item, Item>()
+  private readonly childrens = new ObservableMap<GroupItem, Item[]>()
 
   addItem (item: Item) {
     const oldPreview = this.items.get(item)
@@ -26,6 +26,10 @@ export class ItemPreview {
 
   addChildren (group: GroupItem, children: Item[]) {
     this.childrens.set(group, children)
+  }
+
+  getChildren (group: GroupItem) {
+    return this.childrens.get(group)
   }
 
   previewChildren (group: GroupItem) {
