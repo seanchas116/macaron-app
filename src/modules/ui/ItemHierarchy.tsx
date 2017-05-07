@@ -69,8 +69,8 @@ class ItemTreeDelegate implements TreeDelegate<Item> {
       return
     }
     const beforeReference = parent.childAt(destIndex)
-    const commands = src.map(info => new ItemInsertCommand(parent, info.item.clone(), beforeReference))
-    documentManager.document.history.push(new CompositeCommand('Move Items', commands))
+    const commands = src.map(info => new ItemInsertCommand('Copy Item', parent, info.item.clone(), beforeReference))
+    documentManager.document.history.push(new CompositeCommand('Copy Items', commands))
   }
 }
 

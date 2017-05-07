@@ -8,6 +8,7 @@ import {RectLikeItem} from '../document/RectLikeItem'
 import {RectItem} from '../document/RectItem'
 import {TextItem} from '../document/TextItem'
 import {OvalItem} from '../document/OvalItem'
+import {ItemInsertCommand} from '../document/ItemInsertCommand'
 import {PointerEvents} from '../../util/components/PointerEvents'
 import {RectToolType} from './RectTool'
 
@@ -79,8 +80,24 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
   }
 
   @action private onPointerUp = (event: PointerEvent) => {
+    this.commit()
     this.startPos = undefined
     this.item = undefined
     toolManager.current = undefined
+  }
+
+  @action private commit () {
+    const {item} = this
+    if (!item) {
+      return
+    }
+    const {parent} = item
+    if (!parent) {
+      return
+    }
+
+    parent.removeChild(item)
+    const {document} = documentManager
+    document.history.push(new ItemInsertCommand('Add Item', parent, item, parent.childAt(0)))
   }
 }
