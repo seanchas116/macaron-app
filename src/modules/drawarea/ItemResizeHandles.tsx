@@ -121,11 +121,13 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
     const commands: ItemChangeCommand[] = []
     for (const item of this.items) {
       const preview = itemPreview.getItem(item)
-      if (preview) {
+      if (preview && !preview.rect.equals(item.rect)) {
         commands.push(new ItemChangeCommand('Resize Item', item, {rect: preview.rect}))
       }
     }
-    documentManager.document.history.push(new CompositeCommand('Resize Items', commands))
+    if (commands.length > 0) {
+      documentManager.document.history.push(new CompositeCommand('Resize Items', commands))
+    }
   }
 
   private updatePositions () {
