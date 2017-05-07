@@ -4,11 +4,37 @@ import {Rect} from 'paintvec'
 import {documentManager} from '../document/DocumentManager'
 const styles = require('./Inspector.css')
 
-function ValueInput (props: {value: number, onChange: (value: number) => void}) {
-  const onChange = (e: React.FormEvent<HTMLInputElement>) => {
-    props.onChange(parseFloat(e.currentTarget.value))
+interface ValueInputProps {
+  value: number
+  onChange: (value: number) => void
+}
+
+class ValueInput extends React.Component<ValueInputProps, {}> {
+  private element: HTMLInputElement
+
+  componentDidMount () {
+    this.element.value = String(this.props.value)
   }
-  return <input type='number' value={props.value} onChange={onChange} />
+
+  componentWillReceiveProps (props: ValueInputProps) {
+    this.element.value = String(props.value)
+  }
+
+  render () {
+    return <input type='number' ref={e => this.element = e} onKeyDown={this.onKeyDown} onBlur={this.onBlur} />
+  }
+
+  private onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      this.props.onChange(parseFloat(this.element.value))
+    } else if (e.key === 'Escape') {
+      this.element.value = String(this.props.value)
+    }
+  }
+
+  private onBlur = () => {
+    this.props.onChange(parseFloat(this.element.value))
+  }
 }
 
 function ColorInput (props: {value: string, onChange: (value: string) => void}) {
