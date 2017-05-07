@@ -78,10 +78,12 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     const commands: ItemChangeCommand[] = []
     for (const item of this.items) {
       const preview = itemPreview.getItem(item)
-      if (preview) {
+      if (preview && !preview.position.equals(item.position)) {
         commands.push(new ItemChangeCommand('Move Item', item, {position: preview.position}))
       }
     }
-    documentManager.document.history.push(new CompositeCommand('Move Items', commands))
+    if (commands.length > 0) {
+      documentManager.document.history.push(new CompositeCommand('Move Items', commands))
+    }
   }
 }
