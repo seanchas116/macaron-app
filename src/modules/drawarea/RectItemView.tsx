@@ -8,7 +8,7 @@ import {itemPreview} from './ItemPreview'
 export class RectItemView extends React.Component<{item: RectItem}, {}> {
   render () {
     const {item} = this.props
-    const preview = itemPreview.getOrOriginal(item)
+    const preview = itemPreview.previewItem(item)
     const {x, y} = preview.position
     const {width, height} = preview.size
     return <Movable item={item} key={item.id}>

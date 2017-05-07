@@ -4,6 +4,8 @@ import {Vec2, Rect} from 'paintvec'
 import {Document} from '../document/Document'
 import {documentManager} from '../document/DocumentManager'
 import {toolManager} from '../drawarea/ToolManager'
+import {itemPreview} from '../drawarea/ItemPreview'
+import {GroupItem} from '../document/GroupItem'
 import {RectLikeItem} from '../document/RectLikeItem'
 import {RectItem} from '../document/RectItem'
 import {TextItem} from '../document/TextItem'
@@ -15,6 +17,7 @@ import {RectToolType} from './RectTool'
 export
 class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, {}> {
   startPos: Vec2|undefined
+  parent: GroupItem|undefined
   item: RectLikeItem|undefined
 
   render () {
@@ -65,10 +68,11 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
 
     this.startPos = new Vec2(event.offsetX, event.offsetY)
     const {document} = documentManager
+    this.parent = document.rootItem
     this.item = this.newItem(document)
     this.item.rect = new Rect(this.startPos, this.startPos).translate(document.scroll)
-    document.rootItem.children.unshift(this.item)
-    document.selectedItems.replace([this.item])
+    const children = [this.item, ...this.parent.children]
+    itemPreview.addChildren(this.parent, children)
   }
 
   @action private onPointerMove = (event: PointerEvent) => {
@@ -84,20 +88,16 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     this.startPos = undefined
     this.item = undefined
     toolManager.current = undefined
+    itemPreview.clear()
   }
 
   @action private commit () {
-    const {item} = this
-    if (!item) {
+    const {item, parent} = this
+    if (!item || !parent) {
       return
     }
-    const {parent} = item
-    if (!parent) {
-      return
-    }
-
-    parent.removeChild(item)
     const {document} = documentManager
     document.history.push(new ItemInsertCommand('Add Item', parent, item, parent.childAt(0)))
+    document.selectedItems.replace([item])
   }
 }

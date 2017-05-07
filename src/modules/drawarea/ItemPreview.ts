@@ -1,10 +1,12 @@
 import {ObservableMap} from '../../util/ObservableMap'
 import {Item} from '../document/Item'
+import {GroupItem} from '../document/GroupItem'
 
 export class ItemPreview {
   readonly items = new ObservableMap<Item, Item>()
+  readonly childrens = new ObservableMap<GroupItem, Item[]>()
 
-  add (item: Item) {
+  addItem (item: Item) {
     const oldPreview = this.items.get(item)
     if (oldPreview) {
       oldPreview.dispose()
@@ -14,12 +16,20 @@ export class ItemPreview {
     return preview
   }
 
-  get (item: Item) {
+  getItem (item: Item) {
     return this.items.get(item)
   }
 
-  getOrOriginal<T extends Item> (item: T) {
+  previewItem<T extends Item> (item: T) {
     return this.items.get(item) as T || item
+  }
+
+  addChildren (group: GroupItem, children: Item[]) {
+    this.childrens.set(group, children)
+  }
+
+  previewChildren (group: GroupItem) {
+    return this.childrens.get(group) || group.children
   }
 
   clear () {
@@ -27,6 +37,7 @@ export class ItemPreview {
       preview.dispose()
     }
     this.items.clear()
+    this.childrens.clear()
   }
 }
 

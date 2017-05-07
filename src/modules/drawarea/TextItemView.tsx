@@ -27,7 +27,7 @@ class TextItemView extends React.Component<{item: TextItem}, {}> {
 
   render () {
     const {item} = this.props
-    const preview = itemPreview.getOrOriginal(item)
+    const preview = itemPreview.previewItem(item)
     const {x, y} = preview.position
     const {width, height} = preview.size
     return <Movable movable={!this.focus} item={item}>

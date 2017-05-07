@@ -22,7 +22,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
   private originalRects = new Map<Item, Rect>()
 
   @computed get rect () {
-    const previews = this.props.items.map(item => itemPreview.getOrOriginal(item))
+    const previews = this.props.items.map(item => itemPreview.previewItem(item))
     return Rect.union(...previews.map(i => i.rect))
   }
 
@@ -81,7 +81,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
           }
         }
       }
-      itemPreview.add(item)
+      itemPreview.addItem(item)
     }
     snapper.targets = snapTargets
   }
@@ -91,7 +91,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
       return
     }
     for (const item of this.items) {
-      const preview = itemPreview.get(item)
+      const preview = itemPreview.getItem(item)
       if (!preview) {
         return
       }
@@ -123,7 +123,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
   private commit () {
     const commands: ItemChangeCommand[] = []
     for (const item of this.items) {
-      const preview = itemPreview.get(item)
+      const preview = itemPreview.getItem(item)
       if (preview) {
         commands.push(new ItemChangeCommand('Resize Item', item, {rect: preview.rect}))
       }

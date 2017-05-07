@@ -8,7 +8,7 @@ import {itemPreview} from './ItemPreview'
 export class OvalItemView extends React.Component<{item: OvalItem}, {}> {
   render () {
     const {item} = this.props
-    const preview = itemPreview.getOrOriginal(item)
+    const preview = itemPreview.previewItem(item)
     const center = preview.rect.center
     const radius = preview.rect.size.mulScalar(0.5)
     return <Movable item={item} key={item.id}>

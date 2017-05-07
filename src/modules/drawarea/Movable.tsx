@@ -34,7 +34,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     this.items = document.selectedItems.peek()
     for (const item of this.items) {
       this.originalRects.set(item, item.rect)
-      itemPreview.add(item)
+      itemPreview.addItem(item)
     }
     this.originalRect = Rect.union(...this.originalRects.values())
 
@@ -57,7 +57,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     const snappedOffset = snappedRect.topLeft.sub(this.originalRect.topLeft)
     for (const item of this.items) {
       const position = this.originalRects.get(item)!.topLeft.add(snappedOffset)
-      const preview = itemPreview.get(item)
+      const preview = itemPreview.getItem(item)
       if (preview) {
         preview.position = position
       }
@@ -80,7 +80,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
   private commit () {
     const commands: ItemChangeCommand[] = []
     for (const item of this.items) {
-      const preview = itemPreview.get(item)
+      const preview = itemPreview.getItem(item)
       if (preview) {
         commands.push(new ItemChangeCommand('Move Item', item, {position: preview.position}))
       }
