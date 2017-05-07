@@ -1,5 +1,5 @@
 import {Command} from './Command'
-import {Item} from '../document/Item'
+import {Item} from '../items/Item'
 
 export class ItemChangeCommand extends Command {
   oldProps: Partial<Item> = {}

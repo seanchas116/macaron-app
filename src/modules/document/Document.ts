@@ -1,8 +1,8 @@
 import * as path from 'path'
 import {observable, action, computed} from 'mobx'
 import {Vec2} from 'paintvec'
-import {Item} from './Item'
-import {GroupItem} from './GroupItem'
+import {Item} from './items/Item'
+import {GroupItem} from './items/GroupItem'
 import {History} from './History'
 import {ObservableSet} from '../../util/ObservableSet'
 

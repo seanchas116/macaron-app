@@ -1,7 +1,7 @@
 import {observable} from 'mobx'
 import * as uuid from 'uuid'
 import {Vec2, Rect} from 'paintvec'
-import {Document} from './Document'
+import {Document} from '../Document'
 import {GroupItem} from './GroupItem'
 
 export interface ItemProps {

@@ -1,7 +1,7 @@
 import {Vec2} from 'paintvec'
 import {observable} from 'mobx'
 import {Item, ItemProps} from './Item'
-import {Document} from './Document'
+import {Document} from '../Document'
 
 export interface RectLikeItemProps extends ItemProps {
   x: number

@@ -1,7 +1,7 @@
 import {observable, action, IArrayChange, IArraySplice} from 'mobx'
 import {Rect} from 'paintvec'
 import {Item, ItemProps} from './Item'
-import {Document} from './Document'
+import {Document} from '../Document'
 
 export interface GroupItemProps extends ItemProps {
   type: 'group'

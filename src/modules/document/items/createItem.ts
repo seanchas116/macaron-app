@@ -3,7 +3,7 @@ import {RectItem, RectItemProps} from './RectItem'
 import {OvalItem, OvalItemProps} from './OvalItem'
 import {TextItem, TextItemProps} from './TextItem'
 import {GroupItem, GroupItemProps} from './GroupItem'
-import {Document} from './Document'
+import {Document} from '../Document'
 
 export function createItem (document: Document, props: ItemProps, id?: string) {
   switch (props.type) {
