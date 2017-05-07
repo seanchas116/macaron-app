@@ -27,15 +27,22 @@ class ValueInput extends React.Component<ValueInputProps, {}> {
 
   private onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      // TODO: evaluate string as expression
-      this.props.onChange(parseFloat(this.element.value))
+      this.commit()
     } else if (e.key === 'Escape') {
       this.element.value = String(this.props.value)
     }
   }
 
   private onBlur = () => {
-    this.props.onChange(parseFloat(this.element.value))
+    this.commit()
+  }
+
+  private commit () {
+      // TODO: evaluate string as expression
+    const newValue = parseFloat(this.element.value)
+    if (this.props.value !== newValue) {
+      this.props.onChange(newValue)
+    }
   }
 }
 
