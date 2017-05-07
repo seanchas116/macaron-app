@@ -16,8 +16,8 @@ const template: MenuDescription[] = [
   {
     label: 'Edit',
     submenu: [
-      {role: 'undo'},
-      {role: 'redo'},
+      {action: 'edit.undo', accelerator: 'CommandOrControl+Z'},
+      {action: 'edit.redo', accelerator: 'CommandOrControl+Y'},
       {type: 'separator'},
       {role: 'cut'},
       {role: 'copy'},
@@ -83,6 +83,7 @@ if (process.platform === 'darwin') {
   })
 
   // Edit menu
+  template[2].submenu![1].accelerator = 'Shift+CommandOrControl+Z'
   template[2].submenu!.push(
     {type: 'separator'},
     {

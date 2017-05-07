@@ -36,10 +36,12 @@ class GroupItem extends Item {
     super.dispose()
   }
 
-  clone () {
+  clone ({shallow = false} = {}) {
     const item = new GroupItem(this.document, this.toProps())
-    const children = this.children.map(c => c.clone())
-    item.children.replace(children)
+    if (!shallow) {
+      const children = this.children.map(c => c.clone())
+      item.children.replace(children)
+    }
     return item
   }
 
@@ -50,6 +52,34 @@ class GroupItem extends Item {
       type: 'group',
       collapsed
     }
+  }
+
+  childAt (i: number) {
+    if (0 <= i && i < this.children.length) {
+      return this.children[i]
+    }
+  }
+
+  removeChild (item: Item) {
+    const index = this.children.indexOf(item)
+    if (index >= 0) {
+      this.children.splice(index, 1)
+    }
+  }
+
+  insertBefore (item: Item, reference: Item|undefined) {
+    if (reference && !this.children.includes(reference)) {
+      throw new Error('reference item is not a child of the group')
+    }
+
+    const oldParent = item.parent
+    if (oldParent) {
+      const oldIndex = oldParent.children.indexOf(item)
+      oldParent.children.splice(oldIndex, 1)
+    }
+
+    const index = reference ? this.children.indexOf(reference) : this.children.length
+    this.children.splice(index, 0, item)
   }
 
   @action private onChildChange (change: IArrayChange<Item>|IArraySplice<Item>) {

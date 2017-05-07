@@ -49,6 +49,16 @@ export class ObservableMap<K, T> implements Iterable<[K, T]> {
     return this.map[Symbol.iterator]()
   }
 
+  keys () {
+    this.atom.reportObserved()
+    return this.map.keys()
+  }
+
+  values () {
+    this.atom.reportObserved()
+    return this.map.values()
+  }
+
   peek () {
     this.atom.reportObserved()
     return new Map(this.map)

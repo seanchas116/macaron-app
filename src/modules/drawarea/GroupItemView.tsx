@@ -11,6 +11,8 @@ import {RectItemView} from './RectItemView'
 import {OvalItemView} from './OvalItemView'
 import {TextItemView} from './TextItemView'
 
+import {itemPreview} from './ItemPreview'
+
 export function renderItem (item: Item): JSX.Element|undefined {
   if (item instanceof GroupItem) {
     return <GroupItemView item={item} key={item.id} />
@@ -30,8 +32,9 @@ export function renderItem (item: Item): JSX.Element|undefined {
 export class GroupItemView extends React.Component<{item: GroupItem}, {}> {
   render () {
     const {item} = this.props
+    const children = itemPreview.previewChildren(item)
     return <g key={item.id}>
-      {[...item.children].reverse().map(renderItem)}
+      {[...children].reverse().map(renderItem)}
     </g>
   }
 }

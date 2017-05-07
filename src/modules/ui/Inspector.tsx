@@ -2,13 +2,48 @@ import * as React from 'react'
 import {observer} from 'mobx-react'
 import {Rect} from 'paintvec'
 import {documentManager} from '../document/DocumentManager'
+import {ItemChangeCommand} from '../document/ItemChangeCommand'
 const styles = require('./Inspector.css')
 
-function ValueInput (props: {value: number, onChange: (value: number) => void}) {
-  const onChange = (e: React.FormEvent<HTMLInputElement>) => {
-    props.onChange(parseFloat(e.currentTarget.value))
+interface ValueInputProps {
+  value: number
+  onChange: (value: number) => void
+}
+
+class ValueInput extends React.Component<ValueInputProps, {}> {
+  private element: HTMLInputElement
+
+  componentDidMount () {
+    this.element.value = String(this.props.value)
   }
-  return <input type='number' value={props.value} onChange={onChange} />
+
+  componentWillReceiveProps (props: ValueInputProps) {
+    this.element.value = String(props.value)
+  }
+
+  render () {
+    return <input type='number' ref={e => this.element = e} onKeyDown={this.onKeyDown} onBlur={this.onBlur} />
+  }
+
+  private onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      this.commit()
+    } else if (e.key === 'Escape') {
+      this.element.value = String(this.props.value)
+    }
+  }
+
+  private onBlur = () => {
+    this.commit()
+  }
+
+  private commit () {
+      // TODO: evaluate string as expression
+    const newValue = parseFloat(this.element.value)
+    if (this.props.value !== newValue) {
+      this.props.onChange(newValue)
+    }
+  }
 }
 
 function ColorInput (props: {value: string, onChange: (value: string) => void}) {
@@ -26,26 +61,40 @@ export class Inspector extends React.Component<{}, {}> {
     if (!item) {
       return <div className={styles.root} />
     }
+
+    const onChangeRect = (title: string, rect: Rect) => {
+      document.history.push(new ItemChangeCommand(title, item, {rect}))
+    }
+    const onChangeFill = (fill: string) => {
+      document.history.push(new ItemChangeCommand('Change Fill', item, {fill}))
+    }
+    const onChangeStroke = (stroke: string) => {
+      document.history.push(new ItemChangeCommand('Change Stroke', item, {stroke}))
+    }
+    const onChangeStrokeWidth = (strokeWidth: number) => {
+      document.history.push(new ItemChangeCommand('Change Stroke Width', item, {strokeWidth}))
+    }
+
     const {left, top, width, height} = item.rect
     return <div className={styles.root}>
       <div className={styles.rect} >
-        <ValueInput value={left} onChange={left => item.rect = Rect.fromWidthHeight(left, top, width, height)} />
-        <ValueInput value={top} onChange={top => item.rect = Rect.fromWidthHeight(left, top, width, height)} />
+        <ValueInput value={left} onChange={left => onChangeRect('Change X', Rect.fromWidthHeight(left, top, width, height))} />
+        <ValueInput value={top} onChange={top => onChangeRect('Change Y', Rect.fromWidthHeight(left, top, width, height))} />
         <div className={styles.rectLabel}>X</div>
         <div className={styles.rectLabel}>Y</div>
-        <ValueInput value={width} onChange={width => item.rect = Rect.fromWidthHeight(left, top, width, height)} />
-        <ValueInput value={height} onChange={height => item.rect = Rect.fromWidthHeight(left, top, width, height)} />
+        <ValueInput value={width} onChange={width => onChangeRect('Change Width', Rect.fromWidthHeight(left, top, width, height))} />
+        <ValueInput value={height} onChange={height => onChangeRect('Change Height', Rect.fromWidthHeight(left, top, width, height))} />
         <div className={styles.rectLabel}>Width</div>
         <div className={styles.rectLabel}>Height</div>
       </div>
       <div className={styles.fill}>
         <div className={styles.fillTitle}>Fill</div>
-        <ColorInput value={item.fill} onChange={fill => item.fill = fill} />
+        <ColorInput value={item.fill} onChange={onChangeFill} />
       </div>
       <div className={styles.stroke}>
         <div className={styles.strokeTitle}>Stroke</div>
-        <ColorInput value={item.stroke} onChange={stroke => item.stroke = stroke} />
-        <ValueInput value={item.strokeWidth} onChange={width => item.strokeWidth = width} />
+        <ColorInput value={item.stroke} onChange={onChangeStroke} />
+        <ValueInput value={item.strokeWidth} onChange={onChangeStrokeWidth} />
       </div>
     </div>
   }

@@ -3,6 +3,7 @@ import {observable, action, computed} from 'mobx'
 import {Vec2} from 'paintvec'
 import {Item} from './Item'
 import {GroupItem} from './GroupItem'
+import {History} from './History'
 import {ObservableSet} from '../../util/ObservableSet'
 
 export
@@ -22,6 +23,8 @@ class Document {
 
   @observable filePath = ''
   @observable tempName = 'Untitled'
+
+  readonly history = new History()
 
   @computed get fileName() {
     if (this.filePath) {

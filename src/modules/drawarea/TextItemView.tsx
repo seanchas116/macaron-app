@@ -4,6 +4,7 @@ import {observer} from 'mobx-react'
 import {autobind} from 'core-decorators'
 import {Movable} from './Movable'
 import {TextItem} from '../document/TextItem'
+import {itemPreview} from './ItemPreview'
 
 @observer
 export
@@ -26,8 +27,9 @@ class TextItemView extends React.Component<{item: TextItem}, {}> {
 
   render () {
     const {item} = this.props
-    const {x, y} = item.position
-    const {width, height} = item.size
+    const preview = itemPreview.previewItem(item)
+    const {x, y} = preview.position
+    const {width, height} = preview.size
     return <Movable movable={!this.focus} item={item}>
       <foreignObject
         x={x} y={y} width={width} height={height}
