@@ -25,7 +25,7 @@ function edges (rect: Rect, direction: Direction): {value: number, at: Arrangeme
   ]
 }
 
-function validSnappings(snappings: RectSnapping[]) {
+function validSnappings (snappings: RectSnapping[]) {
   const minDistance = Math.min(...snappings.map(s => Math.abs(s.selfValue - s.targetValue)))
   if (minDistance > snapDistance) {
     return []
@@ -81,7 +81,7 @@ function snapRectPos (targets: Rect[], self: Rect, pos: Vec2, direction: Directi
   return validSnappings(snappings)
 }
 
-function snapLine (snapping: RectSnapping): [Vec2, Vec2] {
+function lineForSnapping (snapping: RectSnapping): [Vec2, Vec2] {
   const {target, self} = snapping
   if (snapping.direction === 'horizontal') {
     const x = snapping.targetValue
@@ -112,8 +112,8 @@ export class Snapper {
   targets: Rect[] = []
   readonly snappings = observable<RectSnapping>([])
 
-  @computed get snapLines () {
-    return this.snappings.map(snapLine)
+  @computed get lines () {
+    return this.snappings.map(lineForSnapping)
   }
 
   @action snapRect (rect: Rect) {
