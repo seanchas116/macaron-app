@@ -1,13 +1,7 @@
 import {computed, action} from 'mobx'
 import {Action} from '../menu/Action'
 import {addAction} from '../menu/ActionManager'
-import {documentManager} from '../document/DocumentManager'
-import {Command} from '../document/Command'
-import {CompositeCommand} from '../document/CompositeCommand'
-import {ItemRemoveCommand} from '../document/ItemRemoveCommand'
-import {ItemMoveCommand} from '../document/ItemMoveCommand'
-import {Item} from '../document/Item'
-import {GroupItem} from '../document/GroupItem'
+import {documentManager, Command, CompositeCommand, ItemRemoveCommand, ItemMoveCommand, Item, GroupItem} from '../document'
 
 @addAction
 export class UngroupItemsAction extends Action {

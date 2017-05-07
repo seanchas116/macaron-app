@@ -1,6 +1,6 @@
 import {Action} from '../../menu/Action'
 import {addAction} from '../../menu/ActionManager'
-import {documentManager} from '../../document/DocumentManager'
+import {documentManager} from '../../document'
 import {FileSaveAsAction} from './FileSaveAsAction'
 import {save} from '../save'
 

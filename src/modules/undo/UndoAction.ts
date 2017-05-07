@@ -1,7 +1,7 @@
 import {computed} from 'mobx'
 import {Action} from '../menu/Action'
 import {addAction} from '../menu/ActionManager'
-import {documentManager} from '../document/DocumentManager'
+import {documentManager} from '../document'
 
 @addAction
 export class UndoAction extends Action {

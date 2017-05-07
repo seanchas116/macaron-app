@@ -3,12 +3,7 @@ import {TreeView, TreeDelegate, TreeRowInfo} from 'react-draggable-tree'
 import {observer} from 'mobx-react'
 import * as classNames from 'classnames'
 
-import {Item} from '../document/Item'
-import {GroupItem} from '../document/GroupItem'
-import {documentManager} from '../document/DocumentManager'
-import {CompositeCommand} from '../document/CompositeCommand'
-import {ItemMoveCommand} from '../document/ItemMoveCommand'
-import {ItemInsertCommand} from '../document/ItemInsertCommand'
+import {Item, GroupItem, documentManager, CompositeCommand, ItemMoveCommand, ItemInsertCommand} from '../document'
 
 const styles = require('./ItemHierarchy.css')
 require('react-draggable-tree/lib/index.css')

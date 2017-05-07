@@ -5,7 +5,7 @@ import './actions/FileSaveAsAction'
 
 import * as qs from 'querystring'
 import {open} from './open'
-import {documentManager} from '../document/DocumentManager'
+import {documentManager} from '../document'
 
 async function openFileFromHash () {
   if (location.hash) {

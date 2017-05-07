@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
-import {RectItem} from '../document/RectItem'
+import {RectItem} from '../document'
 import {Movable} from './Movable'
 import {itemPreview} from './ItemPreview'
 

@@ -1,11 +1,7 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import {Item} from '../document/Item'
-import {GroupItem} from '../document/GroupItem'
-import {RectItem} from '../document/RectItem'
-import {OvalItem} from '../document/OvalItem'
-import {TextItem} from '../document/TextItem'
+import {Item, GroupItem, RectItem, OvalItem, TextItem} from '../document'
 
 import {RectItemView} from './RectItemView'
 import {OvalItemView} from './OvalItemView'

@@ -3,8 +3,7 @@ import * as JSZip from 'jszip'
 import * as msgpack from 'msgpack-lite'
 import {action} from 'mobx'
 import {Vec2} from 'paintvec'
-import {Document} from '../document/Document'
-import {GroupItem} from '../document/GroupItem'
+import {Document, GroupItem} from '../document'
 import {DocumentData, dataToItem} from './serialize'
 
 export const open = action(async (filePath: string) => {
