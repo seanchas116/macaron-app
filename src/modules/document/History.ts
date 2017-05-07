@@ -2,8 +2,8 @@ import {observable, action, computed} from 'mobx'
 import {Command} from './Command'
 
 export class History {
-  readonly commands = observable<Command>([])
-  @observable doneCount = 0
+  private readonly commands = observable<Command>([])
+  @observable private doneCount = 0
 
   @computed get commandToUndo () {
     if (this.canUndo) {
