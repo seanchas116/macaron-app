@@ -52,6 +52,13 @@ function ColorInput (props: {value: string, onChange: (value: string) => void}) 
   return <input type='color' value={props.value} onChange={onChange} />
 }
 
+function CheckboxInput (props: {value: boolean, onChange: (value: boolean) => void}) {
+  const onChange = (e: React.FormEvent<HTMLInputElement>) => {
+    props.onChange(e.currentTarget.checked)
+  }
+  return <input type='checkbox' checked={props.value} onChange={onChange} />
+}
+
 @observer
 export class Inspector extends React.Component<{}, {}> {
   render () {
@@ -73,6 +80,14 @@ export class Inspector extends React.Component<{}, {}> {
     const onChangeStrokeWidth = (strokeWidth: number) => {
       document.history.push(new ItemChangeCommand('Change Stroke Width', item, {strokeWidth}))
     }
+    const onChangeFillEnabled = (fillEnabled: boolean) => {
+      const title = fillEnabled ? 'Enable Fill' : 'Disable Fill'
+      document.history.push(new ItemChangeCommand(title, item, {fillEnabled}))
+    }
+    const onChangeStrokeEnabled = (strokeEnabled: boolean) => {
+      const title = strokeEnabled ? 'Enable Border' : 'Disable Border'
+      document.history.push(new ItemChangeCommand(title, item, {strokeEnabled}))
+    }
 
     const {left, top, width, height} = item.rect
     return <div className={styles.root}>
@@ -87,11 +102,11 @@ export class Inspector extends React.Component<{}, {}> {
         <ValueInput value={height} onChange={height => onChangeRect('Change Height', Rect.fromWidthHeight(left, top, width, height))} />
       </div>
       <div className={styles.fill}>
-        <label><input type='checkbox' />Fill</label>
+        <label><CheckboxInput value={item.fillEnabled} onChange={onChangeFillEnabled} />Fill</label>
         <ColorInput value={item.fill} onChange={onChangeFill} />
       </div>
       <div className={styles.stroke}>
-        <label><input type='checkbox' />Border</label>
+        <label><CheckboxInput value={item.strokeEnabled} onChange={onChangeStrokeEnabled} />Border</label>
         <ColorInput value={item.stroke} onChange={onChangeStroke} />
         <ValueInput value={item.strokeWidth} onChange={onChangeStrokeWidth} />
       </div>
