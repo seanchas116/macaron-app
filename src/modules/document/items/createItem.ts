@@ -16,6 +16,6 @@ export function createItem (document: Document, props: ItemProps, id?: string) {
     case 'group':
       return new GroupItem(document, props as GroupItemProps, id)
     default:
-      return new RectItem(document, {...props, x: 0, y: 0, width: 0, height: 0}, id)
+      return new RectItem(document, {...props, type: 'rect', x: 0, y: 0, width: 0, height: 0, radius: 0}, id)
   }
 }
