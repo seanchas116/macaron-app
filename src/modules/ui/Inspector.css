@@ -7,29 +7,32 @@
 }
 .rect {
   display: grid;
-  grid-template-columns: auto auto;
-  grid-gap: 0 10px;
-  grid-template-rows: auto auto auto auto;
-  justify-content: center;
-  margin-bottom: 8px;
+  grid-template-columns: 10px auto 10px auto;
+  grid-gap: 8px 8px;
+  grid-template-rows: auto auto;
+  margin-bottom: 16px;
+  align-items: center;
+  justify-content: flex-start;
 
   & input {
     width: 64px;
   }
-}
-.rectLabel {
-  text-align: center;
-}
-.fillTitle, .strokeTitle {
-  width: 64px;
+  & label {
+    text-align: center;
+  }
 }
 .fill, .stroke {
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
+  & label {
+    width: 80px;
+  }
   & input[type="color"] {
     width: 32px;
+    margin-right: 8px;
   }
   & input[type="number"] {
-    width: 64px;
+    width: 32px;
   }
 }

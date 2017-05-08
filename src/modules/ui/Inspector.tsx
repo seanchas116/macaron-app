@@ -77,21 +77,21 @@ export class Inspector extends React.Component<{}, {}> {
     const {left, top, width, height} = item.rect
     return <div className={styles.root}>
       <div className={styles.rect} >
+        <label>X</label>
         <ValueInput value={left} onChange={left => onChangeRect('Change X', Rect.fromWidthHeight(left, top, width, height))} />
+        <label>Y</label>
         <ValueInput value={top} onChange={top => onChangeRect('Change Y', Rect.fromWidthHeight(left, top, width, height))} />
-        <div className={styles.rectLabel}>X</div>
-        <div className={styles.rectLabel}>Y</div>
+        <label>W</label>
         <ValueInput value={width} onChange={width => onChangeRect('Change Width', Rect.fromWidthHeight(left, top, width, height))} />
+        <label>H</label>
         <ValueInput value={height} onChange={height => onChangeRect('Change Height', Rect.fromWidthHeight(left, top, width, height))} />
-        <div className={styles.rectLabel}>Width</div>
-        <div className={styles.rectLabel}>Height</div>
       </div>
       <div className={styles.fill}>
-        <div className={styles.fillTitle}>Fill</div>
+        <label><input type='checkbox' />Fill</label>
         <ColorInput value={item.fill} onChange={onChangeFill} />
       </div>
       <div className={styles.stroke}>
-        <div className={styles.strokeTitle}>Stroke</div>
+        <label><input type='checkbox' />Border</label>
         <ColorInput value={item.stroke} onChange={onChangeStroke} />
         <ValueInput value={item.strokeWidth} onChange={onChangeStrokeWidth} />
       </div>
