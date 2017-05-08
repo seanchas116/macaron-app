@@ -13,5 +13,8 @@
   }
   &Current {
     background-color: #2196f3;
+    &:hover {
+      background-color: #2196f3;
+    }
   }
 }
