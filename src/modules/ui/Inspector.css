@@ -4,6 +4,10 @@
   border-left: 1px solid #D8D8D8;
   padding: 8px;
   box-sizing: border-box;
+
+  & input {
+    font-size: 12px;
+  }
 }
 .rect {
   display: grid;
