@@ -91,7 +91,7 @@ export class ItemHierarchy extends React.Component<{}, {}> {
     peekAllItems(document.rootItem)
 
     return <div className={styles.root}>
-      <ItemTreeView root={document.rootItem} selectedKeys={selectedKeys} rowHeight={32} delegate={this.delegate} />
+      <ItemTreeView root={document.rootItem} selectedKeys={selectedKeys} rowHeight={28} delegate={this.delegate} />
     </div>
   }
 }

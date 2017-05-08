@@ -1,6 +1,11 @@
+:root {
+  --default-font-family: BlinkMacSystemFont, "Segoe UI";
+}
 body {
   margin: 0;
 }
 * {
   user-select: none;
+  font-size: 13px;
+  font-family: var(--default-font-family);
 }
