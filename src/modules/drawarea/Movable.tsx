@@ -3,7 +3,7 @@ import {Vec2, Rect} from 'paintvec'
 import {action} from 'mobx'
 import {autobind} from 'core-decorators'
 import {PointerEvents} from '../../util/components/PointerEvents'
-import {Item, CompositeCommand, ItemChangeCommand, documentManager} from '../document'
+import {Item, Command, CompositeCommand, ItemChangeCommand, documentManager} from '../document'
 import {snapper} from './Snapper'
 import {itemPreview} from './ItemPreview'
 
@@ -84,7 +84,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
   }
 
   private commit () {
-    const commands: ItemChangeCommand[] = []
+    const commands: Command[] = []
     for (const item of this.items) {
       const preview = itemPreview.getItem(item)
       if (preview && !preview.position.equals(item.position)) {

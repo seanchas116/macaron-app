@@ -25,6 +25,17 @@
     text-align: center;
   }
 }
+.radius {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  & label {
+    width: 80px;
+  }
+  & input {
+    width: 32px;
+  }
+}
 .fill, .stroke {
   margin-bottom: 8px;
   display: flex;

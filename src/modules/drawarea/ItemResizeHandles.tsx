@@ -4,7 +4,7 @@ import {action, reaction, computed, observable} from 'mobx'
 import {autobind} from 'core-decorators'
 import {Rect, Vec2} from 'paintvec'
 import {ResizeHandles} from './ResizeHandles'
-import {Item, CompositeCommand, ItemChangeCommand, documentManager} from '../document'
+import {Item, Command, CompositeCommand, ItemChangeCommand, documentManager} from '../document'
 import {snapper} from './Snapper'
 import {itemPreview} from './ItemPreview'
 
@@ -118,7 +118,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
   }
 
   private commit () {
-    const commands: ItemChangeCommand[] = []
+    const commands: Command[] = []
     for (const item of this.items) {
       const preview = itemPreview.getItem(item)
       if (preview && !preview.rect.equals(item.rect)) {

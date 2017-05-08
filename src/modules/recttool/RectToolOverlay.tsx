@@ -51,7 +51,8 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
         return new RectItem(document, {
           ...baseProps,
           type: 'rect',
-          name: 'Rect'
+          name: 'Rect',
+          radius: 0
         })
     }
   }
