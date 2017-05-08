@@ -26,8 +26,10 @@ export class GroupItemsAction extends Action {
       type: 'group',
       name: 'Group',
       fill: '#000000',
+      fillEnabled: false,
       stroke: '#000000',
       strokeWidth: 1,
+      strokeEnabled: false,
       collapsed: false
     })
     const commands = [
