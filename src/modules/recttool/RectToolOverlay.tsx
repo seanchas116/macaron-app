@@ -26,8 +26,10 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
   private newItem (document: Document) {
     const baseProps = {
       fill: '#888888',
+      fillEnabled: true,
       stroke: '#000000',
       strokeWidth: 1,
+      strokeEnabled: true,
       x: 0, y: 0, width: 0, height: 0
     }
     switch (this.props.type) {

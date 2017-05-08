@@ -14,8 +14,10 @@ class Document {
     type: 'group',
     name: 'root',
     fill: '#000000',
+    fillEnabled: false,
     stroke: '#000000',
     strokeWidth: 1,
+    strokeEnabled: false,
     collapsed: false
   })
   readonly selectedItems = new ObservableSet<Item>()
