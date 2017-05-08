@@ -16,12 +16,21 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
   private originalRect: Rect|undefined
 
   render () {
+    const child = React.Children.only(this.props.children)
+    const clickableBorder = React.cloneElement(child, {
+      fill: 'none',
+      stroke: 'transparent',
+      strokeWidth: 6
+    })
     return <PointerEvents
       onPointerDown={this.onPointerDown}
       onPointerMove={this.onPointerMove}
       onPointerUp={this.onPointerUp}
       >
-      {React.Children.only(this.props.children)}
+      <g>
+        {clickableBorder}
+        {child}
+      </g>
     </PointerEvents>
   }
 
