@@ -1,10 +1,10 @@
 import {Command} from './Command'
 import {Item} from '../items/Item'
 
-export class ItemChangeCommand extends Command {
-  oldProps: Partial<Item> = {}
+export class ItemChangeCommand<T extends Item> extends Command {
+  oldProps: Partial<T> = {}
 
-  constructor (public title: string, public item: Item, public props: Partial<Item>) {
+  constructor (public title: string, public item: T, public props: Partial<T>) {
     super()
   }
 
