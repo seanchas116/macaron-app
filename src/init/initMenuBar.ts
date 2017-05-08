@@ -2,72 +2,74 @@ import {remote} from 'electron'
 import {menuBar, MenuDescription} from '../modules/menu'
 const {app} = remote
 
-const template: MenuDescription[] = [
-  {
-    label: 'File',
-    submenu: [
-      {action: 'file.new', accelerator: 'CommandOrControl+N'},
-      {action: 'file.open', accelerator: 'CommandOrControl+O'},
-      {type: 'separator'},
-      {action: 'file.save', accelerator: 'CommandOrControl+S'},
-      {action: 'file.saveAs', accelerator: 'Shift+CommandOrControl+S'}
-    ]
-  },
-  {
-    label: 'Edit',
-    submenu: [
-      {action: 'edit.undo', accelerator: 'CommandOrControl+Z'},
-      {action: 'edit.redo', accelerator: 'CommandOrControl+Y'},
-      {type: 'separator'},
-      {role: 'cut'},
-      {role: 'copy'},
-      {role: 'paste'},
-      {role: 'pasteandmatchstyle'},
-      {role: 'delete'},
-      {role: 'selectall'}
-    ]
-  },
-  {
-    label: 'Item',
-    submenu: [
-      {action: 'item.group', accelerator: 'CommandOrControl+G'},
-      {action: 'item.ungroup', accelerator: 'Shift+CommandOrControl+G'}
-    ]
-  },
-  {
-    label: 'View',
-    submenu: [
-      {role: 'reload'},
-      {role: 'forcereload' as Electron.MenuItemRole},
-      {role: 'toggledevtools'},
-      {type: 'separator'},
-      {role: 'resetzoom'},
-      {role: 'zoomin'},
-      {role: 'zoomout'},
-      {type: 'separator'},
-      {role: 'togglefullscreen'}
-    ]
-  },
-  {
-    role: 'window',
-    submenu: [
-      {role: 'minimize'},
-      {role: 'close'}
-    ]
-  },
-  {
-    role: 'help',
-    submenu: [
-      {
-        label: 'Learn More',
-        click () { require('electron').shell.openExternal('https://electron.atom.io') }
-      }
-    ]
-  }
-]
+const fileMenu: MenuDescription = {
+  label: 'File',
+  submenu: [
+    {action: 'file.new', accelerator: 'CommandOrControl+N'},
+    {action: 'file.open', accelerator: 'CommandOrControl+O'},
+    {type: 'separator'},
+    {action: 'file.save', accelerator: 'CommandOrControl+S'},
+    {action: 'file.saveAs', accelerator: 'Shift+CommandOrControl+S'}
+  ]
+}
+
+const editMenu: MenuDescription = {
+  label: 'Edit',
+  submenu: [
+    {action: 'edit.undo', accelerator: 'CommandOrControl+Z'},
+    {action: 'edit.redo', accelerator: 'CommandOrControl+Y'},
+    {type: 'separator'},
+    {role: 'cut'},
+    {role: 'copy'},
+    {role: 'paste'},
+    {role: 'pasteandmatchstyle'},
+    {role: 'delete'},
+    {role: 'selectall'}
+  ]
+}
+
+const itemMenu: MenuDescription = {
+  label: 'Item',
+  submenu: [
+    {action: 'item.group', accelerator: 'CommandOrControl+G'},
+    {action: 'item.ungroup', accelerator: 'Shift+CommandOrControl+G'}
+  ]
+}
+const viewMenu: MenuDescription = {
+  label: 'View',
+  submenu: [
+    {role: 'reload'},
+    {role: 'forcereload' as Electron.MenuItemRole},
+    {role: 'toggledevtools'},
+    {type: 'separator'},
+    {role: 'resetzoom'},
+    {role: 'zoomin'},
+    {role: 'zoomout'},
+    {type: 'separator'},
+    {role: 'togglefullscreen'}
+  ]
+}
+const windowMenu: MenuDescription = {
+  role: 'window',
+  submenu: [
+    {role: 'minimize'},
+    {role: 'close'}
+  ]
+}
+const helpMenu: MenuDescription = {
+  role: 'help',
+  submenu: [
+    {
+      label: 'Learn More',
+      click () { require('electron').shell.openExternal('https://electron.atom.io') }
+    }
+  ]
+}
+
+const template = [fileMenu, editMenu, itemMenu, viewMenu, windowMenu, helpMenu]
 
 if (process.platform === 'darwin') {
-  template.unshift({
+  const appMenu: MenuDescription = {
     label: app.getName(),
     submenu: [
       {role: 'about'},
@@ -80,11 +82,11 @@ if (process.platform === 'darwin') {
       {type: 'separator'},
       {role: 'quit'}
     ]
-  })
+  }
+  template.unshift(appMenu)
 
-  // Edit menu
-  template[2].submenu![1].accelerator = 'Shift+CommandOrControl+Z'
-  template[2].submenu!.push(
+  editMenu.submenu![1].accelerator = 'Shift+CommandOrControl+Z'
+  editMenu.submenu!.push(
     {type: 'separator'},
     {
       label: 'Speech',
@@ -95,8 +97,7 @@ if (process.platform === 'darwin') {
     }
   )
 
-  // Window menu
-  template[4].submenu = [
+  windowMenu.submenu = [
     {role: 'close'},
     {role: 'minimize'},
     {role: 'zoom'},
