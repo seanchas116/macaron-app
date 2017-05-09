@@ -18,6 +18,7 @@
     "lint": "tslint --type-check --project tsconfig.json src/**",
     "start": "npm-run-all --parallel watch app",
     "test": "npm-run-all lint build",
+    "install": "npm run build:native",
     "postinstall": "electron-rebuild"
   },
   "author": "",
