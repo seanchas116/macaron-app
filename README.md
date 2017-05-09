@@ -5,12 +5,12 @@
 ## Run App
 
 ```
-npm install
-npm start
+yarn
+yarn start
 ```
 
 ### Build native code
 
 ```
-npm run build:native
+yarn run build:native
 ```
