@@ -16,10 +16,10 @@
     "watch:main": "webpack --watch --config webpack.config.main.js",
     "watch": "npm-run-all --parallel watch:* build:native",
     "lint": "tslint --type-check --project tsconfig.json src/**",
+    "electron-rebuild" : "electron-rebuild",
     "start": "npm-run-all --parallel watch app",
     "test": "npm-run-all lint build",
-    "install": "npm run build:native",
-    "postinstall": "electron-rebuild"
+    "install": "npm run build:native electron-rebuild"
   },
   "author": "",
   "license": "MIT",
