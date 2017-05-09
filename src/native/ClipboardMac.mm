@@ -17,6 +17,11 @@ public:
     auto data = [NSData dataWithBytes:buf.data() length:buf.length()];
     [pasteboard_ setData:data forType:[NSString stringWithUTF8String:type.c_str()]];
   }
+
+  nbind::Buffer getData(const std::string& type) {
+    auto data = [pasteboard_ dataForType:[NSString stringWithUTF8String:type.c_str()]];
+    return nbind::Buffer((uint8_t *)data.bytes, data.length);
+  }
 };
 
 #include "nbind/nbind.h"
