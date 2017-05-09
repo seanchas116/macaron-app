@@ -1,5 +1,5 @@
 import {Action, addAction} from '../menu'
-import {Clipboard} from '../native'
+import {Clipboard} from '../../native'
 import {documentManager} from '../document'
 import {clipboardDataType, ClipboardData} from './ClipboardData'
 
