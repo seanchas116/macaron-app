@@ -19,10 +19,9 @@ const editMenu: MenuDescription = {
     {action: 'edit.undo', accelerator: 'CommandOrControl+Z'},
     {action: 'edit.redo', accelerator: 'CommandOrControl+Y'},
     {type: 'separator'},
-    {role: 'cut'},
-    {role: 'copy'},
-    {role: 'paste'},
-    {role: 'pasteandmatchstyle'},
+    {action: 'edit.cut', accelerator: 'CommandOrControl+X'},
+    {action: 'edit.copy', accelerator: 'CommandOrControl+C'},
+    {action: 'edit.paste', accelerator: 'CommandOrControl+V'},
     {role: 'delete'},
     {role: 'selectall'}
   ]
