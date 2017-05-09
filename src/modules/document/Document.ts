@@ -10,16 +10,7 @@ export
 class Document {
   itemForId = new Map<string, Item>()
 
-  @observable rootItem = new GroupItem(this, {
-    type: 'group',
-    name: 'root',
-    fill: '#000000',
-    fillEnabled: false,
-    stroke: '#000000',
-    strokeWidth: 1,
-    strokeEnabled: false,
-    collapsed: false
-  })
+  @observable rootItem = new GroupItem(this)
   readonly selectedItems = new ObservableSet<Item>()
   @observable scroll = new Vec2()
 

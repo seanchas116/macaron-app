@@ -3,7 +3,7 @@ import * as temp from 'temp'
 import * as JSZip from 'jszip'
 import * as msgpack from 'msgpack-lite'
 import {Document} from '../document'
-import {DocumentData, itemToData} from './serialize'
+import {DocumentData} from './DocumentData'
 
 export async function save (document: Document, filePath: string) {
   const zip = new JSZip()
@@ -24,7 +24,7 @@ export async function save (document: Document, filePath: string) {
   }
   zip.file('document.msgpack', msgpack.encode(documentData))
 
-  const pageData = msgpack.encode(itemToData(document.rootItem))
+  const pageData = msgpack.encode(document.rootItem.toData())
   zip.file(pagePath, pageData)
 
   const tempPath = temp.path()

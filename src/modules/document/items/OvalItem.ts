@@ -1,6 +1,6 @@
-import {RectLikeItem, RectLikeItemProps} from './RectLikeItem'
+import {RectLikeItem, RectLikeItemData} from './RectLikeItem'
 
-export interface OvalItemProps extends RectLikeItemProps {
+export interface OvalItemData extends RectLikeItemData {
   type: 'oval'
 }
 
@@ -9,12 +9,14 @@ class OvalItem extends RectLikeItem {
   name = 'Oval'
 
   clone () {
-    return new OvalItem(this.document, this.toProps())
+    const item = new OvalItem(this.document)
+    item.loadData(this.toData())
+    return item
   }
 
-  toProps (): OvalItemProps {
+  toData (): OvalItemData {
     return {
-      ...super.toProps(),
+      ...super.toData(),
       type: 'oval'
     }
   }

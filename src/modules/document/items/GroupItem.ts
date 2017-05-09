@@ -1,17 +1,19 @@
 import {observable, action, IArrayChange, IArraySplice} from 'mobx'
 import {Rect} from 'paintvec'
-import {Item, ItemProps} from './Item'
+import {Item, ItemData} from './Item'
 import {Document} from '../Document'
+import {itemFromData} from './itemFromData'
 
-export interface GroupItemProps extends ItemProps {
+export interface GroupItemData extends ItemData {
   type: 'group'
   collapsed: boolean
+  children: ItemData[]
 }
 
 export
 class GroupItem extends Item {
   readonly children = observable<Item>([])
-  @observable collapsed: boolean
+  @observable collapsed = false
 
   get position () {
     return this.rect.topLeft
@@ -25,9 +27,8 @@ class GroupItem extends Item {
     return Rect.union(...this.children.map(i => i.rect)) || new Rect()
   }
 
-  constructor (document: Document, props: GroupItemProps, id?: string) {
-    super(document, props, id)
-    this.collapsed = props.collapsed
+  constructor (document: Document, id?: string) {
+    super(document, id)
     this.children.observe(change => this.onChildChange(change))
   }
 
@@ -36,21 +37,28 @@ class GroupItem extends Item {
     super.dispose()
   }
 
-  clone ({shallow = false} = {}) {
-    const item = new GroupItem(this.document, this.toProps())
-    if (!shallow) {
-      const children = this.children.map(c => c.clone())
-      item.children.replace(children)
-    }
+  clone ({deep = true} = {}) {
+    const item = new GroupItem(this.document)
+    item.loadData(this.toData(), {deep, assignNewID: true})
     return item
   }
 
-  toProps (): GroupItemProps {
+  loadData (data: GroupItemData, {deep = true, assignNewID = true} = {}) {
+    super.loadData(data)
+    this.collapsed = data.collapsed
+    if (deep) {
+      this.children.replace(data.children.map(c => itemFromData(this.document, c, {assignNewID})))
+    }
+  }
+
+  toData (): GroupItemData {
     const {collapsed} = this
+    const children = this.children.map(c => c.toData())
     return {
-      ...super.toProps(),
+      ...super.toData(),
       type: 'group',
-      collapsed
+      collapsed,
+      children
     }
   }
 

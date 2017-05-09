@@ -22,16 +22,7 @@ export class GroupItemsAction extends Action {
       return
     }
 
-    const group = new GroupItem(document, {
-      type: 'group',
-      name: 'Group',
-      fill: '#000000',
-      fillEnabled: false,
-      stroke: '#000000',
-      strokeWidth: 1,
-      strokeEnabled: false,
-      collapsed: false
-    })
+    const group = new GroupItem(document)
     const commands = [
       new ItemInsertCommand('Add Group', parent, group, items[0]),
       ...items.map(item => new ItemMoveCommand(group, item, undefined))
