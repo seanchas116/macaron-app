@@ -4,7 +4,8 @@ import {Vec2, Rect} from 'paintvec'
 import {Document} from '../Document'
 import {GroupItem} from './GroupItem'
 
-export interface ItemProps {
+export interface ItemData {
+  id: string
   type: string
   name: string
   fill: string
@@ -19,12 +20,12 @@ type GroupItem_ = GroupItem
 
 export
 abstract class Item {
-  @observable name: string
-  @observable fill: string
-  @observable fillEnabled: boolean
-  @observable stroke: string
-  @observable strokeEnabled: boolean
-  @observable strokeWidth: number
+  @observable name = 'Item'
+  @observable fill = '#888888'
+  @observable fillEnabled = true
+  @observable stroke = '#000000'
+  @observable strokeEnabled = true
+  @observable strokeWidth = 1
   @observable parent: GroupItem_|undefined
   readonly id: string
 
@@ -39,14 +40,8 @@ abstract class Item {
     this.size = rect.size
   }
 
-  constructor (public readonly document: Document, props: ItemProps, id?: string) {
+  constructor (public readonly document: Document, id?: string) {
     this.id = id || uuid()
-    this.name = props.name
-    this.fill = props.fill
-    this.fillEnabled = props.fillEnabled
-    this.stroke = props.stroke
-    this.strokeWidth = props.strokeWidth
-    this.strokeEnabled = props.strokeEnabled
     document.itemForId.set(this.id, this)
   }
 
@@ -56,10 +51,20 @@ abstract class Item {
 
   abstract clone (opts?: {shallow?: boolean}): Item
 
-  toProps (): ItemProps {
-    const {name, fill, fillEnabled, stroke, strokeWidth, strokeEnabled} = this
+  loadData (data: ItemData) {
+    this.name = data.name
+    this.fill = data.fill
+    this.fillEnabled = data.fillEnabled
+    this.stroke = data.stroke
+    this.strokeWidth = data.strokeWidth
+    this.strokeEnabled = data.strokeEnabled
+  }
+
+  toData (): ItemData {
+    const {id, name, fill, fillEnabled, stroke, strokeWidth, strokeEnabled} = this
     return {
       type: 'none',
+      id,
       name,
       fill,
       fillEnabled,

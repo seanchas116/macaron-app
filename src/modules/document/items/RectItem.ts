@@ -1,8 +1,7 @@
 import {observable} from 'mobx'
-import {Document} from '../Document'
-import {RectLikeItem, RectLikeItemProps} from './RectLikeItem'
+import {RectLikeItem, RectLikeItemData} from './RectLikeItem'
 
-export interface RectItemProps extends RectLikeItemProps {
+export interface RectItemData extends RectLikeItemData {
   type: 'rect'
   radius: number
 }
@@ -12,19 +11,21 @@ class RectItem extends RectLikeItem {
   name = 'Rectangle'
   @observable radius = 0
 
-  constructor (document: Document, props: RectItemProps, id?: string) {
-    super(document, props, id)
-    this.radius = props.radius
-  }
-
   clone () {
-    return new RectItem(this.document, this.toProps())
+    const item = new RectItem(this.document)
+    item.loadData(this.toData())
+    return item
   }
 
-  toProps (): RectItemProps {
+  loadData (data: RectItemData) {
+    super.loadData(data)
+    this.radius = data.radius
+  }
+
+  toData (): RectItemData {
     const {radius} = this
     return {
-      ...super.toProps(),
+      ...super.toData(),
       type: 'rect',
       radius
     }
