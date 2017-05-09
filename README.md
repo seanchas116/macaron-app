@@ -2,21 +2,15 @@
 
 [WIP] Hackable vector design tool
 
-## Build
+## Run App
 
 ```
 npm install
-npm run watch
+npm start
 ```
 
 ### Build native code
 
 ```
 npm run build:native
-```
-
-## Run App
-
-```
-npm run app
 ```
