@@ -24,36 +24,14 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
   }
 
   private newItem (document: Document) {
-    const baseProps = {
-      fill: '#888888',
-      fillEnabled: true,
-      stroke: '#000000',
-      strokeWidth: 1,
-      strokeEnabled: true,
-      x: 0, y: 0, width: 0, height: 0
-    }
     switch (this.props.type) {
       case 'oval':
-        return new OvalItem(document, {
-          ...baseProps,
-          type: 'oval',
-          name: 'Oval'
-        })
+        return new OvalItem(document)
       case 'text':
-        return new TextItem(document, {
-          ...baseProps,
-          type: 'text',
-          name: 'Text',
-          text: 'Text'
-        })
+        return new TextItem(document)
       case 'rect':
       default:
-        return new RectItem(document, {
-          ...baseProps,
-          type: 'rect',
-          name: 'Rect',
-          radius: 0
-        })
+        return new RectItem(document)
     }
   }
 
