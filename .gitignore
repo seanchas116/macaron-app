@@ -66,3 +66,5 @@ typings/
 
 .awcache
 /dist/assets
+/build
+auto*.gypi

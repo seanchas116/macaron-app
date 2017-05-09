@@ -5,6 +5,7 @@
   "main": "dist/assets/main.js",
   "scripts": {
     "app": "electron . --development",
+    "build:native": "autogypi && node-gyp configure build",
     "build:renderer": "webpack",
     "build:main": "webpack --config webpack.config.main.js",
     "watch:renderer": "webpack-dev-server --hot",
