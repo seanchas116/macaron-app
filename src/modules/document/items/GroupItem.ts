@@ -47,7 +47,7 @@ class GroupItem extends Item {
     super.loadData(data)
     this.collapsed = data.collapsed
     if (deep) {
-      this.children.replace(data.children.map(c => itemFromData(this.document, c, assignNewID)))
+      this.children.replace(data.children.map(c => itemFromData(this.document, c, {assignNewID})))
     }
   }
 

@@ -6,7 +6,7 @@ import {GroupItem, GroupItemData} from './GroupItem'
 import {Document} from '../Document'
 
 export function itemFromData (document: Document, data: ItemData, {assignNewID = true} = {}) {
-  const id = assignNewID ? data.id : undefined
+  const id = assignNewID ? undefined : data.id
   switch (data.type) {
     case 'rect': {
       const item = new RectItem(document, id)
@@ -25,7 +25,7 @@ export function itemFromData (document: Document, data: ItemData, {assignNewID =
     }
     case 'group': {
       const item = new GroupItem(document, id)
-      item.loadData(data as GroupItemData)
+      item.loadData(data as GroupItemData, {assignNewID})
       return item
     }
     default:
