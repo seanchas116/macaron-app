@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/assets/main.js",
   "scripts": {
-    "app": "node -e 'require(`respawn`)([`electron`, `.`, `--development`]).start()'",
+    "app": "electron . --development",
     "autogypi": "autogypi",
     "node-gyp:configure": "node-gyp configure --target=1.6.8 --arch=x64 --dist-url=https://atom.io/download/atom-shell",
     "node-gyp:build": "node-gyp build --target=1.6.8 --arch=x64 --dist-url=https://atom.io/download/atom-shell",
@@ -47,7 +47,6 @@
     "npm-run-all": "^4.0.2",
     "postcss-cssnext": "^2.10.0",
     "postcss-loader": "^1.3.3",
-    "respawn": "^2.5.0",
     "style-loader": "^0.17.0",
     "tslint": "^5.2.0",
     "tslint-config-standard": "^5.0.2",
