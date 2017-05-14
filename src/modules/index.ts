@@ -1,3 +1,4 @@
+import './clipboard'
 import './document'
 import './drawarea'
 import './file'
