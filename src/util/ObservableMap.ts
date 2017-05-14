@@ -9,24 +9,25 @@ export class ObservableMap<K, T> implements Iterable<[K, T]> {
   }
 
   set (key: K, value: T) {
-    this.atom.reportChanged()
     this.map.set(key, value)
+    this.atom.reportChanged()
     return this
   }
 
   clear () {
-    this.atom.reportChanged()
     this.map.clear()
+    this.atom.reportChanged()
   }
 
   delete (key: K) {
+    const deleted = this.map.delete(key)
     this.atom.reportChanged()
-    return this.map.delete(key)
+    return deleted
   }
 
   replace (pairs: Iterable<[K, T]>) {
-    this.atom.reportChanged()
     this.map = new Map(pairs)
+    this.atom.reportChanged()
   }
 
   get (key: K) {

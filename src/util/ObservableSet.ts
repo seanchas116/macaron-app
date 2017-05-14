@@ -9,24 +9,25 @@ export class ObservableSet<T> implements Iterable<T> {
   }
 
   add (value: T) {
-    this.atom.reportChanged()
     this.set.add(value)
+    this.atom.reportChanged()
     return this
   }
 
   clear () {
-    this.atom.reportChanged()
     this.set.clear()
+    this.atom.reportChanged()
   }
 
   delete (value: T) {
+    const deleted = this.set.delete(value)
     this.atom.reportChanged()
-    return this.set.delete(value)
+    return deleted
   }
 
   replace (values: Iterable<T>) {
-    this.atom.reportChanged()
     this.set = new Set(values)
+    this.atom.reportChanged()
   }
 
   has (value: T) {
