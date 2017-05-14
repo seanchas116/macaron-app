@@ -25,6 +25,7 @@ export class PasteAction extends Action {
       }
       const commands = items.map(item => new ItemInsertCommand('Paste Item', parent, item, nextItem))
       document.history.push(new CompositeCommand('Paste Items', commands))
+      document.selectedItems.replace(items)
     }
   }
 }
