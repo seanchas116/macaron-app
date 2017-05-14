@@ -5,10 +5,9 @@
   "main": "dist/assets/main.js",
   "scripts": {
     "app": "electron . --development",
-    "autogypi": "autogypi",
     "node-gyp:configure": "node-gyp configure --target=1.6.8 --arch=x64 --dist-url=https://atom.io/download/atom-shell",
     "node-gyp:build": "node-gyp build --target=1.6.8 --arch=x64 --dist-url=https://atom.io/download/atom-shell",
-    "build:native": "npm-run-all autogypi node-gyp:configure node-gyp:build",
+    "build:native": "npm-run-all node-gyp:*",
     "build:renderer": "webpack",
     "build:main": "webpack --config webpack.config.main.js",
     "watch:renderer": "webpack-dev-server --hot",
