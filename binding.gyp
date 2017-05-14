@@ -1,8 +1,9 @@
 {
     "targets": [
         {
-            "includes": [
-                "auto.gypi"
+            "target_name": "native",
+            "include_dirs": [
+                "<!(node -e \"require('nan')\")"
             ],
             "sources": [
                 "src/native/index.cc"
@@ -16,13 +17,10 @@
                         ]
                     },
                     "sources": [
-                        "src/native/ClipboardMac.mm"
+                        "src/native/mac.mm"
                     ]
                 }]
             ]
         }
-    ],
-    "includes": [
-        "auto-top.gypi"
     ]
 }

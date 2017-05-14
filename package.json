@@ -42,6 +42,7 @@
     "electron-rebuild": "^1.5.7",
     "file-loader": "^0.11.1",
     "json-loader": "^0.5.4",
+    "nan": "^2.6.2",
     "node-gyp": "^3.6.1",
     "npm-run-all": "^4.0.2",
     "postcss-cssnext": "^2.10.0",
@@ -57,6 +58,7 @@
   },
   "dependencies": {
     "@types/classnames": "0.0.32",
+    "bindings": "^1.2.1",
     "classnames": "^2.2.5",
     "core-decorators": "^0.18.0",
     "jszip": "^3.1.3",

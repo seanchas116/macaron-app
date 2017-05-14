@@ -1,15 +1,7 @@
-const nbind = require('nbind')
-const {app} = require('electron').remote
-const {lib} = nbind.init(app.getAppPath())
-
-export interface Clipboard {
-  clear (): void
-  setData (type: string, data: Buffer): void
-  getData (type: string): Buffer|undefined
+interface Native {
+  clearClipboard (): void
+  setClipboardData (type: string, data: Buffer): void
+  getClipboardData (type: string): Buffer|undefined
 }
-
-interface ClipboardCtor {
-  new (): Clipboard
-}
-
-export const Clipboard: ClipboardCtor = lib.Clipboard
+const native: Native = require('bindings')('native.node')
+export = native
