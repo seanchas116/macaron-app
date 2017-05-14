@@ -19,6 +19,9 @@
                     "sources": [
                         "src/native/mac.mm"
                     ]
+                }],
+                ['OS=="win"', {
+                    "sources": [ "src/native/windows.cc" ]
                 }]
             ]
         }
