@@ -13,7 +13,7 @@ export class PasteAction extends Action {
     const clipboard = new Clipboard()
     const buffer: Buffer|undefined = clipboard.getData(clipboardDataType)
     clipboard.close()
-    if (!buffer) {
+    if (!buffer || buffer.length === 0) {
       return
     }
     const data: ClipboardData = JSON.parse(buffer.toString())
