@@ -1,6 +1,11 @@
 #import <Cocoa/Cocoa.h>
 #include <nan.h>
 
+namespace macaron {
+
+void OpenClipboard(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+}
+
 void ClearClipboard(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   [[NSPasteboard generalPasteboard] clearContents];
 }
@@ -38,4 +43,9 @@ void GetClipboardData(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   if (!maybeBuffer.IsEmpty()) {
     info.GetReturnValue().Set(maybeBuffer.ToLocalChecked());
   }
+}
+
+void CloseClipboard(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+}
+
 }
