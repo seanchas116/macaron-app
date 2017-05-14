@@ -1,5 +1,5 @@
 import {Action, addAction} from '../menu'
-import {setClipboardData, clearClipboard} from '../../native'
+import {Clipboard} from '../../util/Clipboard'
 import {documentManager} from '../document'
 import {clipboardDataType, ClipboardData} from './ClipboardData'
 
@@ -9,9 +9,11 @@ export class CopyAction extends Action {
   title = 'Copy'
   enabled = true
   run () {
-    clearClipboard()
     const items = [...documentManager.document.selectedItems].map(item => item.toData())
     const data: ClipboardData = {items}
-    setClipboardData(clipboardDataType, Buffer.from(JSON.stringify(data)))
+    const clipboard = new Clipboard()
+    clipboard.clear()
+    clipboard.setData(clipboardDataType, Buffer.from(JSON.stringify(data)))
+    clipboard.close()
   }
 }

@@ -1,7 +1,7 @@
 import {Action, addAction} from '../menu'
 import {itemFromData, documentManager, CompositeCommand, ItemInsertCommand} from '../document'
 import {clipboardDataType, ClipboardData} from './ClipboardData'
-import {getClipboardData} from '../../native'
+import {Clipboard} from '../../util/Clipboard'
 
 @addAction
 export class PasteAction extends Action {
@@ -10,7 +10,9 @@ export class PasteAction extends Action {
   enabled = true
   run () {
     const {document} = documentManager
-    const buffer: Buffer|undefined = getClipboardData(clipboardDataType)
+    const clipboard = new Clipboard()
+    const buffer: Buffer|undefined = clipboard.getData(clipboardDataType)
+    clipboard.close()
     if (!buffer) {
       return
     }
