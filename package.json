@@ -45,6 +45,7 @@
     "npm-run-all": "^4.0.2",
     "postcss-cssnext": "^2.10.0",
     "postcss-loader": "^2.0.5",
+    "standard": "^10.0.2",
     "style-loader": "^0.17.0",
     "tslint": "^5.2.0",
     "tslint-config-standard": "^5.0.2",
