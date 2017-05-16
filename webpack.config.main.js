@@ -1,23 +1,23 @@
-const path = require("path")
+const path = require('path')
 
 module.exports = {
-  entry: path.resolve(__dirname, "src/main.ts"),
+  entry: path.resolve(__dirname, 'src/main.ts'),
   output: {
-    path: path.resolve(__dirname, "dist/assets"),
+    path: path.resolve(__dirname, 'dist/assets'),
     filename: 'main.js',
-    libraryTarget: "commonjs",
+    libraryTarget: 'commonjs'
   },
-  target: "electron",
+  target: 'electron',
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: ['.ts', '.js']
   },
   externals: require('webpack-node-externals')(),
   module: {
     loaders: [
       {
         test: /\.ts$/,
-        use: "awesome-typescript-loader",
-      },
-    ],
-  },
+        use: 'awesome-typescript-loader'
+      }
+    ]
+  }
 }
