@@ -38,7 +38,7 @@ const viewMenu: MenuDescription = {
   label: 'View',
   submenu: [
     {role: 'reload'},
-    {role: 'forcereload' as Electron.MenuItemRole},
+    {role: 'forcereload'},
     {role: 'toggledevtools'},
     {type: 'separator'},
     {role: 'resetzoom'},

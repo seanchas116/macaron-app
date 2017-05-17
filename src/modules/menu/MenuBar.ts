@@ -3,13 +3,13 @@ const {Menu} = remote
 import {autorun, observable} from 'mobx'
 import {actionManager} from './ActionManager'
 
-export interface MenuDescription extends Electron.MenuItemOptions {
+export interface MenuDescription extends Electron.MenuItemConstructorOptions {
   action?: string
   submenu?: MenuDescription[]
 }
 
-function menuDescriptionToElectron (description: MenuDescription): Electron.MenuItemOptions {
-  const options: Electron.MenuItemOptions = {}
+function menuDescriptionToElectron (description: MenuDescription): Electron.MenuItemConstructorOptions {
+  const options: Electron.MenuItemConstructorOptions = {}
   Object.assign(options, description)
   if (description.action) {
     const action = actionManager.actions.get(description.action)

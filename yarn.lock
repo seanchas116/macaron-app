@@ -14,12 +14,6 @@
   version "0.10.32"
   resolved "https://registry.yarnpkg.com/@types/core-decorators/-/core-decorators-0.10.32.tgz#3cb635da99980176832ec420875f7efce1822b5e"
 
-"@types/electron@^1.4.37":
-  version "1.4.37"
-  resolved "https://registry.yarnpkg.com/@types/electron/-/electron-1.4.37.tgz#cfff6958f224842c1742a6e4873ed7135e5f2ff3"
-  dependencies:
-    "@types/node" "*"
-
 "@types/jszip@0.0.32":
   version "0.0.32"
   resolved "https://registry.yarnpkg.com/@types/jszip/-/jszip-0.0.32.tgz#08f717c3fa3daa3feda6fbba9e12d90783c932ab"
@@ -30,7 +24,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node@*":
+"@types/node@*", "@types/node@^7.0.18":
   version "7.0.18"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.18.tgz#cd67f27d3dc0cfb746f0bdd5e086c4c5d55be173"
 
@@ -1151,10 +1145,11 @@ electron-to-chromium@^1.2.7:
   version "1.3.10"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.10.tgz#63d62b785471f0d8dda85199d64579de8a449f08"
 
-electron@1.6.8:
-  version "1.6.8"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-1.6.8.tgz#41cbbe7272ccd93339c040f856c0d6372a4ddb07"
+electron@1.7.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-1.7.1.tgz#a93b8abd1fd6df794839d8602903aacbce74d388"
   dependencies:
+    "@types/node" "^7.0.18"
     electron-download "^3.0.1"
     extract-zip "^1.0.3"
 
