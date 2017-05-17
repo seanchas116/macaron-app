@@ -26,7 +26,6 @@
   "license": "MIT",
   "devDependencies": {
     "@types/core-decorators": "^0.10.32",
-    "@types/electron": "^1.4.37",
     "@types/jszip": "0.0.32",
     "@types/msgpack-lite": "^0.1.4",
     "@types/react": "^15.0.24",
