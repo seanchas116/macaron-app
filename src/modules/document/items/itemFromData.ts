@@ -2,6 +2,7 @@ import {ItemData} from './Item'
 import {RectItem, RectItemData} from './RectItem'
 import {OvalItem, OvalItemData} from './OvalItem'
 import {TextItem, TextItemData} from './TextItem'
+import {PathItem, PathItemData} from './PathItem'
 import {GroupItem, GroupItemData} from './GroupItem'
 import {Document} from '../Document'
 
@@ -21,6 +22,11 @@ export function itemFromData (document: Document, data: ItemData, {assignNewID =
     case 'text': {
       const item = new TextItem(document, id)
       item.loadData(data as TextItemData)
+      return item
+    }
+    case 'path': {
+      const item = new PathItem(document, id)
+      item.loadData(data as PathItemData)
       return item
     }
     case 'group': {
