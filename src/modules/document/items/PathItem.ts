@@ -2,31 +2,31 @@ import {observable} from 'mobx'
 import {Vec2} from 'paintvec'
 import {Item, ItemData} from './Item'
 
-export type EdgeType = 'symmetric' | 'asymmetric' | 'disconnected' | 'straight'
+export type PathEdgeType = 'symmetric' | 'asymmetric' | 'disconnected' | 'straight'
 
-export interface Edge {
+export interface PathEdge {
   position: Vec2
   handles: [Vec2, Vec2]
-  type: EdgeType
+  type: PathEdgeType
 }
 
-export interface EdgeData {
+export interface PathEdgeData {
   x: number
   y: number
   hx1: number
   hy1: number
   hx2: number
   hy2: number
-  type: EdgeType
+  type: PathEdgeType
 }
 
 export interface PathItemData extends ItemData {
   type: 'path'
-  edges: EdgeData[]
+  edges: PathEdgeData[]
 }
 
 export class PathItem extends Item {
-  readonly edges = observable<Edge>([])
+  readonly edges = observable<PathEdge>([])
 
   get position () {
     // TODO
