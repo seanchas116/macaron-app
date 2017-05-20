@@ -47,7 +47,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     if (this.editingInfo) {
       const {item} = this.editingInfo
       const lastEdge = item.edges[item.edges.length - 1]
-      item.edges.push(lastEdge) // for preview on pointer move
+      item.edges.push(lastEdge) // for preview on hover
     }
   })
 
@@ -74,12 +74,11 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     const parent = document.rootItem
     const children = [item, ...parent.children]
     itemPreview.addChildren(parent, children)
-    const edge: PathEdge = {
+    item.edges.push({
       position: pos,
       handles: [pos, pos],
       type: 'straight'
-    }
-    item.edges.push(edge, edge)
+    })
     this.editingInfo = {item, parent}
   }
 
