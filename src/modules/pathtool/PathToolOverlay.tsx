@@ -18,13 +18,12 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     const pos = new Vec2(event.offsetX, event.offsetY)
     if (this.editingInfo) {
       const {item} = this.editingInfo
-      item.edges.pop()
-      const newEdge: PathEdge = {
+      item.edges.pop() // pop preview edge
+      item.edges.push({
         position: pos,
         handles: [pos, pos],
         type: 'straight'
-      }
-      item.edges.push(newEdge, newEdge) // pushing twice (latter is for preview on pointer move)
+      })
     } else {
       this.startEditing(pos)
     }
@@ -45,6 +44,11 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
 
   private onPointerUp = action((event: PointerEvent) => {
     this.clicked = false
+    if (this.editingInfo) {
+      const {item} = this.editingInfo
+      const lastEdge = item.edges[item.edges.length - 1]
+      item.edges.push(lastEdge) // for preview on pointer move
+    }
   })
 
   @action onKeyDown (event: React.KeyboardEvent<HTMLElement>) {
