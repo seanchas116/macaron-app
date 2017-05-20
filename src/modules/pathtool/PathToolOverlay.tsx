@@ -33,12 +33,22 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     const pos = new Vec2(event.offsetX, event.offsetY)
     if (this.editingInfo) {
       const {item} = this.editingInfo
-      item.edges.pop()
-      item.edges.push({
-        position: pos,
-        handles: [pos, pos],
-        type: 'straight'
-      })
+      if (this.clicked) {
+        const edge = item.edges.pop()!
+        const {position} = edge
+        const handles: [Vec2, Vec2] = [position.mulScalar(2).sub(pos), pos]
+        item.edges.push({
+          position, handles, type: 'symmetric'
+        })
+      } else {
+        // preview next curve
+        item.edges.pop()
+        item.edges.push({
+          position: pos,
+          handles: [pos, pos],
+          type: 'straight'
+        })
+      }
     }
   })
 
