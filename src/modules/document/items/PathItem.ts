@@ -1,5 +1,5 @@
-import {observable} from 'mobx'
-import {Vec2} from 'paintvec'
+import {observable, computed} from 'mobx'
+import {Vec2, Rect} from 'paintvec'
 import {Item, ItemData} from './Item'
 
 export type PathEdgeType = 'symmetric' | 'asymmetric' | 'disconnected' | 'straight'
@@ -27,14 +27,28 @@ export interface PathItemData extends ItemData {
 
 export class PathItem extends Item {
   readonly edges = observable<PathEdge>([])
+  @observable offset = new Vec2()
 
   get position () {
-    // TODO
-    return new Vec2()
+    return this.boundingRect.topLeft.add(this.offset)
   }
+  set position (pos: Vec2) {
+    this.offset = pos.sub(this.boundingRect.topLeft)
+  }
+
   get size () {
-    // TODO
-    return new Vec2()
+    return this.boundingRect.size
+  }
+
+  @computed get boundingRect () {
+    // TODO: improve algorithm
+    const points = this.edges.map(e => e.position)
+    const xs = points.map(p => p.x)
+    const ys = points.map(p => p.y)
+    return new Rect(
+      new Vec2(Math.min(...xs), Math.min(...ys)),
+      new Vec2(Math.max(...xs), Math.max(...ys))
+    )
   }
 
   clone () {
@@ -77,17 +91,18 @@ export class PathItem extends Item {
   }
 
   toSVGPathData () {
+    const {x: dx, y: dy} = this.offset
     const {edges} = this
-    const commands = [`M ${edges[0].position.x} ${edges[0].position.y}`]
+    const commands = [`M ${edges[0].position.x + dx} ${edges[0].position.y + dy}`]
     for (let i = 1; i < edges.length; ++i) {
       const edge = edges[i]
       const {x, y} = edge.position
       if (edge.type === 'straight') {
-        commands.push(`L ${x} ${y}`)
+        commands.push(`L ${x + dx} ${y + dy}`)
       } else {
         const {x: x1, y: y1} = edges[i - 1].handles[1]
         const {x: x2, y: y2} = edges[i].handles[0]
-        commands.push(`C ${x1} ${y1}, ${x2} ${y2}, ${x} ${y}`)
+        commands.push(`C ${x1 + dx} ${y1 + dy}, ${x2 + dx} ${y2 + dy}, ${x + dx} ${y + dy}`)
       }
     }
     return commands.join(' ')
