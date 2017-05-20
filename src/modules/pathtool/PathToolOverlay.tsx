@@ -7,12 +7,14 @@ import {PointerEvents} from '../../util/components/PointerEvents'
 
 export
 class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
+  clicked = false
   editingInfo: {
     parent: GroupItem
     item: PathItem
   } | undefined
 
   private onPointerDown = action((event: PointerEvent) => {
+    this.clicked = true
     const pos = new Vec2(event.offsetX, event.offsetY)
     if (this.editingInfo) {
       const {item} = this.editingInfo
@@ -42,7 +44,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
   })
 
   private onPointerUp = action((event: PointerEvent) => {
-    // TODO
+    this.clicked = false
   })
 
   @action onKeyDown (event: React.KeyboardEvent<HTMLElement>) {
