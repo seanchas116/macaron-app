@@ -96,12 +96,13 @@ export class PathItem extends Item {
     const commands = [`M ${edges[0].position.x + dx} ${edges[0].position.y + dy}`]
     for (let i = 1; i < edges.length; ++i) {
       const edge = edges[i]
+      const prevEdge = edges[i - 1]
       const {x, y} = edge.position
-      if (edge.type === 'straight') {
+      if (edge.type === 'straight' && prevEdge.type === 'straight') {
         commands.push(`L ${x + dx} ${y + dy}`)
       } else {
-        const {x: x1, y: y1} = edges[i - 1].handles[1]
-        const {x: x2, y: y2} = edges[i].handles[0]
+        const {x: x1, y: y1} = prevEdge.handles[1]
+        const {x: x2, y: y2} = edge.handles[0]
         commands.push(`C ${x1 + dx} ${y1 + dy}, ${x2 + dx} ${y2 + dy}, ${x + dx} ${y + dy}`)
       }
     }
