@@ -46,7 +46,7 @@ export class PathItem extends Item {
   loadData (data: PathItemData) {
     super.loadData(data)
     this.edges.replace(data.edges.map(e => {
-      const edge: Edge = {
+      const edge: PathEdge = {
         position: new Vec2(e.x, e.y),
         handles: [new Vec2(e.hx1, e.hy1), new Vec2(e.hx2, e.hy2)],
         type: e.type
@@ -57,7 +57,7 @@ export class PathItem extends Item {
 
   toData (): PathItemData {
     const edges = this.edges.map(e => {
-      const data: EdgeData = {
+      const data: PathEdgeData = {
         x: e.position.x,
         y: e.position.y,
         hx1: e.handles[0].x,
