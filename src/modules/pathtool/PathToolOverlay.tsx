@@ -45,7 +45,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     // TODO
   })
 
-  @action onKeyDown (event: KeyboardEvent) {
+  @action onKeyDown (event: React.KeyboardEvent<HTMLElement>) {
     if (event.key === 'Enter') {
       this.endEditing()
     }
