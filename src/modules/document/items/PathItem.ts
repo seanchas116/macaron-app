@@ -75,4 +75,21 @@ export class PathItem extends Item {
       edges
     }
   }
+
+  toSVGPathData () {
+    const {edges} = this
+    const commands = [`M ${edges[0].position.x} ${edges[0].position.y}`]
+    for (let i = 1; i < edges.length; ++i) {
+      const edge = edges[i]
+      const {x, y} = edge.position
+      if (edge.type === 'straight') {
+        commands.push(`L ${x} ${y}`)
+      } else {
+        const {x: x1, y: y1} = edges[i - 1].handles[1]
+        const {x: x2, y: y2} = edges[i].handles[0]
+        commands.push(`C ${x1} ${y1}, ${x2} ${y2}, ${x} ${y}`)
+      }
+    }
+    return commands.join(' ')
+  }
 }
