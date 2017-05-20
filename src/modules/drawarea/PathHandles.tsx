@@ -13,9 +13,11 @@ export class PathHandles extends React.Component<{item: PathItem}, {}> {
     for (const edge of preview.edges) {
       const {position: p, handles: [h1, h2]} = edge
       handles.push(
-        <circle cx={p.x} cy={p.y} rx={3} ry={3} fill='white' stroke='grey' />,
-        <circle cx={h1.x} cy={h1.y} rx={2} ry={2} fill='white' stroke='grey' />,
-        <circle cx={h2.x} cy={h2.y} rx={2} ry={2} fill='white' stroke='grey' />
+        <line x1={p.x} y1={p.y} x2={h1.x} y2={h1.y} stroke='lightgray' />,
+        <line x1={p.x} y1={p.y} x2={h2.x} y2={h2.y} stroke='lightgray' />,
+        <circle cx={p.x} cy={p.y} r={3} fill='white' stroke='grey' />,
+        <circle cx={h1.x} cy={h1.y} r={2} fill='white' stroke='grey' />,
+        <circle cx={h2.x} cy={h2.y} r={2} fill='white' stroke='grey' />
       )
     }
 

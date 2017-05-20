@@ -1,8 +1,8 @@
 import * as React from 'react'
 import {action} from 'mobx'
 import {Vec2} from 'paintvec'
-import {GroupItem, PathItem, PathEdge, documentManager, ItemInsertCommand} from '../document'
-import {itemPreview} from '../drawarea'
+import {GroupItem, PathItem, documentManager, ItemInsertCommand} from '../document'
+import {itemPreview, drawAreaMode} from '../drawarea'
 import {PointerEvents} from '../../util/components/PointerEvents'
 
 export
@@ -90,6 +90,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
       type: 'straight'
     })
     this.editingInfo = {item, parent}
+    drawAreaMode.pathItemToEdit = item
   }
 
   private endEditing () {
@@ -107,5 +108,6 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     const {document} = documentManager
     document.history.push(new ItemInsertCommand('Add Item', parent, item, parent.childAt(0)))
     document.selectedItems.replace([item])
+    drawAreaMode.pathItemToEdit = undefined
   }
 }
