@@ -81,6 +81,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
   private startEditing (pos: Vec2) {
     const {document} = documentManager
     const item = new PathItem(document)
+    item.fillEnabled = false
     const parent = document.rootItem
     const children = [item, ...parent.children]
     itemPreview.addChildren(parent, children)
