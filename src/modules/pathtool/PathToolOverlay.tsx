@@ -18,7 +18,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     const pos = new Vec2(event.offsetX, event.offsetY)
     if (this.editingInfo) {
       const {item} = this.editingInfo
-      item.nodes.pop() // pop preview edge
+      item.nodes.pop() // pop preview node
       item.nodes.push({
         position: pos,
         handles: [pos, pos],
@@ -106,6 +106,9 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
       return
     }
     const {parent, item} = this.editingInfo
+    if (!this.clicked) {
+      item.nodes.pop() // remove preview node
+    }
     const {document} = documentManager
     document.history.push(new ItemInsertCommand('Add Item', parent, item, parent.childAt(0)))
     document.selectedItems.replace([item])
