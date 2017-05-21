@@ -2,7 +2,7 @@ import * as React from 'react'
 import {action} from 'mobx'
 import {Vec2} from 'paintvec'
 import {GroupItem, PathItem, documentManager, ItemInsertCommand} from '../document'
-import {itemPreview, drawAreaMode} from '../drawarea'
+import {itemPreview, drawAreaMode, toolManager} from '../drawarea'
 import {PointerEvents} from '../../util/components/PointerEvents'
 
 export
@@ -62,7 +62,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
   })
 
   @action onKeyDown (event: React.KeyboardEvent<HTMLElement>) {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' || event.key === 'Escape') {
       this.endEditing()
     }
   }
@@ -113,5 +113,6 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     document.history.push(new ItemInsertCommand('Add Item', parent, item, parent.childAt(0)))
     document.selectedItems.replace([item])
     drawAreaMode.pathItemToEdit = undefined
+    toolManager.current = undefined
   }
 }
