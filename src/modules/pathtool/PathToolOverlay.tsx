@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {action} from 'mobx'
 import {Vec2} from 'paintvec'
-import {GroupItem, PathItem, documentManager, ItemInsertCommand} from '../document'
+import {GroupItem, PathNode, PathItem, documentManager, ItemInsertCommand} from '../document'
 import {itemPreview, drawAreaMode, toolManager} from '../drawarea'
 import {PointerEvents} from '../../util/components/PointerEvents'
 
@@ -11,6 +11,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
   editingInfo: {
     parent: GroupItem
     item: PathItem
+    hasPreviewNode: boolean
   } | undefined
 
   private onPointerDown = action((event: PointerEvent) => {
@@ -18,7 +19,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     const pos = new Vec2(event.offsetX, event.offsetY)
     if (this.editingInfo) {
       const {item} = this.editingInfo
-      item.nodes.pop() // pop preview node
+      this.removePreviewMode()
       item.nodes.push({
         position: pos,
         handles: [pos, pos],
@@ -34,6 +35,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     if (this.editingInfo) {
       const {item} = this.editingInfo
       if (this.clicked) {
+        this.removePreviewMode()
         const node = item.nodes.pop()!
         const {position} = node
         const handles: [Vec2, Vec2] = [position.mulScalar(2).sub(pos), pos]
@@ -41,9 +43,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
           position, handles, type: 'symmetric'
         })
       } else {
-        // preview next curve
-        item.nodes.pop()
-        item.nodes.push({
+        this.setPreviewNode({
           position: pos,
           handles: [pos, pos],
           type: 'straight'
@@ -57,7 +57,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     if (this.editingInfo) {
       const {item} = this.editingInfo
       const lastEdge = item.nodes[item.nodes.length - 1]
-      item.nodes.push(lastEdge) // for preview on hover
+      this.setPreviewNode(lastEdge)
     }
   })
 
@@ -90,7 +90,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
       handles: [pos, pos],
       type: 'straight'
     })
-    this.editingInfo = {item, parent}
+    this.editingInfo = {item, parent, hasPreviewNode: false}
     drawAreaMode.pathItemToEdit = item
   }
 
@@ -101,14 +101,33 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     }
   }
 
+  private setPreviewNode (node: PathNode) {
+    if (!this.editingInfo) {
+      return
+    }
+    if (this.editingInfo.hasPreviewNode) {
+      this.editingInfo.item.nodes.pop()
+    }
+    this.editingInfo.item.nodes.push(node)
+    this.editingInfo.hasPreviewNode = true
+  }
+
+  private removePreviewMode () {
+    if (!this.editingInfo) {
+      return
+    }
+    if (this.editingInfo.hasPreviewNode) {
+      this.editingInfo.item.nodes.pop()
+    }
+    this.editingInfo.hasPreviewNode = false
+  }
+
   @action private commit () {
     if (!this.editingInfo) {
       return
     }
     const {parent, item} = this.editingInfo
-    if (!this.clicked) {
-      item.nodes.pop() // remove preview node
-    }
+    this.removePreviewMode()
     const {document} = documentManager
     document.history.push(new ItemInsertCommand('Add Item', parent, item, parent.childAt(0)))
     document.selectedItems.replace([item])
