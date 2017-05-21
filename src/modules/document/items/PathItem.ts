@@ -14,15 +14,18 @@ export interface PathNode {
 export interface PathNodeData {
   x: number
   y: number
-  hx1: number
-  hy1: number
-  hx2: number
-  hy2: number
+  handle1X: number
+  handle1Y: number
+  handle2X: number
+  handle2Y: number
   type: PathNodeType
 }
 
 export interface PathItemData extends ItemData {
   type: 'path'
+  offsetX: number
+  offsetY: number
+  closed: boolean
   nodes: PathNodeData[]
 }
 
@@ -81,10 +84,12 @@ export class PathItem extends Item {
 
   loadData (data: PathItemData) {
     super.loadData(data)
+    this.offset = new Vec2(data.offsetX, data.offsetY)
+    this.closed = data.closed
     this.nodes.replace(data.nodes.map(e => {
       const node: PathNode = {
         position: new Vec2(e.x, e.y),
-        handles: [new Vec2(e.hx1, e.hy1), new Vec2(e.hx2, e.hy2)],
+        handles: [new Vec2(e.handle1X, e.handle1Y), new Vec2(e.handle2X, e.handle2Y)],
         type: e.type
       }
       return node
@@ -96,18 +101,22 @@ export class PathItem extends Item {
       const data: PathNodeData = {
         x: e.position.x,
         y: e.position.y,
-        hx1: e.handles[0].x,
-        hy1: e.handles[0].y,
-        hx2: e.handles[1].x,
-        hy2: e.handles[1].y,
+        handle1X: e.handles[0].x,
+        handle1Y: e.handles[0].y,
+        handle2X: e.handles[1].x,
+        handle2Y: e.handles[1].y,
         type: e.type
       }
       return data
     })
+    const {closed} = this
 
     return {
       ...super.toData(),
       type: 'path',
+      offsetX: this.offset.x,
+      offsetY: this.offset.y,
+      closed,
       nodes
     }
   }
