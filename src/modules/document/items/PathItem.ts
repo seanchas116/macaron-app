@@ -29,6 +29,7 @@ export interface PathItemData extends ItemData {
 export class PathItem extends Item {
   readonly nodes = observable<PathNode>([])
   @observable offset = new Vec2()
+  @observable closed = false
 
   get position () {
     return this.boundingRect.topLeft.add(this.offset)
@@ -45,9 +46,7 @@ export class PathItem extends Item {
     const {nodes} = this
     let result: Rect|undefined
 
-    for (let i = 1; i < nodes.length; ++i) {
-      const node = nodes[i]
-      const prevNode = nodes[i - 1]
+    const addCurve = (prevNode: PathNode, node: PathNode) => {
       const curve = new Bezier(
         prevNode.position.x, prevNode.position.y,
         prevNode.handles[1].x, prevNode.handles[1].y,
@@ -60,6 +59,13 @@ export class PathItem extends Item {
         new Vec2(bbox.x.max, bbox.y.max)
       )
       result = result ? result.union(rect) : rect
+    }
+
+    for (let i = 1; i < nodes.length; ++i) {
+      addCurve(nodes[i - 1], nodes[i])
+    }
+    if (this.closed && 2 <= this.nodes.length) {
+      addCurve(nodes[nodes.length - 1], nodes[0])
     }
     if (result && this.strokeEnabled) {
       result = result.inflate(this.strokeWidth * 0.5)
@@ -109,10 +115,10 @@ export class PathItem extends Item {
   toSVGPathData () {
     const {x: dx, y: dy} = this.offset
     const {nodes} = this
-    const commands = [`M ${nodes[0].position.x + dx} ${nodes[0].position.y + dy}`]
-    for (let i = 1; i < nodes.length; ++i) {
-      const node = nodes[i]
-      const prevNode = nodes[i - 1]
+    const start = nodes[0].position
+    const commands = [`M ${start.x + dx} ${start.y + dy}`]
+
+    const addCurve = (prevNode: PathNode, node: PathNode) => {
       const {x, y} = node.position
       if (node.type === 'straight' && prevNode.type === 'straight') {
         commands.push(`L ${x + dx} ${y + dy}`)
@@ -121,6 +127,13 @@ export class PathItem extends Item {
         const {x: x2, y: y2} = node.handles[0]
         commands.push(`C ${x1 + dx} ${y1 + dy}, ${x2 + dx} ${y2 + dy}, ${x + dx} ${y + dy}`)
       }
+    }
+
+    for (let i = 1; i < nodes.length; ++i) {
+      addCurve(nodes[i - 1], nodes[i])
+    }
+    if (this.closed && 2 <= nodes.length) {
+      addCurve(nodes[nodes.length - 1], nodes[0])
     }
     return commands.join(' ')
   }
