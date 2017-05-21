@@ -18,8 +18,8 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     const pos = new Vec2(event.offsetX, event.offsetY)
     if (this.editingInfo) {
       const {item} = this.editingInfo
-      item.edges.pop() // pop preview edge
-      item.edges.push({
+      item.nodes.pop() // pop preview edge
+      item.nodes.push({
         position: pos,
         handles: [pos, pos],
         type: 'straight'
@@ -34,16 +34,16 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     if (this.editingInfo) {
       const {item} = this.editingInfo
       if (this.clicked) {
-        const edge = item.edges.pop()!
-        const {position} = edge
+        const node = item.nodes.pop()!
+        const {position} = node
         const handles: [Vec2, Vec2] = [position.mulScalar(2).sub(pos), pos]
-        item.edges.push({
+        item.nodes.push({
           position, handles, type: 'symmetric'
         })
       } else {
         // preview next curve
-        item.edges.pop()
-        item.edges.push({
+        item.nodes.pop()
+        item.nodes.push({
           position: pos,
           handles: [pos, pos],
           type: 'straight'
@@ -56,8 +56,8 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     this.clicked = false
     if (this.editingInfo) {
       const {item} = this.editingInfo
-      const lastEdge = item.edges[item.edges.length - 1]
-      item.edges.push(lastEdge) // for preview on hover
+      const lastEdge = item.nodes[item.nodes.length - 1]
+      item.nodes.push(lastEdge) // for preview on hover
     }
   })
 
@@ -85,7 +85,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     const parent = document.rootItem
     const children = [item, ...parent.children]
     itemPreview.addChildren(parent, children)
-    item.edges.push({
+    item.nodes.push({
       position: pos,
       handles: [pos, pos],
       type: 'straight'

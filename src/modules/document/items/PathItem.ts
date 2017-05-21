@@ -2,31 +2,31 @@ import {observable, computed} from 'mobx'
 import {Vec2, Rect} from 'paintvec'
 import {Item, ItemData} from './Item'
 
-export type PathEdgeType = 'symmetric' | 'asymmetric' | 'disconnected' | 'straight'
+export type PathNodeType = 'symmetric' | 'asymmetric' | 'disconnected' | 'straight'
 
-export interface PathEdge {
+export interface PathNode {
   position: Vec2
   handles: [Vec2, Vec2]
-  type: PathEdgeType
+  type: PathNodeType
 }
 
-export interface PathEdgeData {
+export interface PathNodeData {
   x: number
   y: number
   hx1: number
   hy1: number
   hx2: number
   hy2: number
-  type: PathEdgeType
+  type: PathNodeType
 }
 
 export interface PathItemData extends ItemData {
   type: 'path'
-  edges: PathEdgeData[]
+  nodes: PathNodeData[]
 }
 
 export class PathItem extends Item {
-  readonly edges = observable<PathEdge>([])
+  readonly nodes = observable<PathNode>([])
   @observable offset = new Vec2()
 
   get position () {
@@ -42,7 +42,7 @@ export class PathItem extends Item {
 
   @computed get boundingRect () {
     // TODO: improve algorithm
-    const points = this.edges.map(e => e.position)
+    const points = this.nodes.map(e => e.position)
     const xs = points.map(p => p.x)
     const ys = points.map(p => p.y)
     return new Rect(
@@ -59,19 +59,19 @@ export class PathItem extends Item {
 
   loadData (data: PathItemData) {
     super.loadData(data)
-    this.edges.replace(data.edges.map(e => {
-      const edge: PathEdge = {
+    this.nodes.replace(data.nodes.map(e => {
+      const node: PathNode = {
         position: new Vec2(e.x, e.y),
         handles: [new Vec2(e.hx1, e.hy1), new Vec2(e.hx2, e.hy2)],
         type: e.type
       }
-      return edge
+      return node
     }))
   }
 
   toData (): PathItemData {
-    const edges = this.edges.map(e => {
-      const data: PathEdgeData = {
+    const nodes = this.nodes.map(e => {
+      const data: PathNodeData = {
         x: e.position.x,
         y: e.position.y,
         hx1: e.handles[0].x,
@@ -86,23 +86,23 @@ export class PathItem extends Item {
     return {
       ...super.toData(),
       type: 'path',
-      edges
+      nodes
     }
   }
 
   toSVGPathData () {
     const {x: dx, y: dy} = this.offset
-    const {edges} = this
-    const commands = [`M ${edges[0].position.x + dx} ${edges[0].position.y + dy}`]
-    for (let i = 1; i < edges.length; ++i) {
-      const edge = edges[i]
-      const prevEdge = edges[i - 1]
-      const {x, y} = edge.position
-      if (edge.type === 'straight' && prevEdge.type === 'straight') {
+    const {nodes} = this
+    const commands = [`M ${nodes[0].position.x + dx} ${nodes[0].position.y + dy}`]
+    for (let i = 1; i < nodes.length; ++i) {
+      const node = nodes[i]
+      const prevNode = nodes[i - 1]
+      const {x, y} = node.position
+      if (node.type === 'straight' && prevNode.type === 'straight') {
         commands.push(`L ${x + dx} ${y + dy}`)
       } else {
-        const {x: x1, y: y1} = prevEdge.handles[1]
-        const {x: x2, y: y2} = edge.handles[0]
+        const {x: x1, y: y1} = prevNode.handles[1]
+        const {x: x2, y: y2} = node.handles[0]
         commands.push(`C ${x1 + dx} ${y1 + dy}, ${x2 + dx} ${y2 + dy}, ${x + dx} ${y + dy}`)
       }
     }

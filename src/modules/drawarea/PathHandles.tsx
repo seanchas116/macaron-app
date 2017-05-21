@@ -1,10 +1,10 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
-import {PathItem, PathEdge} from '../document'
+import {PathItem, PathNode} from '../document'
 import {itemPreview} from './ItemPreview'
 
-const PathHandle = (props: {edge: PathEdge}) => {
-  const {position: p, handles: [h1, h2], type} = props.edge
+const PathHandle = (props: {node: PathNode}) => {
+  const {position: p, handles: [h1, h2], type} = props.node
   if (type === 'straight') {
     return <g>
       <circle cx={p.x} cy={p.y} r={3} fill='white' stroke='grey' />
@@ -27,7 +27,7 @@ export class PathHandles extends React.Component<{item: PathItem}, {}> {
     const preview = itemPreview.previewItem(item)
 
     return <g>
-      {preview.edges.map((e, i) => <PathHandle edge={e} key={i} />)}
+      {preview.nodes.map((n, i) => <PathHandle node={n} key={i} />)}
     </g>
   }
 }
