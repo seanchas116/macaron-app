@@ -1,5 +1,6 @@
 import {observable, computed} from 'mobx'
 import {Vec2, Rect} from 'paintvec'
+const Bezier = require('bezier-js')
 import {Item, ItemData} from './Item'
 
 export type PathNodeType = 'symmetric' | 'asymmetric' | 'disconnected' | 'straight'
@@ -41,14 +42,29 @@ export class PathItem extends Item {
   }
 
   @computed get boundingRect () {
-    // TODO: improve algorithm
-    const points = this.nodes.map(e => e.position)
-    const xs = points.map(p => p.x)
-    const ys = points.map(p => p.y)
-    return new Rect(
-      new Vec2(Math.min(...xs), Math.min(...ys)),
-      new Vec2(Math.max(...xs), Math.max(...ys))
-    )
+    const {nodes} = this
+    let result: Rect|undefined
+
+    for (let i = 1; i < nodes.length; ++i) {
+      const node = nodes[i]
+      const prevNode = nodes[i - 1]
+      const curve = new Bezier(
+        prevNode.position.x, prevNode.position.y,
+        prevNode.handles[1].x, prevNode.handles[1].y,
+        node.handles[0].x, node.handles[0].y,
+        node.position.x, node.position.y
+      )
+      const bbox = curve.bbox()
+      const rect = new Rect(
+        new Vec2(bbox.x.min, bbox.y.min),
+        new Vec2(bbox.x.max, bbox.y.max)
+      )
+      result = result ? result.union(rect) : rect
+    }
+    if (result && this.strokeEnabled) {
+      result = result.inflate(this.strokeWidth * 0.5)
+    }
+    return result || new Rect()
   }
 
   clone () {

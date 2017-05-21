@@ -25,7 +25,6 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@types/bezier-js": "0.0.6",
     "@types/core-decorators": "^0.10.32",
     "@types/jszip": "0.0.32",
     "@types/msgpack-lite": "^0.1.4",
