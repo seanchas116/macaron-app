@@ -19,9 +19,9 @@ function edges (rect: Rect, direction: Direction): {value: number, at: Arrangeme
   const end = direction === 'horizontal' ? rect.right : rect.bottom
   const center = (begin + end) / 2
   return [
-    {value: begin, at: 'begin'},
-    {value: center, at: 'center'},
-    {value: end, at: 'end'}
+    {value: Math.round(begin), at: 'begin'},
+    {value: Math.round(center), at: 'center'},
+    {value: Math.round(end), at: 'end'}
   ]
 }
 
