@@ -20,7 +20,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
 
   private onPointerDown = action((event: PointerEvent) => {
     this.clicked = true
-    const pos = new Vec2(event.offsetX, event.offsetY)
+    const pos = this.eventPos(event)
     if (this.editingInfo) {
       const {item} = this.editingInfo
       if (pos.sub(item.nodes[0].position).length() < snapDistance) {
@@ -36,7 +36,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
   })
 
   private onPointerMove = action((event: PointerEvent) => {
-    const pos = new Vec2(event.offsetX, event.offsetY)
+    const pos = this.eventPos(event)
     if (!this.editingInfo) {
       return
     }
@@ -94,6 +94,11 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     >
       <rect width={width} height={height} fill='transparent' />
     </PointerEvents>
+  }
+
+  private eventPos (event: PointerEvent) {
+    const pos = new Vec2(event.offsetX, event.offsetY)
+    return pos.add(documentManager.document.scroll)
   }
 
   private startEditing (pos: Vec2) {
