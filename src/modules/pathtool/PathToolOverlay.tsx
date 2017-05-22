@@ -40,52 +40,54 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
 
   private onPointerMove = action((event: PointerEvent) => {
     const pos = new Vec2(event.offsetX, event.offsetY)
-    if (this.editingInfo) {
-      const {item} = this.editingInfo
-      if (this.clicked) {
-        this.removePreviewNode()
-        let node: PathNode
-        if (this.editingInfo.closingNode) {
-          node = item.nodes[0]
-        } else {
-          node = item.nodes.pop()!
-        }
-        const {position} = node
-        const handles: [Vec2, Vec2] = [position.mulScalar(2).sub(pos), pos]
-        const newNode: PathNode = {
-          position, handles, type: 'symmetric'
-        }
-        if (this.editingInfo.closingNode) {
-          item.nodes[0] = newNode
-        } else {
-          item.nodes.push(newNode)
-        }
+    if (!this.editingInfo) {
+      return
+    }
+    const {item} = this.editingInfo
+    if (this.clicked) {
+      this.removePreviewNode()
+      let node: PathNode
+      if (this.editingInfo.closingNode) {
+        node = item.nodes[0]
       } else {
-        if (pos.sub(item.nodes[0].position).length() < closeSnapDistance) {
-          this.removePreviewNode()
-          item.closed = true
-        } else {
-          this.setPreviewNode({
-            position: pos,
-            handles: [pos, pos],
-            type: 'straight'
-          })
-          item.closed = false
-        }
+        node = item.nodes.pop()!
+      }
+      const {position} = node
+      const handles: [Vec2, Vec2] = [position.mulScalar(2).sub(pos), pos]
+      const newNode: PathNode = {
+        position, handles, type: 'symmetric'
+      }
+      if (this.editingInfo.closingNode) {
+        item.nodes[0] = newNode
+      } else {
+        item.nodes.push(newNode)
+      }
+    } else {
+      if (pos.sub(item.nodes[0].position).length() < closeSnapDistance) {
+        this.removePreviewNode()
+        item.closed = true
+      } else {
+        this.setPreviewNode({
+          position: pos,
+          handles: [pos, pos],
+          type: 'straight'
+        })
+        item.closed = false
       }
     }
   })
 
   private onPointerUp = action((event: PointerEvent) => {
     this.clicked = false
-    if (this.editingInfo) {
-      const {item} = this.editingInfo
-      if (this.editingInfo.closingNode) {
-        this.endEditing()
-      } else {
-        const lastEdge = item.nodes[item.nodes.length - 1]
-        this.setPreviewNode(lastEdge)
-      }
+    if (!this.editingInfo) {
+      return
+    }
+    const {item} = this.editingInfo
+    if (this.editingInfo.closingNode) {
+      this.endEditing()
+    } else {
+      const lastEdge = item.nodes[item.nodes.length - 1]
+      this.setPreviewNode(lastEdge)
     }
   })
 
