@@ -13,7 +13,8 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
   editingInfo: {
     parent: GroupItem
     item: PathItem
-    hasPreviewNode: boolean
+    hasPreviewNode?: boolean
+    closingNode?: boolean
   } | undefined
 
   private onPointerDown = action((event: PointerEvent) => {
@@ -22,8 +23,8 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     if (this.editingInfo) {
       const {item} = this.editingInfo
       if (pos.sub(item.nodes[0].position).length() < closeSnapDistance) {
+        this.editingInfo.closingNode = true
         item.closed = true
-        this.endEditing()
       } else {
         this.removePreviewNode()
         item.nodes.push({
@@ -43,12 +44,22 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
       const {item} = this.editingInfo
       if (this.clicked) {
         this.removePreviewNode()
-        const node = item.nodes.pop()!
+        let node: PathNode
+        if (this.editingInfo.closingNode) {
+          node = item.nodes[0]
+        } else {
+          node = item.nodes.pop()!
+        }
         const {position} = node
         const handles: [Vec2, Vec2] = [position.mulScalar(2).sub(pos), pos]
-        item.nodes.push({
+        const newNode: PathNode = {
           position, handles, type: 'symmetric'
-        })
+        }
+        if (this.editingInfo.closingNode) {
+          item.nodes[0] = newNode
+        } else {
+          item.nodes.push(newNode)
+        }
       } else {
         if (pos.sub(item.nodes[0].position).length() < closeSnapDistance) {
           this.removePreviewNode()
@@ -69,8 +80,12 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     this.clicked = false
     if (this.editingInfo) {
       const {item} = this.editingInfo
-      const lastEdge = item.nodes[item.nodes.length - 1]
-      this.setPreviewNode(lastEdge)
+      if (this.editingInfo.closingNode) {
+        this.endEditing()
+      } else {
+        const lastEdge = item.nodes[item.nodes.length - 1]
+        this.setPreviewNode(lastEdge)
+      }
     }
   })
 
@@ -103,7 +118,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
       handles: [pos, pos],
       type: 'straight'
     })
-    this.editingInfo = {item, parent, hasPreviewNode: false}
+    this.editingInfo = {item, parent}
     drawAreaMode.pathItemToEdit = item
   }
 
