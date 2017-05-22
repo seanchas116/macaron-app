@@ -15,7 +15,7 @@ export class PathItemView extends React.Component<{item: PathItem}, {}> {
 
     return <Movable item={item} key={item.id}>
       <path
-        d={preview.toSVGPathData()}
+        d={preview.svgPathData}
         fill={fill}
         stroke={stroke}
         strokeWidth={strokeWidth}

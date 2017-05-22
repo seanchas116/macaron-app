@@ -28,11 +28,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
         item.closed = true
       } else {
         this.removePreviewNode()
-        item.nodes.push({
-          position: pos,
-          handles: [pos, pos],
-          type: 'straight'
-        })
+        item.nodes.push(new PathNode(pos, pos, pos, 'straight'))
       }
     } else {
       this.startEditing(pos)
@@ -53,33 +49,16 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
         }
         this.editingInfo.draggingHandle = true
       }
-
-      let node: PathNode
-      if (this.editingInfo.closingNode) {
-        node = item.nodes[0]
-      } else {
-        node = item.nodes.pop()!
-      }
-      const {position} = node
-      const handles: [Vec2, Vec2] = [position.mulScalar(2).sub(pos), pos]
-      const newNode: PathNode = {
-        position, handles, type: 'symmetric'
-      }
-      if (this.editingInfo.closingNode) {
-        item.nodes[0] = newNode
-      } else {
-        item.nodes.push(newNode)
-      }
+      const node = this.editingInfo.closingNode ? item.nodes[0] : item.nodes[item.nodes.length - 1]
+      node.handle1 = node.position.mulScalar(2).sub(pos)
+      node.handle2 = pos
+      node.type = 'symmetric'
     } else {
       if (pos.sub(item.nodes[0].position).length() < snapDistance) {
         this.removePreviewNode()
         item.closed = true
       } else {
-        this.setPreviewNode({
-          position: pos,
-          handles: [pos, pos],
-          type: 'straight'
-        })
+        this.setPreviewNode(new PathNode(pos, pos, pos, 'straight'))
         item.closed = false
       }
     }
@@ -124,11 +103,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     const parent = document.rootItem
     const children = [item, ...parent.children]
     itemPreview.addChildren(parent, children)
-    item.nodes.push({
-      position: pos,
-      handles: [pos, pos],
-      type: 'straight'
-    })
+    item.nodes.push(new PathNode(pos, pos, pos, 'straight'))
     this.editingInfo = {item, parent}
     drawAreaMode.pathItemToEdit = item
   }

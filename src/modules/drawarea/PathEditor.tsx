@@ -7,7 +7,7 @@ import {PointerEvents} from '../../util/components/PointerEvents'
 @observer
 class PathNodeHandle extends React.Component<{node: PathNode}, {}> {
   render () {
-    const {position: p, handles: [h1, h2], type} = this.props.node
+    const {position: p, handle1: h1, handle2: h2, type} = this.props.node
     if (type === 'straight') {
       return <g>
         <circle cx={p.x} cy={p.y} r={3} fill='white' stroke='grey' />

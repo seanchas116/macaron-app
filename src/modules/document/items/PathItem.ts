@@ -5,10 +5,22 @@ import {Item, ItemData} from './Item'
 
 export type PathNodeType = 'symmetric' | 'asymmetric' | 'disconnected' | 'straight'
 
-export interface PathNode {
-  position: Vec2
-  handles: [Vec2, Vec2]
-  type: PathNodeType
+export class PathNode {
+  @observable position: Vec2
+  @observable handle1: Vec2
+  @observable handle2: Vec2
+  @observable type: PathNodeType
+  constructor (
+    position: Vec2,
+    handle1: Vec2,
+    handle2: Vec2,
+    type: PathNodeType
+  ) {
+    this.position = position
+    this.handle1 = handle1
+    this.handle2 = handle2
+    this.type = type
+  }
 }
 
 export interface PathNodeData {
@@ -52,8 +64,8 @@ export class PathItem extends Item {
     const addCurve = (prevNode: PathNode, node: PathNode) => {
       const curve = new Bezier(
         prevNode.position.x, prevNode.position.y,
-        prevNode.handles[1].x, prevNode.handles[1].y,
-        node.handles[0].x, node.handles[0].y,
+        prevNode.handle2.x, prevNode.handle2.y,
+        node.handle1.x, node.handle1.y,
         node.position.x, node.position.y
       )
       const bbox = curve.bbox()
@@ -87,11 +99,12 @@ export class PathItem extends Item {
     this.offset = new Vec2(data.offsetX, data.offsetY)
     this.closed = data.closed
     this.nodes.replace(data.nodes.map(e => {
-      const node: PathNode = {
-        position: new Vec2(e.x, e.y),
-        handles: [new Vec2(e.handle1X, e.handle1Y), new Vec2(e.handle2X, e.handle2Y)],
-        type: e.type
-      }
+      const node = new PathNode(
+        new Vec2(e.x, e.y),
+        new Vec2(e.handle1X, e.handle1Y),
+        new Vec2(e.handle2X, e.handle2Y),
+        e.type
+      )
       return node
     }))
   }
@@ -101,10 +114,10 @@ export class PathItem extends Item {
       const data: PathNodeData = {
         x: e.position.x,
         y: e.position.y,
-        handle1X: e.handles[0].x,
-        handle1Y: e.handles[0].y,
-        handle2X: e.handles[1].x,
-        handle2Y: e.handles[1].y,
+        handle1X: e.handle1.x,
+        handle1Y: e.handle1.y,
+        handle2X: e.handle2.x,
+        handle2Y: e.handle2.y,
         type: e.type
       }
       return data
@@ -121,9 +134,12 @@ export class PathItem extends Item {
     }
   }
 
-  toSVGPathData () {
+  @computed get svgPathData () {
     const {x: dx, y: dy} = this.offset
     const {nodes} = this
+    if (nodes.length < 2) {
+      return ''
+    }
     const start = nodes[0].position
     const commands = [`M ${start.x + dx} ${start.y + dy}`]
 
@@ -132,8 +148,8 @@ export class PathItem extends Item {
       if (node.type === 'straight' && prevNode.type === 'straight') {
         commands.push(`L ${x + dx} ${y + dy}`)
       } else {
-        const {x: x1, y: y1} = prevNode.handles[1]
-        const {x: x2, y: y2} = node.handles[0]
+        const {x: x1, y: y1} = prevNode.handle2
+        const {x: x2, y: y2} = node.handle1
         commands.push(`C ${x1 + dx} ${y1 + dy}, ${x2 + dx} ${y2 + dy}, ${x + dx} ${y + dy}`)
       }
     }
