@@ -48,7 +48,6 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     if (this.clicked) {
       if (!this.editingInfo.draggingHandle) {
         const distance = pos.sub(item.nodes[item.nodes.length - 1].position).length()
-        console.log(distance)
         if (distance < snapDistance) {
           return
         }
