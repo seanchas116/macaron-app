@@ -6,7 +6,7 @@ import {autobind} from 'core-decorators'
 import {documentManager} from '../document'
 import {toolManager} from './ToolManager'
 import {ItemResizeHandles} from './ItemResizeHandles'
-import {PathHandles} from './PathHandles'
+import {PathEditor} from './PathEditor'
 import {SnapLines} from './SnapLines'
 import {GroupItemView} from './GroupItemView'
 import {drawAreaMode} from './DrawAreaMode'
@@ -43,7 +43,7 @@ export class DrawArea extends React.Component<{}, {}> {
           <GroupItemView item={rootItem} />
           <SnapLines />
           <ItemResizeHandles items={[...selectedItems]} />
-          {pathItemToEdit && <PathHandles item={pathItemToEdit} />}
+          {pathItemToEdit && <PathEditor item={pathItemToEdit} />}
         </g>
         {currentTool && currentTool.renderOverlay(this.size)}
       </svg>
