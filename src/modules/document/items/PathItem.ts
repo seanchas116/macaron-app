@@ -37,6 +37,8 @@ export interface PathItemData extends ItemData {
   type: 'path'
   offsetX: number
   offsetY: number
+  resizedWidth: number|null
+  resizedHeight: number|null
   closed: boolean
   nodes: PathNodeData[]
 }
@@ -45,16 +47,20 @@ export class PathItem extends Item {
   readonly nodes = observable<PathNode>([])
   @observable offset = new Vec2()
   @observable closed = false
+  @observable resizedSize: Vec2|undefined
 
-  get position () {
+  @computed get position () {
     return this.boundingRect.topLeft.add(this.offset)
   }
   set position (pos: Vec2) {
     this.offset = pos.sub(this.boundingRect.topLeft)
   }
 
-  get size () {
-    return this.boundingRect.size
+  @computed get size () {
+    return this.resizedSize || this.boundingRect.size
+  }
+  set size (size: Vec2) {
+    this.resizedSize = size
   }
 
   @computed get boundingRect () {
@@ -97,6 +103,7 @@ export class PathItem extends Item {
   loadData (data: PathItemData) {
     super.loadData(data)
     this.offset = new Vec2(data.offsetX, data.offsetY)
+    this.resizedSize = (data.resizedWidth && data.resizedHeight) ? new Vec2(data.resizedWidth, data.resizedHeight) : undefined
     this.closed = data.closed
     this.nodes.replace(data.nodes.map(e => {
       const node = new PathNode(
@@ -129,28 +136,30 @@ export class PathItem extends Item {
       type: 'path',
       offsetX: this.offset.x,
       offsetY: this.offset.y,
+      resizedWidth: this.resizedSize ? this.resizedSize.x : null,
+      resizedHeight: this.resizedSize ? this.resizedSize.y : null,
       closed,
       nodes
     }
   }
 
   @computed get svgPathData () {
-    const {x: dx, y: dy} = this.offset
     const {nodes} = this
     if (nodes.length < 2) {
       return ''
     }
-    const start = nodes[0].position
-    const commands = [`M ${start.x + dx} ${start.y + dy}`]
+
+    const start = this.transformPos(nodes[0].position)
+    const commands = [`M ${start.x} ${start.y}`]
 
     const addCurve = (prevNode: PathNode, node: PathNode) => {
-      const {x, y} = node.position
+      const {x, y} = this.transformPos(node.position)
       if (node.type === 'straight' && prevNode.type === 'straight') {
-        commands.push(`L ${x + dx} ${y + dy}`)
+        commands.push(`L ${x} ${y}`)
       } else {
-        const {x: x1, y: y1} = prevNode.handle2
-        const {x: x2, y: y2} = node.handle1
-        commands.push(`C ${x1 + dx} ${y1 + dy}, ${x2 + dx} ${y2 + dy}, ${x + dx} ${y + dy}`)
+        const {x: x1, y: y1} = this.transformPos(prevNode.handle2)
+        const {x: x2, y: y2} = this.transformPos(node.handle1)
+        commands.push(`C ${x1} ${y1}, ${x2} ${y2}, ${x} ${y}`)
       }
     }
 
@@ -161,5 +170,16 @@ export class PathItem extends Item {
       addCurve(nodes[nodes.length - 1], nodes[0])
     }
     return commands.join(' ')
+  }
+
+  private transformPos (pos: Vec2) {
+    if (this.resizedSize) {
+      return pos.sub(this.boundingRect.topLeft)
+              .mul(this.resizedSize.div(this.boundingRect.size))
+              .add(this.boundingRect.topLeft)
+              .add(this.offset)
+    } else {
+      return pos.add(this.offset)
+    }
   }
 }
