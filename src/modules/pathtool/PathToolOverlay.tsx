@@ -167,6 +167,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     }
     const {parent, item} = this.editingInfo
     this.removePreviewNode()
+    itemPreview.clear()
     const {document} = documentManager
     document.history.push(new ItemInsertCommand('Add Item', parent, item, parent.childAt(0)))
     document.selectedItems.replace([item])
