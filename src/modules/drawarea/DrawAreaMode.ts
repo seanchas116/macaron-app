@@ -1,8 +1,8 @@
 import {observable} from 'mobx'
-import {PathItem} from '../document'
+import {Item} from '../document'
 
 export class DrawAreaMode {
-  @observable pathItemToEdit: PathItem|undefined
+  @observable itemToEdit: Item|undefined
 }
 
 export const drawAreaMode = new DrawAreaMode()

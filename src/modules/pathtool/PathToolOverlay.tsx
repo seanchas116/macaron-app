@@ -110,7 +110,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     itemPreview.addChildren(parent, children)
     item.nodes.push(new PathNode(pos, pos, pos, 'straight'))
     this.editingInfo = {item, parent}
-    drawAreaMode.pathItemToEdit = item
+    drawAreaMode.itemToEdit = item
   }
 
   private endEditing () {
@@ -151,7 +151,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     const {document} = documentManager
     document.history.push(new ItemInsertCommand('Add Item', parent, item, parent.childAt(0)))
     document.selectedItems.replace([item])
-    drawAreaMode.pathItemToEdit = undefined
+    drawAreaMode.itemToEdit = undefined
     toolManager.current = undefined
   }
 }
