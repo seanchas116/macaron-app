@@ -5,7 +5,7 @@ import {GroupItem, PathNode, PathItem, documentManager, ItemInsertCommand} from 
 import {itemPreview, drawAreaMode, toolManager} from '../drawarea'
 import {PointerEvents} from '../../util/components/PointerEvents'
 
-const closeSnapDistance = 3
+const snapDistance = 3
 
 export
 class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
@@ -15,6 +15,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     item: PathItem
     hasPreviewNode?: boolean
     closingNode?: boolean
+    draggingHandle?: boolean
   } | undefined
 
   private onPointerDown = action((event: PointerEvent) => {
@@ -22,7 +23,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     const pos = new Vec2(event.offsetX, event.offsetY)
     if (this.editingInfo) {
       const {item} = this.editingInfo
-      if (pos.sub(item.nodes[0].position).length() < closeSnapDistance) {
+      if (pos.sub(item.nodes[0].position).length() < snapDistance) {
         this.editingInfo.closingNode = true
         item.closed = true
       } else {
@@ -45,7 +46,15 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     }
     const {item} = this.editingInfo
     if (this.clicked) {
-      this.removePreviewNode()
+      if (!this.editingInfo.draggingHandle) {
+        const distance = pos.sub(item.nodes[item.nodes.length - 1].position).length()
+        console.log(distance)
+        if (distance < snapDistance) {
+          return
+        }
+        this.editingInfo.draggingHandle = true
+      }
+
       let node: PathNode
       if (this.editingInfo.closingNode) {
         node = item.nodes[0]
@@ -63,7 +72,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
         item.nodes.push(newNode)
       }
     } else {
-      if (pos.sub(item.nodes[0].position).length() < closeSnapDistance) {
+      if (pos.sub(item.nodes[0].position).length() < snapDistance) {
         this.removePreviewNode()
         item.closed = true
       } else {
@@ -82,6 +91,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     if (!this.editingInfo) {
       return
     }
+    this.editingInfo.draggingHandle = false
     const {item} = this.editingInfo
     if (this.editingInfo.closingNode) {
       this.endEditing()
