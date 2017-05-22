@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "@types/classnames": "0.0.32",
+    "bezier-js": "^2.2.3",
     "bindings": "^1.2.1",
     "classnames": "^2.2.5",
     "core-decorators": "^0.19.0",

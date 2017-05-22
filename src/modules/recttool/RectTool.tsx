@@ -28,4 +28,8 @@ class RectTool extends Tool {
   renderOverlay (size: Vec2) {
     return <RectToolOverlay size={size} type={this.type} />
   }
+
+  onKeyDown (event: React.KeyboardEvent<HTMLElement>) {
+    // do nothing
+  }
 }

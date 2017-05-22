@@ -3,11 +3,13 @@ import {observable, action} from 'mobx'
 import {observer} from 'mobx-react'
 import {Vec2} from 'paintvec'
 import {autobind} from 'core-decorators'
-import {documentManager} from '../document'
+import {documentManager, PathItem} from '../document'
 import {toolManager} from './ToolManager'
 import {ItemResizeHandles} from './ItemResizeHandles'
+import {PathHandles} from './PathHandles'
 import {SnapLines} from './SnapLines'
 import {GroupItemView} from './GroupItemView'
+import {drawAreaMode} from './DrawAreaMode'
 const styles = require('./DrawArea.css')
 
 @observer
@@ -32,6 +34,7 @@ export class DrawArea extends React.Component<{}, {}> {
     const {rootItem, selectedItems, scroll} = documentManager.document
     const currentTool = toolManager.current
     const {width, height} = this.size
+    const {itemToEdit} = drawAreaMode
     // TODO: improve scroll performance
     return <div className={styles.root} ref={e => this.root = e}>
       <svg className={styles.svg} width={width + 'px'} height={height + 'px'} onWheel={this.onWheel} >
@@ -40,6 +43,7 @@ export class DrawArea extends React.Component<{}, {}> {
           <GroupItemView item={rootItem} />
           <SnapLines />
           <ItemResizeHandles items={[...selectedItems]} />
+          {itemToEdit instanceof PathItem && <PathHandles item={itemToEdit} />}
         </g>
         {currentTool && currentTool.renderOverlay(this.size)}
       </svg>
