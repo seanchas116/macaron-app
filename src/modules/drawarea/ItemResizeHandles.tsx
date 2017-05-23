@@ -7,7 +7,7 @@ import {ResizeHandles} from './ResizeHandles'
 import {Item, Command, CompositeCommand, ItemChangeCommand, documentManager} from '../document'
 import {snapper} from './Snapper'
 import {itemPreview} from './ItemPreview'
-import {Alignment} from '../../util/types'
+import {Alignment} from '../../util/Types'
 
 @observer
 export

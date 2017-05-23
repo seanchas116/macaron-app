@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {Vec2} from 'paintvec'
 import {PointerEvents} from '../../util/components/PointerEvents'
-import {Alignment} from '../../util/types'
+import {Alignment} from '../../util/Types'
 
 const handleSize = 6
 
