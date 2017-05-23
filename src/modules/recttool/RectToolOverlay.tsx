@@ -89,6 +89,7 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
 
   private snap (pos: Vec2) {
     // snap twice to connect vertical & horizontal snap lines
+    // TODO: pass correct x/y alignment
     return snapper.snapPos(snapper.snapPos(pos, 'center', 'center'), 'center', 'center')
   }
 }
