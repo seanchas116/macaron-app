@@ -142,6 +142,8 @@ class ResizeHandles extends React.Component<ResizeHandlesProps, {}> {
         onChange={(x1, _) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
+      <text textAnchor='middle' x={(x1 + x2) / 2} y={y2 + 16} fill='blue' style={{fontSize: '12px'}}>{width}</text>
+      <text x={x2 + 8} y={(y1 + y2) / 2} fill='blue' style={{fontSize: '12px'}}>{height}</text>
     </g>
   }
 }
