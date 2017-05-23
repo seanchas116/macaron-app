@@ -71,12 +71,9 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
     }
     const snapTargets: Rect[] = []
     for (const item of this.items) {
-      const {parent} = item
-      if (parent) {
-        for (const child of parent.children) {
-          if (!this.props.items.includes(child)) {
-            snapTargets.push(child.rect)
-          }
+      for (const sibling of item.siblings) {
+        if (!this.props.items.includes(sibling)) {
+          snapTargets.push(sibling.rect)
         }
       }
       itemPreview.addItem(item)
