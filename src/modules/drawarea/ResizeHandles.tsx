@@ -1,4 +1,6 @@
 import * as React from 'react'
+import {observer} from 'mobx-react'
+import {observable, action} from 'mobx'
 import {Vec2, Rect} from 'paintvec'
 import {PointerEvents} from '../../util/components/PointerEvents'
 import {Alignment} from '../../util/Types'
@@ -75,13 +77,19 @@ interface ResizeHandlesProps {
   onChangeEnd: () => void
 }
 
-interface ResizeHandlesState {
-  dragged: boolean
-}
-
+@observer
 export
-class ResizeHandles extends React.Component<ResizeHandlesProps, ResizeHandlesState> {
-  state = {dragged: false}
+class ResizeHandles extends React.Component<ResizeHandlesProps, {}> {
+  @observable private dragged = false
+
+  private onChangeBegin = action(() => {
+    this.dragged = true
+    this.props.onChangeBegin()
+  })
+  private onChangeEnd = action(() => {
+    this.dragged = false
+    this.props.onChangeEnd()
+  })
 
   render () {
     const x1 = this.props.p1.x
@@ -94,7 +102,6 @@ class ResizeHandles extends React.Component<ResizeHandlesProps, ResizeHandlesSta
     const height = Math.max(y1, y2) - y
     const {onChangeBegin, onChangeEnd} = this
     const {onChange, snap} = this.props
-    const {dragged} = this.state
     const rect = Rect.fromWidthHeight(x, y, width, height)
 
     return <g>
@@ -163,16 +170,7 @@ class ResizeHandles extends React.Component<ResizeHandlesProps, ResizeHandlesSta
         onChange={(x1, _) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
-      {dragged && <SizeLabel rect={rect} />}
+      {this.dragged && <SizeLabel rect={rect} />}
     </g>
-  }
-
-  private onChangeBegin = () => {
-    this.setState({dragged: true})
-    this.props.onChangeBegin()
-  }
-  private onChangeEnd = () => {
-    this.setState({dragged: false})
-    this.props.onChangeEnd()
   }
 }
