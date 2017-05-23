@@ -76,12 +76,12 @@ interface ResizeHandlesProps {
 }
 
 interface ResizeHandlesState {
-  draggedHandle: [Alignment, Alignment]|undefined
+  dragged: boolean
 }
 
 export
 class ResizeHandles extends React.Component<ResizeHandlesProps, ResizeHandlesState> {
-  state = {draggedHandle: undefined}
+  state = {dragged: false}
 
   render () {
     const x1 = this.props.p1.x
@@ -94,7 +94,7 @@ class ResizeHandles extends React.Component<ResizeHandlesProps, ResizeHandlesSta
     const height = Math.max(y1, y2) - y
     const {onChangeBegin, onChangeEnd} = this
     const {onChange, snap} = this.props
-    const {draggedHandle} = this.state
+    const {dragged} = this.state
     const rect = Rect.fromWidthHeight(x, y, width, height)
 
     return <g>
@@ -163,18 +163,16 @@ class ResizeHandles extends React.Component<ResizeHandlesProps, ResizeHandlesSta
         onChange={(x1, _) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
-      {draggedHandle &&
-        <SizeLabel rect={rect} draggedHandle={draggedHandle} />
-      }
+      {dragged && <SizeLabel rect={rect} />}
     </g>
   }
 
-  private onChangeBegin = (xAlign: Alignment, yAlign: Alignment) => {
-    this.setState({draggedHandle: [xAlign, yAlign]})
+  private onChangeBegin = () => {
+    this.setState({dragged: true})
     this.props.onChangeBegin()
   }
   private onChangeEnd = () => {
-    this.setState({draggedHandle: undefined})
+    this.setState({dragged: false})
     this.props.onChangeEnd()
   }
 }
