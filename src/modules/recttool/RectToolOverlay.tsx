@@ -2,7 +2,7 @@ import * as React from 'react'
 import {action} from 'mobx'
 import {Vec2, Rect} from 'paintvec'
 import {Document, documentManager, GroupItem, RectLikeItem, RectItem, TextItem, OvalItem, ItemInsertCommand} from '../document'
-import {toolManager, itemPreview} from '../drawarea'
+import {toolManager, itemPreview, snapper} from '../drawarea'
 import {PointerEvents} from '../../util/components/PointerEvents'
 import {RectToolType} from './RectTool'
 
@@ -11,6 +11,18 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
   startPos: Vec2|undefined
   parent: GroupItem|undefined
   item: RectLikeItem|undefined
+
+  componentDidMount () {
+    const targets: Rect[] = []
+    for (const item of documentManager.document.selectedItems) {
+      targets.push(...item.siblings.map(s => s.rect))
+    }
+    snapper.targets = targets
+  }
+
+  componentWillUnmount () {
+    snapper.clear()
+  }
 
   render () {
     const {width, height} = this.props.size
@@ -39,7 +51,8 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     const elem = event.currentTarget as SVGRectElement
     elem.setPointerCapture(event.pointerId)
 
-    this.startPos = new Vec2(event.offsetX, event.offsetY)
+    const pos = this.snap(new Vec2(event.offsetX, event.offsetY))
+    this.startPos = pos
     const {document} = documentManager
     this.parent = document.rootItem
     this.item = this.newItem(document)
@@ -49,9 +62,9 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
   }
 
   @action private onPointerMove = (event: PointerEvent) => {
+    const pos = this.snap(new Vec2(event.offsetX, event.offsetY))
     if (this.startPos && this.item) {
       const {document} = documentManager
-      const pos = new Vec2(event.offsetX, event.offsetY)
       this.item.rect = Rect.fromTwoPoints(this.startPos, pos).translate(document.scroll)
     }
   }
@@ -72,5 +85,11 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     const {document} = documentManager
     document.history.push(new ItemInsertCommand('Add Item', parent, item, parent.childAt(0)))
     document.selectedItems.replace([item])
+  }
+
+  private snap (pos: Vec2) {
+    // snap twice to connect vertical & horizontal snap lines
+    // TODO: pass correct x/y alignment
+    return snapper.snapPos(snapper.snapPos(pos, 'center', 'center'), 'center', 'center')
   }
 }
