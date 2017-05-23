@@ -83,7 +83,7 @@ abstract class Item {
     }
   }
 
-  get siblings () {
+  get siblings (): Item[] {
     if (this.parent) {
       return this.parent.children
     } else {

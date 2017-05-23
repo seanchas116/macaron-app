@@ -2,7 +2,7 @@ import * as React from 'react'
 import {action} from 'mobx'
 import {Vec2, Rect} from 'paintvec'
 import {Document, documentManager, GroupItem, RectLikeItem, RectItem, TextItem, OvalItem, ItemInsertCommand} from '../document'
-import {toolManager, itemPreview} from '../drawarea'
+import {toolManager, itemPreview, snapper} from '../drawarea'
 import {PointerEvents} from '../../util/components/PointerEvents'
 import {RectToolType} from './RectTool'
 
@@ -11,6 +11,18 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
   startPos: Vec2|undefined
   parent: GroupItem|undefined
   item: RectLikeItem|undefined
+
+  componentDidMount () {
+    const targets: Rect[] = []
+    for (const item of documentManager.document.selectedItems) {
+      targets.push(...item.siblings.map(s => s.rect))
+    }
+    snapper.targets = targets
+  }
+
+  componentWillUnmount () {
+    snapper.clear()
+  }
 
   render () {
     const {width, height} = this.props.size
@@ -39,7 +51,8 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     const elem = event.currentTarget as SVGRectElement
     elem.setPointerCapture(event.pointerId)
 
-    this.startPos = new Vec2(event.offsetX, event.offsetY)
+    const pos = snapper.snapPos(new Vec2(event.offsetX, event.offsetY), 'center', 'center')
+    this.startPos = pos
     const {document} = documentManager
     this.parent = document.rootItem
     this.item = this.newItem(document)
@@ -49,9 +62,9 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
   }
 
   @action private onPointerMove = (event: PointerEvent) => {
+    const pos = snapper.snapPos(new Vec2(event.offsetX, event.offsetY), 'center', 'center')
     if (this.startPos && this.item) {
       const {document} = documentManager
-      const pos = new Vec2(event.offsetX, event.offsetY)
       this.item.rect = Rect.fromTwoPoints(this.startPos, pos).translate(document.scroll)
     }
   }
