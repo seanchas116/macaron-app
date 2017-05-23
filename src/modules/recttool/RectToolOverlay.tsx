@@ -51,7 +51,7 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     const elem = event.currentTarget as SVGRectElement
     elem.setPointerCapture(event.pointerId)
 
-    const pos = snapper.snapPos(new Vec2(event.offsetX, event.offsetY), 'center', 'center')
+    const pos = this.snap(new Vec2(event.offsetX, event.offsetY))
     this.startPos = pos
     const {document} = documentManager
     this.parent = document.rootItem
@@ -62,7 +62,7 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
   }
 
   @action private onPointerMove = (event: PointerEvent) => {
-    const pos = snapper.snapPos(new Vec2(event.offsetX, event.offsetY), 'center', 'center')
+    const pos = this.snap(new Vec2(event.offsetX, event.offsetY))
     if (this.startPos && this.item) {
       const {document} = documentManager
       this.item.rect = Rect.fromTwoPoints(this.startPos, pos).translate(document.scroll)
@@ -85,5 +85,10 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     const {document} = documentManager
     document.history.push(new ItemInsertCommand('Add Item', parent, item, parent.childAt(0)))
     document.selectedItems.replace([item])
+  }
+
+  private snap (pos: Vec2) {
+    // snap twice to connect vertical & horizontal snap lines
+    return snapper.snapPos(snapper.snapPos(pos, 'center', 'center'), 'center', 'center')
   }
 }
