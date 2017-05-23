@@ -1,18 +1,21 @@
 import * as React from 'react'
-import {Vec2} from 'paintvec'
+import {Vec2, Rect} from 'paintvec'
 import {PointerEvents} from '../../util/components/PointerEvents'
 import {Alignment} from '../../util/Types'
+import {SizeLabel} from './SizeLabel'
 
 const handleSize = 6
 
 interface ResizeHandleProps {
   x: number
   y: number
+  xAlign: Alignment
+  yAlign: Alignment
   cursor: string
-  snap: (pos: Vec2) => Vec2
-  onChangeBegin: () => void
-  onChange: (x: number, y: number) => void
-  onChangeEnd: () => void
+  snap: (pos: Vec2, xAlign: Alignment, yAlign: Alignment) => Vec2
+  onChangeBegin: (xAlign: Alignment, yAlign: Alignment) => void
+  onChange: (x: number, y: number, xAlign: Alignment, yAlign: Alignment) => void
+  onChangeEnd: (xAlign: Alignment, yAlign: Alignment) => void
 }
 
 class ResizeHandle extends React.Component<ResizeHandleProps, {}> {
@@ -46,7 +49,7 @@ class ResizeHandle extends React.Component<ResizeHandleProps, {}> {
     this.origClientX = e.clientX
     this.origClientY = e.clientY
     ;(e.currentTarget as Element).setPointerCapture(e.pointerId)
-    this.props.onChangeBegin()
+    this.props.onChangeBegin(this.props.xAlign, this.props.yAlign)
   }
   private onPointerMove = (e: PointerEvent) => {
     if (!this.dragged) {
@@ -54,12 +57,12 @@ class ResizeHandle extends React.Component<ResizeHandleProps, {}> {
     }
     const x = e.clientX - this.origClientX + this.origX
     const y = e.clientY - this.origClientY + this.origY
-    const snapped = this.props.snap(new Vec2(x, y))
-    this.props.onChange(snapped.x, snapped.y)
+    const snapped = this.props.snap(new Vec2(x, y), this.props.xAlign, this.props.yAlign)
+    this.props.onChange(snapped.x, snapped.y, this.props.xAlign, this.props.yAlign)
   }
   private onPointerUp = (e: PointerEvent) => {
     this.dragged = false
-    this.props.onChangeEnd()
+    this.props.onChangeEnd(this.props.xAlign, this.props.yAlign)
   }
 }
 
@@ -72,8 +75,14 @@ interface ResizeHandlesProps {
   onChangeEnd: () => void
 }
 
+interface ResizeHandlesState {
+  draggedHandle: [Alignment, Alignment]|undefined
+}
+
 export
-class ResizeHandles extends React.Component<ResizeHandlesProps, {}> {
+class ResizeHandles extends React.Component<ResizeHandlesProps, ResizeHandlesState> {
+  state = {draggedHandle: undefined}
+
   render () {
     const x1 = this.props.p1.x
     const y1 = this.props.p1.y
@@ -83,67 +92,89 @@ class ResizeHandles extends React.Component<ResizeHandlesProps, {}> {
     const width = Math.max(x1, x2) - x
     const y = Math.min(y1, y2)
     const height = Math.max(y1, y2) - y
-    const {onChange, onChangeBegin, onChangeEnd, snap} = this.props
+    const {onChangeBegin, onChangeEnd} = this
+    const {onChange, snap} = this.props
+    const {draggedHandle} = this.state
+    const rect = Rect.fromWidthHeight(x, y, width, height)
+
     return <g>
       <rect x={x + 0.5} y={y + 0.5} width={width - 1} height={height - 1} stroke='lightgray' fill='transparent' pointerEvents='none' />
       <ResizeHandle
         cursor='nwse-resize'
         x={x1} y={y1}
-        snap={p => snap(p, 'begin', 'begin')}
+        xAlign='begin' yAlign='begin'
+        snap={snap}
         onChange={(x1, y1) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         cursor='ns-resize'
         x={(x1 + x2) / 2} y={y1}
-        snap={p => snap(p, 'center', 'begin')}
+        xAlign='center' yAlign='begin'
+        snap={snap}
         onChange={(_, y1) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         cursor='nesw-resize'
         x={x2} y={y1}
-        snap={p => snap(p, 'end', 'begin')}
+        xAlign='end' yAlign='begin'
+        snap={snap}
         onChange={(x2, y1) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         cursor='ew-resize'
         x={x2} y={(y1 + y2) / 2}
-        snap={p => snap(p, 'end', 'center')}
+        xAlign='end' yAlign='center'
+        snap={snap}
         onChange={(x2, _) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         cursor='nwse-resize'
         x={x2} y={y2}
-        snap={p => snap(p, 'end', 'end')}
+        xAlign='end' yAlign='end'
+        snap={snap}
         onChange={(x2, y2) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         cursor='ns-resize'
         x={(x1 + x2) / 2} y={y2}
-        snap={p => snap(p, 'center', 'end')}
+        xAlign='center' yAlign='end'
+        snap={snap}
         onChange={(_, y2) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         cursor='nesw-resize'
         x={x1} y={y2}
-        snap={p => snap(p, 'begin', 'end')}
+        xAlign='begin' yAlign='end'
+        snap={snap}
         onChange={(x1, y2) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
       <ResizeHandle
         cursor='ew-resize'
         x={x1} y={(y1 + y2) / 2}
-        snap={p => snap(p, 'begin', 'center')}
+        xAlign='begin' yAlign='center'
+        snap={snap}
         onChange={(x1, _) => onChange(new Vec2(x1, y1), new Vec2(x2, y2))}
         onChangeBegin={onChangeBegin} onChangeEnd={onChangeEnd}
       />
-      <text textAnchor='middle' x={(x1 + x2) / 2} y={y2 + 16} fill='blue' style={{fontSize: '12px'}}>{width}</text>
-      <text x={x2 + 8} y={(y1 + y2) / 2} fill='blue' style={{fontSize: '12px'}}>{height}</text>
+      {draggedHandle &&
+        <SizeLabel rect={rect} draggedHandle={draggedHandle} />
+      }
     </g>
+  }
+
+  private onChangeBegin = (xAlign: Alignment, yAlign: Alignment) => {
+    this.setState({draggedHandle: [xAlign, yAlign]})
+    this.props.onChangeBegin()
+  }
+  private onChangeEnd = () => {
+    this.setState({draggedHandle: undefined})
+    this.props.onChangeEnd()
   }
 }
