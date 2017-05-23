@@ -1,6 +1,6 @@
 import {Vec2, Rect} from 'paintvec'
 import {observable, computed, action} from 'mobx'
-import {Arrangement, Direction} from '../../util/Types'
+import {Alignment, Direction} from '../../util/Types'
 
 const snapDistance = 8
 
@@ -8,13 +8,13 @@ interface RectSnapping {
   direction: Direction
   target: Rect
   targetValue: number
-  targetAt: Arrangement
+  targetAt: Alignment
   self: Rect
   selfValue: number
-  selfAt: Arrangement
+  selfAt: Alignment
 }
 
-function edges (rect: Rect, direction: Direction): {value: number, at: Arrangement}[] {
+function edges (rect: Rect, direction: Direction): {value: number, at: Alignment}[] {
   const begin = direction === 'horizontal' ? rect.left : rect.top
   const end = direction === 'horizontal' ? rect.right : rect.bottom
   const center = (begin + end) / 2
@@ -58,7 +58,7 @@ function snapRect (targets: Rect[], self: Rect, direction: Direction) {
   return validSnappings(snappings)
 }
 
-function snapRectPos (targets: Rect[], self: Rect, pos: Vec2, direction: Direction) {
+function snapPos (targets: Rect[], pos: Vec2, direction: Direction, align: Alignment) {
   const snappings: RectSnapping[] = []
 
   const selfValue = direction === 'horizontal' ? pos.x : pos.y
@@ -71,9 +71,9 @@ function snapRectPos (targets: Rect[], self: Rect, pos: Vec2, direction: Directi
         target,
         targetValue,
         targetAt,
-        self,
+        self: new Rect(pos, pos),
         selfValue,
-        selfAt: 'center'
+        selfAt: align
       })
     }
   }
@@ -125,10 +125,14 @@ export class Snapper {
     return rect.translate(new Vec2(xOffset, yOffset))
   }
 
-  @action snapRectPos (rect: Rect, pos: Vec2) {
-    const xSnappings = snapRectPos(this.targets, rect, pos, 'horizontal')
+  // pos is top left of rectangle -> xAlign = 'begin', yAlign = 'begin'
+  // pos is top center of rectangle -> xAlign = 'center', yAlign = 'begin'
+  // pos is top right of rectangle -> xAlign = 'end', yAlign = 'begin'
+  // ...
+  @action snapPos (pos: Vec2, xAlign: Alignment, yAlign: Alignment) {
+    const xSnappings = snapPos(this.targets, pos, 'horizontal', xAlign)
     const newX = xSnappings.length > 0 ? xSnappings[0].targetValue : pos.x
-    const ySnappings = snapRectPos(this.targets, rect, pos, 'vertical')
+    const ySnappings = snapPos(this.targets, pos, 'vertical', yAlign)
     const newY = ySnappings.length > 0 ? ySnappings[0].targetValue : pos.y
     this.snappings.replace([...xSnappings, ...ySnappings])
     return new Vec2(newX, newY)

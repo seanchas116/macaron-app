@@ -7,6 +7,7 @@ import {ResizeHandles} from './ResizeHandles'
 import {Item, Command, CompositeCommand, ItemChangeCommand, documentManager} from '../document'
 import {snapper} from './Snapper'
 import {itemPreview} from './ItemPreview'
+import {Alignment} from '../../util/types'
 
 @observer
 export
@@ -53,9 +54,9 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
     />
   }
 
-  @autobind private snap (pos: Vec2) {
+  @autobind private snap (pos: Vec2, xAlign: Alignment, yAlign: Alignment) {
     if (this.rect) {
-      return snapper.snapRectPos(this.rect, pos)
+      return snapper.snapPos(pos, xAlign, yAlign)
     } else {
       return pos
     }
