@@ -12,7 +12,7 @@ import {Alignment} from '../../util/Types'
 @observer
 export
 class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
-  @observable private dragging = false
+  private dragging = false
   private disposers: (() => void)[] = []
   private items: Item[] = []
   @observable private positions: [Vec2, Vec2]|undefined
