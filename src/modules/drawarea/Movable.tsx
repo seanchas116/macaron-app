@@ -5,6 +5,7 @@ import {PointerEvents} from '../../util/components/PointerEvents'
 import {Item, Command, CompositeCommand, ItemChangeCommand, documentManager} from '../document'
 import {snapper} from './Snapper'
 import {itemPreview} from './ItemPreview'
+import {drawAreaMode} from './DrawAreaMode'
 
 export
 class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
@@ -26,11 +27,16 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
       onPointerMove={this.onPointerMove}
       onPointerUp={this.onPointerUp}
       >
-      <g>
+      <g onDoubleClick={this.onDoubleClick}>
         {clickableBorder}
         {child}
       </g>
     </PointerEvents>
+  }
+
+  @action private onDoubleClick = () => {
+    this.cancel()
+    drawAreaMode.itemToEdit = this.props.item
   }
 
   @action private onPointerDown = (event: PointerEvent) => {
@@ -72,14 +78,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     if (!this.dragging) {
       return
     }
-
     this.commit()
-    this.dragging = false
-    this.items = new Set()
-    this.originalRects = new Map()
-    this.originalRect = undefined
-    snapper.clear()
-    itemPreview.clear()
   }
 
   private commit () {
@@ -93,5 +92,15 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     if (commands.length > 0) {
       documentManager.document.history.push(new CompositeCommand('Move Items', commands))
     }
+    this.cancel()
+  }
+
+  private cancel () {
+    this.dragging = false
+    this.items = new Set()
+    this.originalRects = new Map()
+    this.originalRect = undefined
+    snapper.clear()
+    itemPreview.clear()
   }
 }
