@@ -182,7 +182,7 @@ export class PathItem extends Item {
     this.resizedSize = undefined
   }
 
-  private transformPos (pos: Vec2) {
+  transformPos (pos: Vec2) {
     if (this.resizedSize) {
       return pos.sub(this.boundingRect.topLeft)
               .mul(this.resizedSize.div(this.boundingRect.size))

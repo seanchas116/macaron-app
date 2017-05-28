@@ -5,10 +5,13 @@ import {itemPreview} from './ItemPreview'
 import {PointerEvents} from '../../util/components/PointerEvents'
 
 @observer
-class PathNodeHandle extends React.Component<{node: PathNode}, {}> {
+class PathNodeHandle extends React.Component<{item: PathItem, node: PathNode}, {}> {
   render () {
-    const {position: p, handle1: h1, handle2: h2, type} = this.props.node
-    if (type === 'straight') {
+    const {item, node} = this.props
+    const p = item.transformPos(node.position)
+    const h1 = item.transformPos(node.handle1)
+    const h2 = item.transformPos(node.handle2)
+    if (node.type === 'straight') {
       return <g>
         <circle cx={p.x} cy={p.y} r={3} fill='white' stroke='grey' />
       </g>
@@ -33,7 +36,7 @@ export class PathHandles extends React.Component<{item: PathItem}, {}> {
     const preview = itemPreview.previewItem(item)
 
     return <g>
-      {preview.nodes.map((n, i) => <PathNodeHandle node={n} key={i} />)}
+      {preview.nodes.map((n, i) => <PathNodeHandle item={item} node={n} key={i} />)}
     </g>
   }
 }
