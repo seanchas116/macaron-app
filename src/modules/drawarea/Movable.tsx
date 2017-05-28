@@ -36,7 +36,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
 
   @action private onDoubleClick = () => {
     this.cancel()
-    drawAreaMode.itemToEdit = this.props.item
+    drawAreaMode.focusedItem = this.props.item
   }
 
   @action private onPointerDown = (event: PointerEvent) => {
