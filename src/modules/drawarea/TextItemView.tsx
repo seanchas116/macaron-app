@@ -1,7 +1,6 @@
 import * as React from 'react'
 import {observable, action, reaction} from 'mobx'
 import {observer} from 'mobx-react'
-import {autobind} from 'core-decorators'
 import {Movable} from './Movable'
 import {TextItem} from '../document'
 import {itemPreview} from './ItemPreview'
@@ -53,13 +52,13 @@ class TextItemView extends React.Component<{item: TextItem}, {}> {
     </Movable>
   }
 
-  @autobind @action onDoubleClick () {
+  @action onDoubleClick = () => {
     this.focus = true
   }
-  @autobind @action onBlur () {
+  @action onBlur = () => {
     this.focus = false
   }
-  @autobind @action onKeyDown (e: React.KeyboardEvent<HTMLElement>) {
+  @action onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
     if (e.key === 'Escape') {
       this.focus = false
     }
