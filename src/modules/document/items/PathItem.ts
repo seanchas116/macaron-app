@@ -1,4 +1,4 @@
-import {observable, computed} from 'mobx'
+import {observable, computed, action} from 'mobx'
 import {Vec2, Rect} from 'paintvec'
 const Bezier = require('bezier-js')
 import {Item, ItemData} from './Item'
@@ -170,6 +170,16 @@ export class PathItem extends Item {
       addCurve(nodes[nodes.length - 1], nodes[0])
     }
     return commands.join(' ')
+  }
+
+  @action normalize () {
+    for (const node of this.nodes) {
+      node.position = this.transformPos(node.position)
+      node.handle1 = this.transformPos(node.handle1)
+      node.handle2 = this.transformPos(node.handle2)
+    }
+    this.offset = new Vec2()
+    this.resizedSize = undefined
   }
 
   private transformPos (pos: Vec2) {
