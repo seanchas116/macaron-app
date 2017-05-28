@@ -46,7 +46,7 @@
     "postcss-cssnext": "^2.10.0",
     "postcss-loader": "^2.0.5",
     "standard": "^10.0.2",
-    "style-loader": "^0.17.0",
+    "style-loader": "^0.18.1",
     "tslint": "^5.2.0",
     "tslint-config-standard": "^5.0.2",
     "typescript": "^2.3.2",
@@ -55,7 +55,7 @@
     "webpack-node-externals": "^1.6.0"
   },
   "dependencies": {
-    "@types/classnames": "0.0.32",
+    "@types/classnames": "2.2.0",
     "bezier-js": "^2.2.3",
     "bindings": "^1.2.1",
     "classnames": "^2.2.5",
