@@ -82,15 +82,6 @@ export
 class ResizeHandles extends React.Component<ResizeHandlesProps, {}> {
   @observable private dragged = false
 
-  private onChangeBegin = action(() => {
-    this.dragged = true
-    this.props.onChangeBegin()
-  })
-  private onChangeEnd = action(() => {
-    this.dragged = false
-    this.props.onChangeEnd()
-  })
-
   render () {
     const x1 = this.props.p1.x
     const y1 = this.props.p1.y
@@ -172,5 +163,14 @@ class ResizeHandles extends React.Component<ResizeHandlesProps, {}> {
       />
       {this.dragged && <SizeLabel rect={rect} />}
     </g>
+  }
+
+  @action private onChangeBegin = () => {
+    this.dragged = true
+    this.props.onChangeBegin()
+  }
+  @action private onChangeEnd = () => {
+    this.dragged = false
+    this.props.onChangeEnd()
   }
 }
