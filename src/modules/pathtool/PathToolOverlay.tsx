@@ -18,7 +18,24 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     draggingHandle?: boolean
   } | undefined
 
-  private onPointerDown = action((event: PointerEvent) => {
+  @action onKeyDown (event: React.KeyboardEvent<HTMLElement>) {
+    if (event.key === 'Enter' || event.key === 'Escape') {
+      this.endEditing()
+    }
+  }
+
+  render () {
+    const {width, height} = this.props.size
+    return <PointerEvents
+      onPointerDown={this.onPointerDown}
+      onPointerMove={this.onPointerMove}
+      onPointerUp={this.onPointerUp}
+    >
+      <rect width={width} height={height} fill='transparent' />
+    </PointerEvents>
+  }
+
+  @action private onPointerDown = (event: PointerEvent) => {
     this.clicked = true
     const pos = this.eventPos(event)
     if (this.editingInfo) {
@@ -33,9 +50,9 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     } else {
       this.startEditing(pos)
     }
-  })
+  }
 
-  private onPointerMove = action((event: PointerEvent) => {
+  @action private onPointerMove = (event: PointerEvent) => {
     const pos = this.eventPos(event)
     if (!this.editingInfo) {
       return
@@ -62,9 +79,9 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
         item.closed = false
       }
     }
-  })
+  }
 
-  private onPointerUp = action((event: PointerEvent) => {
+  @action private onPointerUp = (event: PointerEvent) => {
     this.clicked = false
     if (!this.editingInfo) {
       return
@@ -77,23 +94,6 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
       const lastEdge = item.nodes[item.nodes.length - 1]
       this.setPreviewNode(lastEdge)
     }
-  })
-
-  @action onKeyDown (event: React.KeyboardEvent<HTMLElement>) {
-    if (event.key === 'Enter' || event.key === 'Escape') {
-      this.endEditing()
-    }
-  }
-
-  render () {
-    const {width, height} = this.props.size
-    return <PointerEvents
-      onPointerDown={this.onPointerDown}
-      onPointerMove={this.onPointerMove}
-      onPointerUp={this.onPointerUp}
-    >
-      <rect width={width} height={height} fill='transparent' />
-    </PointerEvents>
   }
 
   private eventPos (event: PointerEvent) {
