@@ -33,7 +33,7 @@ export class DrawArea extends React.Component<{}, {}> {
     const {rootItem, selectedItems, scroll} = documentManager.document
     const currentTool = toolManager.current
     const {width, height} = this.size
-    const {itemToEdit} = drawAreaMode
+    const {focusedItem} = drawAreaMode
     // TODO: improve scroll performance
     return <div className={styles.root} ref={e => this.root = e}>
       <svg className={styles.svg} width={width + 'px'} height={height + 'px'} onWheel={this.onWheel} >
@@ -42,7 +42,7 @@ export class DrawArea extends React.Component<{}, {}> {
           <GroupItemView item={rootItem} />
           <SnapLines />
           <ItemResizeHandles items={[...selectedItems]} />
-          {itemToEdit instanceof PathItem && <PathHandles item={itemToEdit} />}
+          {focusedItem instanceof PathItem && <PathHandles item={focusedItem} />}
         </g>
         {currentTool && currentTool.renderOverlay(this.size)}
       </svg>
