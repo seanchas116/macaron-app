@@ -2,6 +2,8 @@
 
 [WIP] Hackable vector design tool
 
+Powered by Electron / SVG / React / MobX
+
 ## Run App
 
 ```

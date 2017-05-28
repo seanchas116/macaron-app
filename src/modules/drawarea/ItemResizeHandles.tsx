@@ -1,7 +1,6 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 import {action, reaction, computed, observable} from 'mobx'
-import {autobind} from 'core-decorators'
 import {Rect, Vec2} from 'paintvec'
 import {ResizeHandles} from './ResizeHandles'
 import {Item, Command, CompositeCommand, ItemChangeCommand, documentManager} from '../document'
@@ -54,7 +53,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
     />
   }
 
-  @autobind private snap (pos: Vec2, xAlign: Alignment, yAlign: Alignment) {
+  private snap = (pos: Vec2, xAlign: Alignment, yAlign: Alignment) => {
     if (this.rect) {
       return snapper.snapPos(pos, xAlign, yAlign)
     } else {
@@ -62,7 +61,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
     }
   }
 
-  @autobind @action private onChangeBegin () {
+  @action private onChangeBegin = () => {
     this.dragging = true
     this.originalPositions = this.positions
     this.items = this.props.items
@@ -81,7 +80,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
     snapper.targets = snapTargets
   }
 
-  @autobind @action private onChange (p1: Vec2, p2: Vec2) {
+  @action private onChange = (p1: Vec2, p2: Vec2) => {
     if (!this.originalPositions) {
       return
     }
@@ -102,7 +101,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
     this.positions = [p1, p2]
   }
 
-  @autobind @action private onChangeEnd () {
+  @action private onChangeEnd = () => {
     this.commit()
 
     this.dragging = false

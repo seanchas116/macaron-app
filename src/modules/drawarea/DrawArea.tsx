@@ -2,7 +2,6 @@ import * as React from 'react'
 import {observable, action} from 'mobx'
 import {observer} from 'mobx-react'
 import {Vec2} from 'paintvec'
-import {autobind} from 'core-decorators'
 import {documentManager, PathItem} from '../document'
 import {toolManager} from './ToolManager'
 import {ItemResizeHandles} from './ItemResizeHandles'
@@ -50,7 +49,7 @@ export class DrawArea extends React.Component<{}, {}> {
     </div>
   }
 
-  @autobind @action deselect () {
+  @action deselect = () => {
     documentManager.document.deselectItems()
   }
 
@@ -59,7 +58,7 @@ export class DrawArea extends React.Component<{}, {}> {
     this.size = new Vec2(width, height)
   }
 
-  @autobind @action private onWheel (event: React.WheelEvent<SVGElement>) {
+  @action private onWheel = (event: React.WheelEvent<SVGElement>) => {
     const {document} = documentManager
     document.scroll = document.scroll.add(new Vec2(event.deltaX, event.deltaY)).round()
   }

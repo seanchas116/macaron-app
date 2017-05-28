@@ -1,7 +1,6 @@
 import * as React from 'react'
 import {Vec2, Rect} from 'paintvec'
 import {action} from 'mobx'
-import {autobind} from 'core-decorators'
 import {PointerEvents} from '../../util/components/PointerEvents'
 import {Item, Command, CompositeCommand, ItemChangeCommand, documentManager} from '../document'
 import {snapper} from './Snapper'
@@ -34,7 +33,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     </PointerEvents>
   }
 
-  @autobind @action private onPointerDown (event: PointerEvent) {
+  @action private onPointerDown = (event: PointerEvent) => {
     const {document} = this.props.item
     document.selectItem(this.props.item, event.shiftKey)
     this.items = document.selectedItems.peek()
@@ -53,7 +52,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
       snapper.targets = this.props.item.parent!.children.filter(i => !this.items.has(i)).map(i => i.rect)
     }
   }
-  @autobind @action private onPointerMove (event: PointerEvent) {
+  @action private onPointerMove = (event: PointerEvent) => {
     if (!this.dragging || !this.originalRect) {
       return
     }
@@ -69,7 +68,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
       }
     }
   }
-  @autobind @action private onPointerUp (event: PointerEvent) {
+  @action private onPointerUp = (event: PointerEvent) => {
     if (!this.dragging) {
       return
     }
