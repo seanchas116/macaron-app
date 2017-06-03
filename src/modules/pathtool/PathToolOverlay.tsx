@@ -45,7 +45,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
         item.closed = true
       } else {
         this.removePreviewNode()
-        item.nodes.push(new PathNode(pos, pos, pos, 'straight'))
+        item.nodes.push({position: pos, handle1: pos, handle2: pos, type: 'straight'})
       }
     } else {
       this.startEditing(pos)
@@ -75,7 +75,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
         this.removePreviewNode()
         item.closed = true
       } else {
-        this.setPreviewNode(new PathNode(pos, pos, pos, 'straight'))
+        this.setPreviewNode({position: pos, handle1: pos, handle2: pos, type: 'straight'})
         item.closed = false
       }
     }
@@ -108,7 +108,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     const parent = document.rootItem
     const children = [item, ...parent.children]
     itemPreview.addChildren(parent, children)
-    item.nodes.push(new PathNode(pos, pos, pos, 'straight'))
+    item.nodes.push({type: 'straight', position: pos, handle1: pos, handle2: pos})
     this.editingInfo = {item, parent}
     drawAreaMode.focusedItem = item
   }
