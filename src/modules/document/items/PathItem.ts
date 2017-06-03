@@ -5,22 +5,11 @@ import {Item, ItemData} from './Item'
 
 export type PathNodeType = 'symmetric' | 'asymmetric' | 'disconnected' | 'straight'
 
-export class PathNode {
-  @observable position: Vec2
-  @observable handle1: Vec2
-  @observable handle2: Vec2
-  @observable type: PathNodeType
-  constructor (
-    position: Vec2,
-    handle1: Vec2,
-    handle2: Vec2,
-    type: PathNodeType
-  ) {
-    this.position = position
-    this.handle1 = handle1
-    this.handle2 = handle2
-    this.type = type
-  }
+export interface PathNode {
+  type: PathNodeType
+  position: Vec2
+  handle1: Vec2
+  handle2: Vec2
 }
 
 export interface PathNodeData {
@@ -105,15 +94,12 @@ export class PathItem extends Item {
     this.offset = new Vec2(data.offsetX, data.offsetY)
     this.resizedSize = (data.resizedWidth && data.resizedHeight) ? new Vec2(data.resizedWidth, data.resizedHeight) : undefined
     this.closed = data.closed
-    this.nodes.replace(data.nodes.map(e => {
-      const node = new PathNode(
-        new Vec2(e.x, e.y),
-        new Vec2(e.handle1X, e.handle1Y),
-        new Vec2(e.handle2X, e.handle2Y),
-        e.type
-      )
-      return node
-    }))
+    this.nodes.replace(data.nodes.map(e => ({
+      type: e.type,
+      position: new Vec2(e.x, e.y),
+      handle1: new Vec2(e.handle1X, e.handle1Y),
+      handle2: new Vec2(e.handle2X, e.handle2Y)
+    })))
   }
 
   toData (): PathItemData {
