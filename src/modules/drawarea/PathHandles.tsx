@@ -36,7 +36,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     }
   }
 
-  @action onPointerMove = (event: PointerEvent) => {
+  @action onPointerMove = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
     if (!this.drag) {
       return
     }
@@ -57,6 +57,10 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     preview.nodes[this.props.index] = newNode
   }
 
+  onPointerMovePosition = (e: PointerEvent) => this.onPointerMove('position', e)
+  onPointerMoveHandle1 = (e: PointerEvent) => this.onPointerMove('handle1', e)
+  onPointerMoveHandle2 = (e: PointerEvent) => this.onPointerMove('handle2', e)
+
   @action onPointerUp = (event: PointerEvent) => {
     this.drag = undefined
     // TODO: commit
@@ -75,18 +79,19 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
         <circle cx={p.x} cy={p.y} r={3} fill='white' stroke='grey' />
       </g>
     } else {
-      return <PointerEvents
-        onPointerDown={this.onPointerDown}
-        onPointerMove={this.onPointerMove}
-        onPointerUp={this.onPointerUp} >
-        <g>
-          <line x1={p.x} y1={p.y} x2={h1.x} y2={h1.y} stroke='lightgray' />
-          <line x1={p.x} y1={p.y} x2={h2.x} y2={h2.y} stroke='lightgray' />
+      return <g>
+        <line x1={p.x} y1={p.y} x2={h1.x} y2={h1.y} stroke='lightgray' />
+        <line x1={p.x} y1={p.y} x2={h2.x} y2={h2.y} stroke='lightgray' />
+        <PointerEvents onPointerDown={this.onPointerDown} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
           <circle cx={p.x} cy={p.y} r={3} fill='white' stroke='grey' />
+        </PointerEvents>
+        <PointerEvents onPointerDown={this.onPointerDown} onPointerMove={this.onPointerMoveHandle1} onPointerUp={this.onPointerUp} >
           <circle cx={h1.x} cy={h1.y} r={2} fill='white' stroke='grey' />
+        </PointerEvents>
+        <PointerEvents onPointerDown={this.onPointerDown} onPointerMove={this.onPointerMoveHandle2} onPointerUp={this.onPointerUp} >
           <circle cx={h2.x} cy={h2.y} r={2} fill='white' stroke='grey' />
-        </g>
-      </PointerEvents>
+        </PointerEvents>
+      </g>
     }
   }
 }
