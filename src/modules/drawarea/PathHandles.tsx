@@ -2,7 +2,7 @@ import * as React from 'react'
 import {Vec2} from 'paintvec'
 import {action} from 'mobx'
 import {observer} from 'mobx-react'
-import {PathItem, PathNode} from '../document'
+import {PathItem, PathNode, PathNodeType} from '../document'
 import {itemPreview} from './ItemPreview'
 import {PointerEvents} from '../../util/components/PointerEvents'
 
@@ -16,6 +16,22 @@ function normalizeNodes (item: PathItem) {
   item.nodes.replace(newNodes)
   item.offset = new Vec2()
   item.resizedSize = undefined
+}
+
+function oppositeHandle (type: PathNodeType, position: Vec2, handle: Vec2, origOppositeHandle: Vec2) {
+  if (type === 'symmetric') {
+    return position.mulScalar(2).sub(handle)
+  }
+  if (type === 'asymmetric') {
+    const oppositeLength = origOppositeHandle.sub(position).length()
+    const orientation = handle.sub(position)
+    const length = orientation.length()
+    if (length > 0) {
+      return orientation.mulScalar(-oppositeLength / length)
+    }
+    return position
+  }
+  return origOppositeHandle
 }
 
 @observer
@@ -48,12 +64,41 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     const currentPos = new Vec2(event.clientX, event.clientY)
     const offset = currentPos.sub(startPos)
     // TODO: get absolute pos from event
-    const newNode = {
-      type: origNode.type,
-      position: origNode.position.add(offset),
-      handle1: origNode.handle1.add(offset),
-      handle2: origNode.handle2.add(offset)
+    let newNode: PathNode
+
+    switch (target) {
+      default:
+      case 'position': {
+        newNode = {
+          type: origNode.type,
+          position: origNode.position.add(offset),
+          handle1: origNode.handle1.add(offset),
+          handle2: origNode.handle2.add(offset)
+        }
+        break
+      }
+      case 'handle1': {
+        const handle1 = origNode.handle1.add(offset)
+        const handle2 = oppositeHandle(origNode.type, origNode.position, handle1, origNode.handle2)
+        newNode = {
+          type: origNode.type,
+          position: origNode.position,
+          handle1, handle2
+        }
+        break
+      }
+      case 'handle2': {
+        const handle2 = origNode.handle2.add(offset)
+        const handle1 = oppositeHandle(origNode.type, origNode.position, handle2, origNode.handle1)
+        newNode = {
+          type: origNode.type,
+          position: origNode.position,
+          handle1, handle2
+        }
+        break
+      }
     }
+
     preview.nodes[this.props.index] = newNode
   }
 
