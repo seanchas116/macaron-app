@@ -1,20 +1,53 @@
 import * as React from 'react'
+import {Vec2} from 'paintvec'
 import {action} from 'mobx'
 import {observer} from 'mobx-react'
-import {PathItem} from '../document'
+import {PathItem, PathNode} from '../document'
 import {itemPreview} from './ItemPreview'
 import {PointerEvents} from '../../util/components/PointerEvents'
 
 @observer
 class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}> {
+  drag: {
+    startPos: Vec2
+    origNode: PathNode
+  } | undefined
+
   @action onPointerDown = (event: PointerEvent) => {
-    // TODO
+    (event.target as Element).setPointerCapture(event.pointerId)
+    const {item, index} = this.props
+    itemPreview.addItem(item)
+    this.drag = {
+      startPos: new Vec2(event.clientX, event.clientY),
+      origNode: {...item.nodes[index]}
+    }
   }
+
   @action onPointerMove = (event: PointerEvent) => {
-    // TODO
+    if (!this.drag) {
+      return
+    }
+    const preview = itemPreview.getItem(this.props.item)
+    if (!preview) {
+      return
+    }
+    const {origNode, startPos} = this.drag
+    const currentPos = new Vec2(event.clientX, event.clientY)
+    const offset = currentPos.sub(startPos)
+    // TODO: get absolute pos from event
+    const newNode = {
+      type: origNode.type,
+      position: origNode.position.add(offset),
+      handle1: origNode.handle1.add(offset),
+      handle2: origNode.handle2.add(offset)
+    }
+    preview.nodes[this.props.index] = newNode
   }
+
   @action onPointerUp = (event: PointerEvent) => {
-    // TODO
+    this.drag = undefined
+    // TODO: commit
+    itemPreview.clear()
   }
 
   render () {

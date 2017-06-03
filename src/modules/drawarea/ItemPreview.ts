@@ -15,8 +15,8 @@ export class ItemPreview {
     return preview
   }
 
-  getItem (item: Item) {
-    return this.items.get(item)
+  getItem<T extends Item> (item: T) {
+    return this.items.get(item) as (T | undefined)
   }
 
   previewItem<T extends Item> (item: T) {
