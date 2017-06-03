@@ -6,6 +6,18 @@ import {PathItem, PathNode} from '../document'
 import {itemPreview} from './ItemPreview'
 import {PointerEvents} from '../../util/components/PointerEvents'
 
+function normalizeNodes (item: PathItem) {
+  const newNodes = item.nodes.map(n => ({
+    type: n.type,
+    position: item.transformPos(n.position),
+    handle1: item.transformPos(n.handle1),
+    handle2: item.transformPos(n.handle2)
+  }))
+  item.nodes.replace(newNodes)
+  item.offset = new Vec2()
+  item.resizedSize = undefined
+}
+
 @observer
 class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}> {
   drag: {
@@ -16,10 +28,11 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
   @action onPointerDown = (event: PointerEvent) => {
     (event.target as Element).setPointerCapture(event.pointerId)
     const {item, index} = this.props
-    itemPreview.addItem(item)
+    const preview = itemPreview.addItem(item)
+    normalizeNodes(preview)
     this.drag = {
       startPos: new Vec2(event.clientX, event.clientY),
-      origNode: {...item.nodes[index]}
+      origNode: {...preview.nodes[index]}
     }
   }
 

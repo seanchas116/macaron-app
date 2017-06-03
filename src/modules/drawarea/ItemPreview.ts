@@ -5,12 +5,12 @@ export class ItemPreview {
   private readonly items = new ObservableMap<Item, Item>()
   private readonly childrens = new ObservableMap<GroupItem, Item[]>()
 
-  addItem (item: Item) {
+  addItem<T extends Item> (item: T) {
     const oldPreview = this.items.get(item)
     if (oldPreview) {
       oldPreview.dispose()
     }
-    const preview = item.clone({shallow: true})
+    const preview = item.clone({shallow: true}) as T
     this.items.set(item, preview)
     return preview
   }
