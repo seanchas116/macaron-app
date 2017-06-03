@@ -41,8 +41,10 @@
     "@types/node" "*"
 
 "@types/uuid@^3.0.0":
-  version "3.3.28"
-  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-3.3.28.tgz#e0ca8f62e667783180b179ed69068586d6fba5cc"
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-3.0.0.tgz#be93b14bcf97f59c079a9e58754960b5efd946c3"
+  dependencies:
+    "@types/node" "*"
 
 "@types/webpack-env@^1.13.0":
   version "1.13.0"
