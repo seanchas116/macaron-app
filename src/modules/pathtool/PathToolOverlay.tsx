@@ -5,7 +5,7 @@ import {GroupItem, PathNode, PathItem, documentManager, ItemInsertCommand} from 
 import {itemPreview, drawAreaMode, toolManager} from '../drawarea'
 import {PointerEvents} from '../../util/components/PointerEvents'
 
-const snapDistance = 3
+const snapDistance = 4
 
 export
 class PathToolOverlay extends React.Component<{size: Vec2}, {}> {

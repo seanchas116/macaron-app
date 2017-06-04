@@ -177,3 +177,21 @@ export class PathItem extends Item {
     }
   }
 }
+
+export const PathUtil = {
+  getOppositeHandle (type: PathNodeType, position: Vec2, handle: Vec2, origOppositeHandle: Vec2) {
+    if (type === 'symmetric') {
+      return position.mulScalar(2).sub(handle)
+    }
+    if (type === 'asymmetric') {
+      const oppositeLength = origOppositeHandle.sub(position).length()
+      const orientation = handle.sub(position)
+      const length = orientation.length()
+      if (length > 0) {
+        return orientation.mulScalar(-oppositeLength / length)
+      }
+      return position
+    }
+    return origOppositeHandle
+  }
+}

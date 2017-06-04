@@ -2,7 +2,7 @@ import * as React from 'react'
 import {Vec2} from 'paintvec'
 import {action} from 'mobx'
 import {observer} from 'mobx-react'
-import {PathItem, PathNode, PathNodeType, ItemChangeCommand} from '../document'
+import {PathItem, PathNode, PathUtil, ItemChangeCommand} from '../document'
 import {itemPreview} from './ItemPreview'
 import {PointerEvents} from '../../util/components/PointerEvents'
 
@@ -18,21 +18,6 @@ function normalizeNodes (item: PathItem) {
   item.resizedSize = undefined
 }
 
-function oppositeHandle (type: PathNodeType, position: Vec2, handle: Vec2, origOppositeHandle: Vec2) {
-  if (type === 'symmetric') {
-    return position.mulScalar(2).sub(handle)
-  }
-  if (type === 'asymmetric') {
-    const oppositeLength = origOppositeHandle.sub(position).length()
-    const orientation = handle.sub(position)
-    const length = orientation.length()
-    if (length > 0) {
-      return orientation.mulScalar(-oppositeLength / length)
-    }
-    return position
-  }
-  return origOppositeHandle
-}
 
 @observer
 class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}> {
@@ -79,7 +64,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
       }
       case 'handle1': {
         const handle1 = origNode.handle1.add(offset)
-        const handle2 = oppositeHandle(origNode.type, origNode.position, handle1, origNode.handle2)
+        const handle2 = PathUtil.getOppositeHandle(origNode.type, origNode.position, handle1, origNode.handle2)
         newNode = {
           type: origNode.type,
           position: origNode.position,
@@ -89,7 +74,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
       }
       case 'handle2': {
         const handle2 = origNode.handle2.add(offset)
-        const handle1 = oppositeHandle(origNode.type, origNode.position, handle2, origNode.handle1)
+        const handle1 = PathUtil.getOppositeHandle(origNode.type, origNode.position, handle2, origNode.handle1)
         newNode = {
           type: origNode.type,
           position: origNode.position,
@@ -131,20 +116,20 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     const h2 = preview.transformPos(node.handle2)
     if (node.type === 'straight') {
       return <g>
-        <circle cx={p.x} cy={p.y} r={3} fill='white' stroke='grey' />
+        <circle cx={p.x} cy={p.y} r={4} fill='white' stroke='grey' />
       </g>
     } else {
       return <g>
         <line x1={p.x} y1={p.y} x2={h1.x} y2={h1.y} stroke='lightgray' />
         <line x1={p.x} y1={p.y} x2={h2.x} y2={h2.y} stroke='lightgray' />
         <PointerEvents onPointerDown={this.onPointerDown} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
-          <circle cx={p.x} cy={p.y} r={3} fill='white' stroke='grey' />
+          <circle cx={p.x} cy={p.y} r={4} fill='white' stroke='grey' />
         </PointerEvents>
         <PointerEvents onPointerDown={this.onPointerDown} onPointerMove={this.onPointerMoveHandle1} onPointerUp={this.onPointerUp} >
-          <circle cx={h1.x} cy={h1.y} r={2} fill='white' stroke='grey' />
+          <circle cx={h1.x} cy={h1.y} r={3} fill='white' stroke='grey' />
         </PointerEvents>
         <PointerEvents onPointerDown={this.onPointerDown} onPointerMove={this.onPointerMoveHandle2} onPointerUp={this.onPointerUp} >
-          <circle cx={h2.x} cy={h2.y} r={2} fill='white' stroke='grey' />
+          <circle cx={h2.x} cy={h2.y} r={3} fill='white' stroke='grey' />
         </PointerEvents>
       </g>
     }
