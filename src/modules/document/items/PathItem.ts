@@ -38,6 +38,13 @@ export class PathItem extends Item {
   @observable closed = false
   @observable resizedSize: Vec2|undefined
 
+  get nodeArray (): ReadonlyArray<PathNode> {
+    return [...this.nodes]
+  }
+  set nodeArray (array: ReadonlyArray<PathNode>) {
+    this.nodes.replace(array as PathNode[])
+  }
+
   @computed get position () {
     return this.boundingRect.topLeft.add(this.offset)
   }
