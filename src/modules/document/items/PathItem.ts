@@ -38,6 +38,7 @@ export class PathItem extends Item {
   @observable closed = false
   @observable resizedSize: Vec2|undefined
 
+  // nodes as settable immutable array property
   get nodeArray (): ReadonlyArray<PathNode> {
     return [...this.nodes]
   }
