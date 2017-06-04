@@ -2,7 +2,7 @@ import * as React from 'react'
 import {Vec2} from 'paintvec'
 import {action} from 'mobx'
 import {observer} from 'mobx-react'
-import {PathItem, PathNode, PathNodeType} from '../document'
+import {PathItem, PathNode, PathNodeType, ItemChangeCommand} from '../document'
 import {itemPreview} from './ItemPreview'
 import {PointerEvents} from '../../util/components/PointerEvents'
 
@@ -108,7 +108,17 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
 
   @action onPointerUp = (event: PointerEvent) => {
     this.drag = undefined
-    // TODO: commit
+    const {item} = this.props
+    const {document} = item
+    const preview = itemPreview.getItem(item)
+    if (!preview) {
+      return
+    }
+    document.history.push(new ItemChangeCommand('Move Path', item, {
+      nodeArray: preview.nodeArray,
+      offset: new Vec2(),
+      resizedSize: undefined
+    }))
     itemPreview.clear()
   }
 
