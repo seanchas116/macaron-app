@@ -63,7 +63,7 @@ namespace macaron {
 		auto format = ::RegisterClipboardFormat(*type);
 		auto data = ::GetClipboardData(format);
 
-		auto maybeBuffer = Nan::NewBuffer((char *)::GlobalLock(data), (uint32_t)::GlobalSize(data));
+		auto maybeBuffer = Nan::CopyBuffer((char *)::GlobalLock(data), (uint32_t)::GlobalSize(data));
 		::GlobalUnlock(data);
 		if (!maybeBuffer.IsEmpty()) {
 			info.GetReturnValue().Set(maybeBuffer.ToLocalChecked());
