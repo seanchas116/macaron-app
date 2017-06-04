@@ -156,8 +156,9 @@ export class PathHandles extends React.Component<{item: PathItem}, {}> {
   render () {
     const {item} = this.props
     const preview = itemPreview.previewItem(item)
+    const {scroll} = item.document
 
-    return <g>
+    return <g transform={`translate(${-scroll.x}, ${-scroll.y})`}>
       {preview.nodes.map((n, i) => <PathNodeHandle item={item} index={i} key={i} />)}
     </g>
   }

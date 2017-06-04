@@ -41,9 +41,10 @@ export class DrawArea extends React.Component<{}, {}> {
         <g transform={`translate(${-scroll.x}, ${-scroll.y})`} >
           <GroupItemView item={rootItem} />
           <SnapLines />
-          <ItemResizeHandles items={[...selectedItems]} />
-          {focusedItem instanceof PathItem && <PathHandles item={focusedItem} />}
+          {!focusedItem && <ItemResizeHandles items={[...selectedItems]} />}
         </g>
+        {focusedItem && <rect x={0} y={0} width={width} height={height} fill='transparent' />}
+        {focusedItem instanceof PathItem && <PathHandles item={focusedItem} />}
         {currentTool && currentTool.renderOverlay(this.size)}
       </svg>
     </div>
