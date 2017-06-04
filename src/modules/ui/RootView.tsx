@@ -34,7 +34,7 @@ class RootView extends React.Component<{}, {}> {
     if (e.key === 'Delete' || e.key === 'Backspace') {
       this.removeItems()
     }
-    if (e.key === 'Escape') {
+    if (e.key === 'Escape' || e.key === 'Enter') {
       drawAreaMode.focusedItem = undefined
     }
   }
