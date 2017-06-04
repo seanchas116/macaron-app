@@ -12,6 +12,7 @@ class Document {
 
   @observable rootItem = new GroupItem(this)
   readonly selectedItems = new ObservableSet<Item>()
+  @observable focusedItem: Item|undefined = undefined
   @observable scroll = new Vec2()
 
   @observable filePath = ''

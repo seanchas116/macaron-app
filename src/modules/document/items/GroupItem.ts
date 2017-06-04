@@ -97,6 +97,9 @@ class GroupItem extends Item {
     const onRemoved = (child: Item) => {
       child.parent = undefined
       this.document.selectedItems.delete(child)
+      if (this.document.focusedItem === child) {
+        this.document.focusedItem = undefined
+      }
     }
     if (change.type === 'splice') {
       change.added.forEach(onAdded)

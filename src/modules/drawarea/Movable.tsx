@@ -5,7 +5,6 @@ import {PointerEvents} from '../../util/components/PointerEvents'
 import {Item, Command, CompositeCommand, ItemChangeCommand, documentManager} from '../document'
 import {snapper} from './Snapper'
 import {itemPreview} from './ItemPreview'
-import {drawAreaMode} from './DrawAreaMode'
 
 export
 class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
@@ -36,7 +35,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
 
   @action private onDoubleClick = () => {
     this.cancel()
-    drawAreaMode.focusedItem = this.props.item
+    documentManager.document.focusedItem = this.props.item
   }
 
   @action private onPointerDown = (event: PointerEvent) => {

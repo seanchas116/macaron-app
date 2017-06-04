@@ -3,7 +3,7 @@ import {action} from 'mobx'
 import {ToolSelect} from './ToolSelect'
 import {ItemHierarchy} from './ItemHierarchy'
 import {Inspector} from './Inspector'
-import {DrawArea, toolManager, drawAreaMode} from '../drawarea'
+import {DrawArea, toolManager} from '../drawarea'
 import {documentManager, CompositeCommand, ItemRemoveCommand} from '../document'
 import {isTextInput} from '../../util/isTextInput'
 const styles = require('./RootView.css')
@@ -35,7 +35,7 @@ class RootView extends React.Component<{}, {}> {
       this.removeItems()
     }
     if (e.key === 'Escape' || e.key === 'Enter') {
-      drawAreaMode.focusedItem = undefined
+      documentManager.document.focusedItem = undefined
     }
   }
 
