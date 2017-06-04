@@ -116,7 +116,9 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     const h2 = preview.transformPos(node.handle2)
     if (node.type === 'straight') {
       return <g>
-        <circle cx={p.x} cy={p.y} r={4} fill='white' stroke='grey' />
+        <PointerEvents onPointerDown={this.onPointerDown} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
+          <circle cx={p.x} cy={p.y} r={4} fill='white' stroke='grey' />
+        </PointerEvents>
       </g>
     } else {
       return <g>
