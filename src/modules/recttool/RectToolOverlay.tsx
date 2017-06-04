@@ -73,7 +73,7 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     this.commit()
     this.startPos = undefined
     this.item = undefined
-    toolManager.current = undefined
+    toolManager.currentId = undefined
     itemPreview.clear()
   }
 

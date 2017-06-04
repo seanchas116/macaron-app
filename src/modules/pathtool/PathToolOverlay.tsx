@@ -152,6 +152,6 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     document.history.push(new ItemInsertCommand('Add Item', parent, item, parent.childAt(0)))
     document.selectedItems.replace([item])
     document.focusedItem = undefined
-    toolManager.current = undefined
+    toolManager.currentId = undefined
   }
 }
