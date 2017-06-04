@@ -2,7 +2,7 @@ import * as React from 'react'
 import {action} from 'mobx'
 import {Vec2} from 'paintvec'
 import {GroupItem, PathNode, PathItem, documentManager, ItemInsertCommand} from '../document'
-import {itemPreview, drawAreaMode, toolManager} from '../drawarea'
+import {itemPreview, toolManager} from '../drawarea'
 import {PointerEvents} from '../../util/components/PointerEvents'
 
 const snapDistance = 4
@@ -110,7 +110,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     itemPreview.addChildren(parent, children)
     item.nodes.push({type: 'straight', position: pos, handle1: pos, handle2: pos})
     this.editingInfo = {item, parent}
-    drawAreaMode.focusedItem = item
+    document.focusedItem = item
   }
 
   private endEditing () {
@@ -151,7 +151,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     const {document} = documentManager
     document.history.push(new ItemInsertCommand('Add Item', parent, item, parent.childAt(0)))
     document.selectedItems.replace([item])
-    drawAreaMode.focusedItem = undefined
+    document.focusedItem = undefined
     toolManager.current = undefined
   }
 }
