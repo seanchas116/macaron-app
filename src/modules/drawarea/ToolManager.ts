@@ -1,12 +1,20 @@
-import {observable} from 'mobx'
+import {observable, computed} from 'mobx'
 import {Tool} from './Tool'
 
 export
 class ToolManager {
-  readonly tools = observable<Tool>([])
-  @observable current: Tool|undefined
+  tools = new Map<string, Tool>()
+  readonly toolOrder = observable<string>([])
+  @observable currentId: string|undefined
+
+  @computed get current () {
+    if (this.currentId) {
+      return this.tools.get(this.currentId)
+    }
+  }
+
   add (tool: Tool) {
-    this.tools.push(tool)
+    this.tools.set(tool.id, tool)
   }
 }
 
