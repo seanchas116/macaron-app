@@ -8,7 +8,7 @@ export {RectLikeItem, RectLikeItemData} from './items/RectLikeItem'
 export {RectItem, RectItemData} from './items/RectItem'
 export {OvalItem, OvalItemData} from './items/OvalItem'
 export {TextItem, TextItemData} from './items/TextItem'
-export {PathNodeType, PathNode, PathNodeData, PathItem, PathItemData} from './items/PathItem'
+export {PathNodeType, PathNode, PathNodeData, PathItem, PathItemData, PathUtil} from './items/PathItem'
 export {itemFromData} from './items/itemFromData'
 
 export {Command} from './commands/Command'

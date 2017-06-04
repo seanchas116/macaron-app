@@ -38,6 +38,14 @@ export class PathItem extends Item {
   @observable closed = false
   @observable resizedSize: Vec2|undefined
 
+  // nodes as settable immutable array property
+  get nodeArray (): ReadonlyArray<PathNode> {
+    return [...this.nodes]
+  }
+  set nodeArray (array: ReadonlyArray<PathNode>) {
+    this.nodes.replace(array as PathNode[])
+  }
+
   @computed get position () {
     return this.boundingRect.topLeft.add(this.offset)
   }
@@ -158,7 +166,7 @@ export class PathItem extends Item {
     return commands.join(' ')
   }
 
-  private transformPos (pos: Vec2) {
+  transformPos (pos: Vec2) {
     if (this.resizedSize) {
       return pos.sub(this.boundingRect.topLeft)
               .mul(this.resizedSize.div(this.boundingRect.size))
@@ -167,5 +175,23 @@ export class PathItem extends Item {
     } else {
       return pos.add(this.offset)
     }
+  }
+}
+
+export const PathUtil = {
+  getOppositeHandle (type: PathNodeType, position: Vec2, handle: Vec2, origOppositeHandle: Vec2) {
+    if (type === 'symmetric') {
+      return position.mulScalar(2).sub(handle)
+    }
+    if (type === 'asymmetric') {
+      const oppositeLength = origOppositeHandle.sub(position).length()
+      const orientation = handle.sub(position)
+      const length = orientation.length()
+      if (length > 0) {
+        return orientation.mulScalar(-oppositeLength / length)
+      }
+      return position
+    }
+    return origOppositeHandle
   }
 }
