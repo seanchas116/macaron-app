@@ -19,7 +19,7 @@ class Document {
 
   readonly history = new History()
 
-  @computed get fileName() {
+  @computed get fileName () {
     if (this.filePath) {
       return path.basename(this.filePath)
     } else {
