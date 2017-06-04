@@ -3,6 +3,7 @@ import {Vec2} from 'paintvec'
 import {action} from 'mobx'
 import {observer} from 'mobx-react'
 import {PathItem, PathNode, PathUtil, ItemChangeCommand} from '../document'
+import {DrawArea} from './DrawArea'
 import {itemPreview} from './ItemPreview'
 import {PointerEvents} from '../../util/components/PointerEvents'
 
@@ -22,7 +23,6 @@ function normalizeNodes (item: PathItem) {
 @observer
 class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}> {
   drag: {
-    startPos: Vec2
     origNode: PathNode
   } | undefined
 
@@ -32,7 +32,6 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     const preview = itemPreview.addItem(item)
     normalizeNodes(preview)
     this.drag = {
-      startPos: new Vec2(event.clientX, event.clientY),
       origNode: {...preview.nodes[index]}
     }
   }
@@ -45,25 +44,24 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     if (!preview) {
       return
     }
-    const {origNode, startPos} = this.drag
-    const currentPos = new Vec2(event.clientX, event.clientY)
-    const offset = currentPos.sub(startPos)
-    // TODO: get absolute pos from event
-    let newNode: PathNode
+    const {origNode} = this.drag
+    const pos = DrawArea.posFromEvent(event)
 
+    let newNode: PathNode
     switch (target) {
       default:
       case 'position': {
+        const offset = pos.sub(origNode.position)
         newNode = {
           type: origNode.type,
-          position: origNode.position.add(offset),
+          position: pos,
           handle1: origNode.handle1.add(offset),
           handle2: origNode.handle2.add(offset)
         }
         break
       }
       case 'handle1': {
-        const handle1 = origNode.handle1.add(offset)
+        const handle1 = pos
         const handle2 = PathUtil.getOppositeHandle(origNode.type, origNode.position, handle1, origNode.handle2)
         newNode = {
           type: origNode.type,
@@ -73,7 +71,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
         break
       }
       case 'handle2': {
-        const handle2 = origNode.handle2.add(offset)
+        const handle2 = pos
         const handle1 = PathUtil.getOppositeHandle(origNode.type, origNode.position, handle2, origNode.handle1)
         newNode = {
           type: origNode.type,

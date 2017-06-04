@@ -13,9 +13,19 @@ const styles = require('./DrawArea.css')
 
 @observer
 export class DrawArea extends React.Component<{}, {}> {
+  private static clientRect: ClientRect|undefined
+
   private root: HTMLElement
   private resizeObserver: any
   @observable private size = new Vec2(0, 0)
+
+  static posFromEvent (event: {clientX: number, clientY: number}) {
+    const {scroll} = documentManager.document
+    if (this.clientRect) {
+      return new Vec2(event.clientX - this.clientRect.left + scroll.x, event.clientY - this.clientRect.top + scroll.y)
+    }
+    return new Vec2()
+  }
 
   componentDidMount () {
     this.resizeSVG()
@@ -55,8 +65,9 @@ export class DrawArea extends React.Component<{}, {}> {
   }
 
   @action private resizeSVG () {
-    const {width, height} = this.root.getBoundingClientRect()
-    this.size = new Vec2(width, height)
+    const clientRect = this.root.getBoundingClientRect()
+    DrawArea.clientRect = clientRect
+    this.size = new Vec2(clientRect.width, clientRect.height)
   }
 
   @action private onWheel = (event: React.WheelEvent<SVGElement>) => {
