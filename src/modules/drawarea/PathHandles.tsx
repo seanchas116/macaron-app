@@ -25,7 +25,6 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
   drag: {
     origNodes: Map<number, PathNode>
     draggedNodePos: Vec2
-    moved: boolean
   } | undefined
 
   @action onPointerDown = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
@@ -37,21 +36,24 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     const origNodes = new Map<number, PathNode>()
     if (target === 'position') {
       const {document} = item
-      document.selectedPathNodes.add(index)
+      if (event.shiftKey) {
+        document.selectedPathNodes.add(index)
+      } else {
+        document.selectedPathNodes.replace([index])
+      }
       for (const i of document.selectedPathNodes) {
         origNodes.set(i , {...preview.nodes[i]})
       }
     } else {
       origNodes.set(index, {...preview.nodes[index]})
     }
-    this.drag = {origNodes, draggedNodePos: preview.nodes[index].position, moved: false}
+    this.drag = {origNodes, draggedNodePos: preview.nodes[index].position}
   }
 
   @action onPointerMove = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
     if (!this.drag) {
       return
     }
-    this.drag.moved = true
     const preview = itemPreview.getItem(this.props.item)
     if (!preview) {
       return
@@ -73,16 +75,9 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
   onPointerMoveHandle2 = (e: PointerEvent) => this.onPointerMove('handle2', e)
 
   @action onPointerUp = (event: PointerEvent) => {
-    if (!this.drag) {
-      return
-    }
+    this.drag = undefined
     const {item} = this.props
     const {document} = item
-    if (!this.drag.moved) {
-      if (!event.shiftKey) {
-        document.selectedPathNodes.replace([this.props.index])
-      }
-    }
     const preview = itemPreview.getItem(item)
     if (!preview) {
       return
