@@ -7,6 +7,8 @@ import {DrawArea} from './DrawArea'
 import {itemPreview} from './ItemPreview'
 import {PointerEvents} from '../../util/components/PointerEvents'
 
+const snapDistance = 4
+
 function normalizeNodes (item: PathItem) {
   const newNodes = item.nodes.map(n => ({
     type: n.type,
@@ -117,6 +119,111 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
         </PointerEvents>
       </g>
     }
+  }
+}
+
+export class PathNodeAddOverlay extends React.Component<{width: number, height: number, item: PathItem, onFinish: () => void}, {}> {
+  clicked = false
+  hasPreviewNode = false
+  closingNode = false
+  draggingHandle = false
+  preview: PathItem
+
+  componentDidMount () {
+    this.preview = itemPreview.previewItem(this.props.item)
+    normalizeNodes(this.preview)
+  }
+  componentWillUnmount () {
+    itemPreview.clear()
+  }
+
+  render () {
+    const {width, height} = this.props
+    return <PointerEvents
+      onPointerDown={this.onPointerDown}
+      onPointerMove={this.onPointerMove}
+      onPointerUp={this.onPointerUp}
+    >
+      <rect width={width} height={height} fill='transparent' />
+    </PointerEvents>
+  }
+
+  @action private onPointerDown = (event: PointerEvent) => {
+    this.clicked = true
+    const pos = DrawArea.posFromEvent(event)
+    const {preview} = this
+    if (pos.sub(preview.nodes[0].position).length() < snapDistance) {
+      this.closingNode = true
+      preview.closed = true
+    } else {
+      this.removePreviewNode()
+      preview.nodes.push({position: pos, handle1: pos, handle2: pos, type: 'straight'})
+    }
+  }
+
+  @action private onPointerMove = (event: PointerEvent) => {
+    const pos = DrawArea.posFromEvent(event)
+    const {preview} = this
+    if (this.clicked) {
+      if (!this.draggingHandle) {
+        const distance = pos.sub(preview.nodes[preview.nodes.length - 1].position).length()
+        if (distance < snapDistance) {
+          return
+        }
+        this.draggingHandle = true
+      }
+      const node = this.closingNode ? preview.nodes[0] : preview.nodes[preview.nodes.length - 1]
+      node.handle1 = node.position.mulScalar(2).sub(pos)
+      node.handle2 = pos
+      node.type = 'symmetric'
+    } else {
+      if (pos.sub(preview.nodes[0].position).length() < snapDistance) {
+        this.removePreviewNode()
+        preview.closed = true
+      } else {
+        this.setPreviewNode({position: pos, handle1: pos, handle2: pos, type: 'straight'})
+        preview.closed = false
+      }
+    }
+  }
+
+  @action private onPointerUp = (event: PointerEvent) => {
+    this.clicked = false
+    this.draggingHandle = false
+    const {preview} = this
+    this.commit()
+    if (this.closingNode) {
+      this.props.onFinish()
+    } else {
+      const lastEdge = preview.nodes[preview.nodes.length - 1]
+      this.setPreviewNode(lastEdge)
+    }
+  }
+
+  private setPreviewNode (node: PathNode) {
+    this.removePreviewNode()
+    this.preview.nodes.push(node)
+    this.hasPreviewNode = true
+  }
+
+  private removePreviewNode () {
+    if (this.hasPreviewNode) {
+      this.preview.nodes.pop()
+    }
+    this.hasPreviewNode = false
+  }
+
+  @action private commit () {
+    const {item} = this.props
+    const {document} = item
+    const {preview} = this
+    const nodeArray = this.hasPreviewNode ? preview.nodeArray.slice(0, -1) : preview.nodeArray
+    document.history.push(new ItemChangeCommand('Move Path', item, {
+      nodeArray,
+      offset: new Vec2(),
+      resizedSize: undefined,
+      closed: preview.closed
+    }))
   }
 }
 
