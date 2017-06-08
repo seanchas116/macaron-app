@@ -50,6 +50,10 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     this.drag = {origNodes, draggedNodePos: preview.nodes[index].position}
   }
 
+  onPointerDownPosition = (e: PointerEvent) => this.onPointerDown('position', e)
+  onPointerDownHandle1 = (e: PointerEvent) => this.onPointerDown('handle1', e)
+  onPointerDownHandle2 = (e: PointerEvent) => this.onPointerDown('handle2', e)
+
   @action onPointerMove = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
     if (!this.drag) {
       return
@@ -65,10 +69,6 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
       preview.nodes[index] = PathUtil.moveHandle(origNode, target, pos)
     }
   }
-
-  onPointerDownPosition = (e: PointerEvent) => this.onPointerDown('position', e)
-  onPointerDownHandle1 = (e: PointerEvent) => this.onPointerDown('handle1', e)
-  onPointerDownHandle2 = (e: PointerEvent) => this.onPointerDown('handle2', e)
 
   onPointerMovePosition = (e: PointerEvent) => this.onPointerMove('position', e)
   onPointerMoveHandle1 = (e: PointerEvent) => this.onPointerMove('handle1', e)
