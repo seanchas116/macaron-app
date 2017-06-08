@@ -34,6 +34,12 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     this.drag = {
       origNode: {...preview.nodes[index]}
     }
+    const {document} = item
+    if (event.shiftKey) {
+      document.selectedPathNodes.add(index)
+    } else {
+      document.selectedPathNodes.replace([index])
+    }
   }
 
   @action onPointerMove = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
@@ -112,6 +118,8 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     const p = preview.transformPos(node.position)
     const h1 = preview.transformPos(node.handle1)
     const h2 = preview.transformPos(node.handle2)
+    const selected = item.document.selectedPathNodes.has(index)
+    console.log(index, item.document.selectedPathNodes)
     if (node.type === 'straight') {
       return <g>
         <PointerEvents onPointerDown={this.onPointerDown} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
@@ -123,7 +131,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
         <line x1={p.x} y1={p.y} x2={h1.x} y2={h1.y} stroke='lightgray' />
         <line x1={p.x} y1={p.y} x2={h2.x} y2={h2.y} stroke='lightgray' />
         <PointerEvents onPointerDown={this.onPointerDown} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
-          <circle cx={p.x} cy={p.y} r={4} fill='white' stroke='grey' />
+          <circle cx={p.x} cy={p.y} r={4} fill={selected ? 'blue' : 'white'} stroke='grey' />
         </PointerEvents>
         <PointerEvents onPointerDown={this.onPointerDown} onPointerMove={this.onPointerMoveHandle1} onPointerUp={this.onPointerUp} >
           <circle cx={h1.x} cy={h1.y} r={3} fill='white' stroke='grey' />
