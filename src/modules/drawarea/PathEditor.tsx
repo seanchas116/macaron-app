@@ -19,7 +19,6 @@ function normalizeNodes (item: PathItem) {
   item.resizedSize = undefined
 }
 
-
 @observer
 class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}> {
   drag: {
