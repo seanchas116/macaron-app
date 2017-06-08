@@ -59,42 +59,8 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     const dragPos = DrawArea.posFromEvent(event)
 
     for (const [index, origNode] of this.drag.origNodes) {
-      let newNode: PathNode
       const pos = dragPos.add(origNode.position.sub(this.drag.draggedNodePos))
-      switch (target) {
-        default:
-        case 'position': {
-          const offset = pos.sub(origNode.position)
-          newNode = {
-            type: origNode.type,
-            position: pos,
-            handle1: origNode.handle1.add(offset),
-            handle2: origNode.handle2.add(offset)
-          }
-          break
-        }
-        case 'handle1': {
-          const handle1 = pos
-          const handle2 = PathUtil.getOppositeHandle(origNode.type, origNode.position, handle1, origNode.handle2)
-          newNode = {
-            type: origNode.type,
-            position: origNode.position,
-            handle1, handle2
-          }
-          break
-        }
-        case 'handle2': {
-          const handle2 = pos
-          const handle1 = PathUtil.getOppositeHandle(origNode.type, origNode.position, handle2, origNode.handle1)
-          newNode = {
-            type: origNode.type,
-            position: origNode.position,
-            handle1, handle2
-          }
-          break
-        }
-      }
-      preview.nodes[index] = newNode
+      preview.nodes[index] = PathUtil.moveHandle(origNode, target, pos)
     }
   }
 

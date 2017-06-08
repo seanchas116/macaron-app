@@ -193,5 +193,38 @@ export const PathUtil = {
       return position
     }
     return origOppositeHandle
+  },
+
+  moveHandle (node: PathNode, target: 'position' | 'handle1' | 'handle2', pos: Vec2) {
+    switch (target) {
+      default:
+      case 'position': {
+        const offset = pos.sub(node.position)
+        return {
+          type: node.type,
+          position: pos,
+          handle1: node.handle1.add(offset),
+          handle2: node.handle2.add(offset)
+        }
+      }
+      case 'handle1': {
+        const handle1 = pos
+        const handle2 = PathUtil.getOppositeHandle(node.type, node.position, handle1, node.handle2)
+        return {
+          type: node.type,
+          position: node.position,
+          handle1, handle2
+        }
+      }
+      case 'handle2': {
+        const handle2 = pos
+        const handle1 = PathUtil.getOppositeHandle(node.type, node.position, handle2, node.handle1)
+        return {
+          type: node.type,
+          position: node.position,
+          handle1, handle2
+        }
+      }
+    }
   }
 }
