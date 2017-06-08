@@ -51,8 +51,7 @@ export class DrawArea extends React.Component<{}, {}> {
           <SnapLines />
           {!focusedItem && <ItemResizeHandles items={[...selectedItems]} />}
         </g>
-        {focusedItem && <rect x={0} y={0} width={width} height={height} fill='transparent' />}
-        {focusedItem instanceof PathItem && <PathEditor item={focusedItem} />}
+        {focusedItem instanceof PathItem && <PathEditor item={focusedItem} width={width} height={height} />}
         {currentTool && currentTool.renderOverlay(this.size)}
       </svg>
     </div>

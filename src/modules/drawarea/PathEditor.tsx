@@ -124,14 +124,30 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
 }
 
 @observer
-export class PathEditor extends React.Component<{item: PathItem}, {}> {
+export class PathEditor extends React.Component<{item: PathItem, width: number, height: number}, {}> {
   render () {
     const {item} = this.props
     const preview = itemPreview.previewItem(item)
     const {scroll} = item.document
 
-    return <g transform={`translate(${-scroll.x}, ${-scroll.y})`}>
-      {preview.nodes.map((n, i) => <PathNodeHandle item={item} index={i} key={i} />)}
+    return <g>
+      <rect
+        x={0} y={0} width={this.props.width} height={this.props.height}
+        fill='transparent'
+        onClick={this.onClickOutside} onDoubleClick={this.onDoubleClickOutside} />
+      <g transform={`translate(${-scroll.x}, ${-scroll.y})`}>
+        {preview.nodes.map((n, i) => <PathNodeHandle item={item} index={i} key={i} />)}
+      </g>
     </g>
+  }
+
+  @action private onClickOutside = () => {
+    const {document} = this.props.item
+    document.selectedPathNodes.clear()
+  }
+
+  @action private onDoubleClickOutside = () => {
+    const {document} = this.props.item
+    document.focusedItem = undefined
   }
 }
