@@ -26,7 +26,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     origNode: PathNode
   } | undefined
 
-  @action onPointerDown = (event: PointerEvent) => {
+  @action onPointerDown = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
     (event.target as Element).setPointerCapture(event.pointerId)
     const {item, index} = this.props
     const preview = itemPreview.addItem(item)
@@ -34,11 +34,14 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     this.drag = {
       origNode: {...preview.nodes[index]}
     }
-    const {document} = item
-    if (event.shiftKey) {
-      document.selectedPathNodes.add(index)
-    } else {
-      document.selectedPathNodes.replace([index])
+
+    if (target === 'position') {
+      const {document} = item
+      if (event.shiftKey) {
+        document.selectedPathNodes.add(index)
+      } else {
+        document.selectedPathNodes.replace([index])
+      }
     }
   }
 
@@ -91,6 +94,10 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     preview.nodes[this.props.index] = newNode
   }
 
+  onPointerDownPosition = (e: PointerEvent) => this.onPointerDown('position', e)
+  onPointerDownHandle1 = (e: PointerEvent) => this.onPointerDown('handle1', e)
+  onPointerDownHandle2 = (e: PointerEvent) => this.onPointerDown('handle2', e)
+
   onPointerMovePosition = (e: PointerEvent) => this.onPointerMove('position', e)
   onPointerMoveHandle1 = (e: PointerEvent) => this.onPointerMove('handle1', e)
   onPointerMoveHandle2 = (e: PointerEvent) => this.onPointerMove('handle2', e)
@@ -122,7 +129,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     console.log(index, item.document.selectedPathNodes)
     if (node.type === 'straight') {
       return <g>
-        <PointerEvents onPointerDown={this.onPointerDown} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
+        <PointerEvents onPointerDown={this.onPointerDownPosition} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
           <circle cx={p.x} cy={p.y} r={4} fill='white' stroke='grey' />
         </PointerEvents>
       </g>
@@ -130,13 +137,13 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
       return <g>
         <line x1={p.x} y1={p.y} x2={h1.x} y2={h1.y} stroke='lightgray' />
         <line x1={p.x} y1={p.y} x2={h2.x} y2={h2.y} stroke='lightgray' />
-        <PointerEvents onPointerDown={this.onPointerDown} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
+        <PointerEvents onPointerDown={this.onPointerDownPosition} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
           <circle cx={p.x} cy={p.y} r={4} fill={selected ? 'blue' : 'white'} stroke='grey' />
         </PointerEvents>
-        <PointerEvents onPointerDown={this.onPointerDown} onPointerMove={this.onPointerMoveHandle1} onPointerUp={this.onPointerUp} >
+        <PointerEvents onPointerDown={this.onPointerDownHandle1} onPointerMove={this.onPointerMoveHandle1} onPointerUp={this.onPointerUp} >
           <circle cx={h1.x} cy={h1.y} r={3} fill='white' stroke='grey' />
         </PointerEvents>
-        <PointerEvents onPointerDown={this.onPointerDown} onPointerMove={this.onPointerMoveHandle2} onPointerUp={this.onPointerUp} >
+        <PointerEvents onPointerDown={this.onPointerDownHandle2} onPointerMove={this.onPointerMoveHandle2} onPointerUp={this.onPointerUp} >
           <circle cx={h2.x} cy={h2.y} r={3} fill='white' stroke='grey' />
         </PointerEvents>
       </g>
