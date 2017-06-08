@@ -5,7 +5,7 @@ import {Vec2} from 'paintvec'
 import {documentManager, PathItem} from '../document'
 import {toolManager} from './ToolManager'
 import {ItemResizeHandles} from './ItemResizeHandles'
-import {PathHandles} from './PathHandles'
+import {PathEditor} from './PathEditor'
 import {SnapLines} from './SnapLines'
 import {GroupItemView} from './GroupItemView'
 const styles = require('./DrawArea.css')
@@ -52,7 +52,7 @@ export class DrawArea extends React.Component<{}, {}> {
           {!focusedItem && <ItemResizeHandles items={[...selectedItems]} />}
         </g>
         {focusedItem && <rect x={0} y={0} width={width} height={height} fill='transparent' />}
-        {focusedItem instanceof PathItem && <PathHandles item={focusedItem} />}
+        {focusedItem instanceof PathItem && <PathEditor item={focusedItem} />}
         {currentTool && currentTool.renderOverlay(this.size)}
       </svg>
     </div>

@@ -124,7 +124,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
 }
 
 @observer
-export class PathHandles extends React.Component<{item: PathItem}, {}> {
+export class PathEditor extends React.Component<{item: PathItem}, {}> {
   render () {
     const {item} = this.props
     const preview = itemPreview.previewItem(item)
