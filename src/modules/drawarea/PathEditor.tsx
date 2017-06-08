@@ -19,22 +19,39 @@ function normalizeNodes (item: PathItem) {
   item.resizedSize = undefined
 }
 
-
 @observer
 class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}> {
   drag: {
-    origNode: PathNode
+    origNodes: Map<number, PathNode>
+    draggedNodePos: Vec2
   } | undefined
 
-  @action onPointerDown = (event: PointerEvent) => {
+  @action onPointerDown = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
     (event.target as Element).setPointerCapture(event.pointerId)
     const {item, index} = this.props
     const preview = itemPreview.addItem(item)
     normalizeNodes(preview)
-    this.drag = {
-      origNode: {...preview.nodes[index]}
+
+    const origNodes = new Map<number, PathNode>()
+    if (target === 'position') {
+      const {document} = item
+      if (event.shiftKey) {
+        document.selectedPathNodes.add(index)
+      } else if (!document.selectedPathNodes.has(index)) {
+        document.selectedPathNodes.replace([index])
+      }
+      for (const i of document.selectedPathNodes) {
+        origNodes.set(i , {...preview.nodes[i]})
+      }
+    } else {
+      origNodes.set(index, {...preview.nodes[index]})
     }
+    this.drag = {origNodes, draggedNodePos: preview.nodes[index].position}
   }
+
+  onPointerDownPosition = (e: PointerEvent) => this.onPointerDown('position', e)
+  onPointerDownHandle1 = (e: PointerEvent) => this.onPointerDown('handle1', e)
+  onPointerDownHandle2 = (e: PointerEvent) => this.onPointerDown('handle2', e)
 
   @action onPointerMove = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
     if (!this.drag) {
@@ -44,45 +61,12 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     if (!preview) {
       return
     }
-    const {origNode} = this.drag
-    const pos = DrawArea.posFromEvent(event)
+    const dragPos = DrawArea.posFromEvent(event)
 
-    let newNode: PathNode
-    switch (target) {
-      default:
-      case 'position': {
-        const offset = pos.sub(origNode.position)
-        newNode = {
-          type: origNode.type,
-          position: pos,
-          handle1: origNode.handle1.add(offset),
-          handle2: origNode.handle2.add(offset)
-        }
-        break
-      }
-      case 'handle1': {
-        const handle1 = pos
-        const handle2 = PathUtil.getOppositeHandle(origNode.type, origNode.position, handle1, origNode.handle2)
-        newNode = {
-          type: origNode.type,
-          position: origNode.position,
-          handle1, handle2
-        }
-        break
-      }
-      case 'handle2': {
-        const handle2 = pos
-        const handle1 = PathUtil.getOppositeHandle(origNode.type, origNode.position, handle2, origNode.handle1)
-        newNode = {
-          type: origNode.type,
-          position: origNode.position,
-          handle1, handle2
-        }
-        break
-      }
+    for (const [index, origNode] of this.drag.origNodes) {
+      const pos = dragPos.add(origNode.position.sub(this.drag.draggedNodePos))
+      preview.nodes[index] = PathUtil.moveHandle(origNode, target, pos)
     }
-
-    preview.nodes[this.props.index] = newNode
   }
 
   onPointerMovePosition = (e: PointerEvent) => this.onPointerMove('position', e)
@@ -112,23 +96,23 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     const p = preview.transformPos(node.position)
     const h1 = preview.transformPos(node.handle1)
     const h2 = preview.transformPos(node.handle2)
+    const selected = item.document.selectedPathNodes.has(index)
+
+    const positionHandle = <PointerEvents onPointerDown={this.onPointerDownPosition} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
+      <circle cx={p.x} cy={p.y} r={4} fill={selected ? '#2196f3' : 'white'} stroke='grey' />
+    </PointerEvents>
+
     if (node.type === 'straight') {
-      return <g>
-        <PointerEvents onPointerDown={this.onPointerDown} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
-          <circle cx={p.x} cy={p.y} r={4} fill='white' stroke='grey' />
-        </PointerEvents>
-      </g>
+      return <g>{positionHandle}</g>
     } else {
       return <g>
         <line x1={p.x} y1={p.y} x2={h1.x} y2={h1.y} stroke='lightgray' />
         <line x1={p.x} y1={p.y} x2={h2.x} y2={h2.y} stroke='lightgray' />
-        <PointerEvents onPointerDown={this.onPointerDown} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
-          <circle cx={p.x} cy={p.y} r={4} fill='white' stroke='grey' />
-        </PointerEvents>
-        <PointerEvents onPointerDown={this.onPointerDown} onPointerMove={this.onPointerMoveHandle1} onPointerUp={this.onPointerUp} >
+        {positionHandle}
+        <PointerEvents onPointerDown={this.onPointerDownHandle1} onPointerMove={this.onPointerMoveHandle1} onPointerUp={this.onPointerUp} >
           <circle cx={h1.x} cy={h1.y} r={3} fill='white' stroke='grey' />
         </PointerEvents>
-        <PointerEvents onPointerDown={this.onPointerDown} onPointerMove={this.onPointerMoveHandle2} onPointerUp={this.onPointerUp} >
+        <PointerEvents onPointerDown={this.onPointerDownHandle2} onPointerMove={this.onPointerMoveHandle2} onPointerUp={this.onPointerUp} >
           <circle cx={h2.x} cy={h2.y} r={3} fill='white' stroke='grey' />
         </PointerEvents>
       </g>
@@ -137,14 +121,30 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
 }
 
 @observer
-export class PathHandles extends React.Component<{item: PathItem}, {}> {
+export class PathEditor extends React.Component<{item: PathItem, width: number, height: number}, {}> {
   render () {
     const {item} = this.props
     const preview = itemPreview.previewItem(item)
     const {scroll} = item.document
 
-    return <g transform={`translate(${-scroll.x}, ${-scroll.y})`}>
-      {preview.nodes.map((n, i) => <PathNodeHandle item={item} index={i} key={i} />)}
+    return <g>
+      <rect
+        x={0} y={0} width={this.props.width} height={this.props.height}
+        fill='transparent'
+        onClick={this.onClickOutside} onDoubleClick={this.onDoubleClickOutside} />
+      <g transform={`translate(${-scroll.x}, ${-scroll.y})`}>
+        {preview.nodes.map((n, i) => <PathNodeHandle item={item} index={i} key={i} />)}
+      </g>
     </g>
+  }
+
+  @action private onClickOutside = () => {
+    const {document} = this.props.item
+    document.selectedPathNodes.clear()
+  }
+
+  @action private onDoubleClickOutside = () => {
+    const {document} = this.props.item
+    document.focusedItem = undefined
   }
 }
