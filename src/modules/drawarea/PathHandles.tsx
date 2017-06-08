@@ -141,7 +141,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     if (node.type === 'straight') {
       return <g>
         <PointerEvents onPointerDown={this.onPointerDownPosition} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
-          <circle cx={p.x} cy={p.y} r={4} fill='white' stroke='grey' />
+          <circle cx={p.x} cy={p.y} r={4} fill={selected ? 'blue' : 'white'} stroke='grey' />
         </PointerEvents>
       </g>
     } else {
