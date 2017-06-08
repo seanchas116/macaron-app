@@ -38,7 +38,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
       const {document} = item
       if (event.shiftKey) {
         document.selectedPathNodes.add(index)
-      } else {
+      } else if (!document.selectedPathNodes.has(index)) {
         document.selectedPathNodes.replace([index])
       }
       for (const i of document.selectedPathNodes) {
