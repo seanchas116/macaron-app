@@ -23,7 +23,8 @@ function normalizeNodes (item: PathItem) {
 @observer
 class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}> {
   drag: {
-    origNode: PathNode
+    origNodes: Map<number, PathNode>
+    draggedNodePos: Vec2
   } | undefined
 
   @action onPointerDown = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
@@ -31,10 +32,8 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     const {item, index} = this.props
     const preview = itemPreview.addItem(item)
     normalizeNodes(preview)
-    this.drag = {
-      origNode: {...preview.nodes[index]}
-    }
 
+    const origNodes = new Map<number, PathNode>()
     if (target === 'position') {
       const {document} = item
       if (event.shiftKey) {
@@ -42,7 +41,13 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
       } else {
         document.selectedPathNodes.replace([index])
       }
+      for (const i of document.selectedPathNodes) {
+        origNodes.set(i , {...preview.nodes[i]})
+      }
+    } else {
+      origNodes.set(index, {...preview.nodes[index]})
     }
+    this.drag = {origNodes, draggedNodePos: preview.nodes[index].position}
   }
 
   @action onPointerMove = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
@@ -53,45 +58,46 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     if (!preview) {
       return
     }
-    const {origNode} = this.drag
-    const pos = DrawArea.posFromEvent(event)
+    const dragPos = DrawArea.posFromEvent(event)
 
-    let newNode: PathNode
-    switch (target) {
-      default:
-      case 'position': {
-        const offset = pos.sub(origNode.position)
-        newNode = {
-          type: origNode.type,
-          position: pos,
-          handle1: origNode.handle1.add(offset),
-          handle2: origNode.handle2.add(offset)
+    for (const [index, origNode] of this.drag.origNodes) {
+      let newNode: PathNode
+      const pos = dragPos.add(origNode.position.sub(this.drag.draggedNodePos))
+      switch (target) {
+        default:
+        case 'position': {
+          const offset = pos.sub(origNode.position)
+          newNode = {
+            type: origNode.type,
+            position: pos,
+            handle1: origNode.handle1.add(offset),
+            handle2: origNode.handle2.add(offset)
+          }
+          break
         }
-        break
-      }
-      case 'handle1': {
-        const handle1 = pos
-        const handle2 = PathUtil.getOppositeHandle(origNode.type, origNode.position, handle1, origNode.handle2)
-        newNode = {
-          type: origNode.type,
-          position: origNode.position,
-          handle1, handle2
+        case 'handle1': {
+          const handle1 = pos
+          const handle2 = PathUtil.getOppositeHandle(origNode.type, origNode.position, handle1, origNode.handle2)
+          newNode = {
+            type: origNode.type,
+            position: origNode.position,
+            handle1, handle2
+          }
+          break
         }
-        break
-      }
-      case 'handle2': {
-        const handle2 = pos
-        const handle1 = PathUtil.getOppositeHandle(origNode.type, origNode.position, handle2, origNode.handle1)
-        newNode = {
-          type: origNode.type,
-          position: origNode.position,
-          handle1, handle2
+        case 'handle2': {
+          const handle2 = pos
+          const handle1 = PathUtil.getOppositeHandle(origNode.type, origNode.position, handle2, origNode.handle1)
+          newNode = {
+            type: origNode.type,
+            position: origNode.position,
+            handle1, handle2
+          }
+          break
         }
-        break
       }
+      preview.nodes[index] = newNode
     }
-
-    preview.nodes[this.props.index] = newNode
   }
 
   onPointerDownPosition = (e: PointerEvent) => this.onPointerDown('position', e)
