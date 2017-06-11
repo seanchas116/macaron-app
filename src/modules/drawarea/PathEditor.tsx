@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {Vec2} from 'paintvec'
-import {action} from 'mobx'
+import {action, observable, reaction, computed} from 'mobx'
 import {observer} from 'mobx-react'
 import {PathItem, PathNode, PathUtil, ItemChangeCommand} from '../document'
 import {DrawArea} from './DrawArea'
@@ -21,8 +21,39 @@ function normalizeNodes (item: PathItem) {
   item.resizedSize = undefined
 }
 
+class PathEditorState {
+  readonly nodes = observable([...this.item.nodes])
+  readonly preview = itemPreview.addItem(this.item)
+
+  private disposers = [
+    reaction(() => [...this.item.nodes], nodes => {
+      this.nodes.replace(nodes)
+    }),
+    reaction(() => [...this.nodes], nodes => {
+      this.preview.nodes.replace(nodes)
+    })
+  ]
+
+  constructor (public readonly item: PathItem) {
+  }
+
+  dispose () {
+    this.disposers.forEach(d => d())
+    itemPreview.clear()
+  }
+
+  commit () {
+    this.item.document.history.push(new ItemChangeCommand('Move Path', this.item, {
+      nodeArray: this.preview.nodeArray,
+      closed: this.preview.closed,
+      offset: this.preview.offset,
+      resizedSize: this.preview.resizedSize
+    }))
+  }
+}
+
 @observer
-class PathNodeHandle extends React.Component<{item: PathItem, preview: PathItem, index: number}, {}> {
+class PathNodeHandle extends React.Component<{item: PathItem, index: number, state: PathEditorState}, {}> {
   drag: {
     origNodes: Map<number, PathNode>
     draggedNodePos: Vec2
@@ -30,8 +61,8 @@ class PathNodeHandle extends React.Component<{item: PathItem, preview: PathItem,
 
   @action onPointerDown = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
     (event.target as Element).setPointerCapture(event.pointerId)
-    const {item, index, preview} = this.props
-    normalizeNodes(preview)
+    const {item, index, state} = this.props
+    normalizeNodes(state.preview)
 
     const origNodes = new Map<number, PathNode>()
     if (target === 'position') {
@@ -42,12 +73,12 @@ class PathNodeHandle extends React.Component<{item: PathItem, preview: PathItem,
         document.selectedPathNodes.replace([index])
       }
       for (const i of document.selectedPathNodes) {
-        origNodes.set(i , {...preview.nodes[i]})
+        origNodes.set(i , {...state.nodes[i]})
       }
     } else {
-      origNodes.set(index, {...preview.nodes[index]})
+      origNodes.set(index, {...state.nodes[index]})
     }
-    this.drag = {origNodes, draggedNodePos: preview.nodes[index].position}
+    this.drag = {origNodes, draggedNodePos: state.nodes[index].position}
   }
 
   onPointerDownPosition = (e: PointerEvent) => this.onPointerDown('position', e)
@@ -58,12 +89,12 @@ class PathNodeHandle extends React.Component<{item: PathItem, preview: PathItem,
     if (!this.drag) {
       return
     }
-    const {preview} = this.props
+    const {state} = this.props
     const dragPos = DrawArea.posFromEvent(event)
 
     for (const [index, origNode] of this.drag.origNodes) {
       const pos = dragPos.add(origNode.position.sub(this.drag.draggedNodePos))
-      preview.nodes[index] = PathUtil.moveHandle(origNode, target, pos)
+      state.nodes[index] = PathUtil.moveHandle(origNode, target, pos)
     }
   }
 
@@ -73,21 +104,15 @@ class PathNodeHandle extends React.Component<{item: PathItem, preview: PathItem,
 
   @action onPointerUp = (event: PointerEvent) => {
     this.drag = undefined
-    const {item, preview} = this.props
-    const {document} = item
-    document.history.push(new ItemChangeCommand('Move Path', item, {
-      nodeArray: preview.nodeArray,
-      offset: new Vec2(),
-      resizedSize: undefined
-    }))
+    this.props.state.commit()
   }
 
   render () {
-    const {preview, index} = this.props
-    const node = preview.nodes[index]
-    const p = preview.transformPos(node.position)
-    const h1 = preview.transformPos(node.handle1)
-    const h2 = preview.transformPos(node.handle2)
+    const {state, index} = this.props
+    const node = state.nodes[index]
+    const p = state.preview.transformPos(node.position)
+    const h1 = state.preview.transformPos(node.handle1)
+    const h2 = state.preview.transformPos(node.handle2)
     const selected = this.props.item.document.selectedPathNodes.has(index)
 
     const positionHandle = <PointerEvents onPointerDown={this.onPointerDownPosition} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
@@ -112,7 +137,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, preview: PathItem,
   }
 }
 
-export class PathNodeAddOverlay extends React.Component<{width: number, height: number, item: PathItem, preview: PathItem, onFinish: () => void}, {}> {
+class PathNodeAddUnderlay extends React.Component<{width: number, height: number, item: PathItem, preview: PathItem}, {}> {
   clicked = false
   hasPreviewNode = false
   closingNode = false
@@ -173,9 +198,7 @@ export class PathNodeAddOverlay extends React.Component<{width: number, height: 
     this.draggingHandle = false
     const {preview} = this.props
     this.commit()
-    if (this.closingNode) {
-      this.props.onFinish()
-    } else {
+    if (!this.closingNode) {
       const lastEdge = preview.nodes[preview.nodes.length - 1]
       this.setPreviewNode(lastEdge)
     }
@@ -208,10 +231,10 @@ export class PathNodeAddOverlay extends React.Component<{width: number, height: 
 }
 
 @observer export class PathEditor extends React.Component<{item: PathItem, width: number, height: number}, {}> {
-  preview = itemPreview.addItem(this.props.item)
+  state = new PathEditorState(this.props.item)
 
   componentWillUnmount () {
-    itemPreview.clear()
+    this.state.dispose()
   }
 
   render () {
@@ -225,7 +248,7 @@ export class PathNodeAddOverlay extends React.Component<{width: number, height: 
         fill='transparent'
         onClick={this.onClickOutside} onDoubleClick={this.onDoubleClickOutside} />
       <g transform={`translate(${-scroll.x}, ${-scroll.y})`}>
-        {preview.nodes.map((n, i) => <PathNodeHandle item={item} preview={this.preview} index={i} key={i} />)}
+        {preview.nodes.map((n, i) => <PathNodeHandle item={item} state={this.state} index={i} key={i} />)}
       </g>
     </g>
   }
