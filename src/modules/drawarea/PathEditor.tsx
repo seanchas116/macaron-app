@@ -166,10 +166,23 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
 
 class PathEditorBackground extends React.Component<{item: PathItem, width: number, height: number, state: PathEditorState}, {}> {
   render () {
-    return <rect
-      x={0} y={0} width={this.props.width} height={this.props.height}
-      fill='transparent'
-      onClick={this.onClick} onDoubleClick={this.onDoubleClick} />
+    return <PointerEvents
+      onPointerDown = {this.onPointerDown} onPointerMove={this.onPointerMove} onPointerUp={this.onPointerUp}>
+      <rect
+        x={0} y={0} width={this.props.width} height={this.props.height}
+        fill='transparent'
+        onClick={this.onClick} onDoubleClick={this.onDoubleClick} />
+    </PointerEvents>
+  }
+
+  @action private onPointerDown = (event: PointerEvent) => {
+
+  }
+  @action private onPointerMove = (event: PointerEvent) => {
+
+  }
+  @action private onPointerUp = (event: PointerEvent) => {
+
   }
 
   @action private onClick = () => {
