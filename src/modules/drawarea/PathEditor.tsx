@@ -71,7 +71,7 @@ class PathEditorState {
 
   commit () {
     this.item.document.history.push(new ItemChangeCommand('Move Path', this.item, {
-      nodeArray: this.preview.nodeArray,
+      nodeArray: [...this.nodes],
       closed: this.preview.closed,
       offset: this.preview.offset,
       resizedSize: this.preview.resizedSize
@@ -113,6 +113,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
   onPointerDownHandle2 = (e: PointerEvent) => this.onPointerDown('handle2', e)
 
   @action onPointerMove = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
+    this.props.state.insertPreview = undefined
     if (!this.drag) {
       return
     }
@@ -179,7 +180,9 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
 
   }
   @action private onPointerMove = (event: PointerEvent) => {
-
+    const pos = DrawArea.posFromEvent(event)
+    const node: PathNode = {type: 'straight', position: pos, handle1: pos, handle2: pos}
+    this.props.state.insertPreview = node
   }
   @action private onPointerUp = (event: PointerEvent) => {
 
@@ -205,13 +208,12 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
 
   render () {
     const {item} = this.props
-    const preview = itemPreview.previewItem(item)
     const {scroll} = item.document
 
     return <g>
       <PathEditorBackground item={item} width={this.props.width} height={this.props.height} state={this.state} />
       <g transform={`translate(${-scroll.x}, ${-scroll.y})`}>
-        {preview.nodes.map((n, i) => <PathNodeHandle item={item} state={this.state} index={i} key={i} />)}
+        {this.state.nodes.map((n, i) => <PathNodeHandle item={item} state={this.state} index={i} key={i} />)}
       </g>
     </g>
   }
