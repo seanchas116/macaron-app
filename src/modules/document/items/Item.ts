@@ -29,10 +29,10 @@ abstract class Item {
   abstract position: Vec2
   abstract size: Vec2
 
-  get rect() {
+  get rect () {
     return Rect.fromSize(this.position, this.size)
   }
-  set rect(rect: Rect) {
+  set rect (rect: Rect) {
     this.position = rect.topLeft
     this.size = rect.size
   }
