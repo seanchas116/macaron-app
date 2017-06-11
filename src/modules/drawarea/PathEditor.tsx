@@ -166,6 +166,8 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
 }
 
 class PathEditorBackground extends React.Component<{item: PathItem, width: number, height: number, state: PathEditorState}, {}> {
+  dragged = false
+
   render () {
     return <PointerEvents
       onPointerDown = {this.onPointerDown} onPointerMove={this.onPointerMove} onPointerUp={this.onPointerUp}>
@@ -177,15 +179,36 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
   }
 
   @action private onPointerDown = (event: PointerEvent) => {
-
-  }
-  @action private onPointerMove = (event: PointerEvent) => {
+    this.dragged = true
+    const {state} = this.props
+    const {document} = this.props.item
+    if (state.insertMode === 'none') {
+      return
+    }
     const pos = DrawArea.posFromEvent(event)
     const node: PathNode = {type: 'straight', position: pos, handle1: pos, handle2: pos}
-    this.props.state.insertPreview = node
+    if (state.insertMode === 'prepend') {
+      state.nodes.unshift(node)
+      document.selectedPathNodes.replace([0])
+    } else {
+      state.nodes.push(node)
+      document.selectedPathNodes.replace([state.nodes.length - 1])
+    }
+    state.insertPreview = undefined
   }
-  @action private onPointerUp = (event: PointerEvent) => {
 
+  @action private onPointerMove = (event: PointerEvent) => {
+    const {state} = this.props
+    if (state.insertMode === 'none') {
+      return
+    }
+    const pos = DrawArea.posFromEvent(event)
+    const node: PathNode = {type: 'straight', position: pos, handle1: pos, handle2: pos}
+    state.insertPreview = node
+  }
+
+  @action private onPointerUp = (event: PointerEvent) => {
+    this.dragged = false
   }
 
   @action private onClick = () => {
