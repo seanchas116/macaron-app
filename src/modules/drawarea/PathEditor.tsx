@@ -22,7 +22,7 @@ function normalizeNodes (item: PathItem) {
 }
 
 @observer
-class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}> {
+class PathNodeHandle extends React.Component<{item: PathItem, preview: PathItem, index: number}, {}> {
   drag: {
     origNodes: Map<number, PathNode>
     draggedNodePos: Vec2
@@ -30,8 +30,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
 
   @action onPointerDown = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
     (event.target as Element).setPointerCapture(event.pointerId)
-    const {item, index} = this.props
-    const preview = itemPreview.addItem(item)
+    const {item, index, preview} = this.props
     normalizeNodes(preview)
 
     const origNodes = new Map<number, PathNode>()
@@ -59,10 +58,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     if (!this.drag) {
       return
     }
-    const preview = itemPreview.getItem(this.props.item)
-    if (!preview) {
-      return
-    }
+    const {preview} = this.props
     const dragPos = DrawArea.posFromEvent(event)
 
     for (const [index, origNode] of this.drag.origNodes) {
@@ -77,28 +73,22 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
 
   @action onPointerUp = (event: PointerEvent) => {
     this.drag = undefined
-    const {item} = this.props
+    const {item, preview} = this.props
     const {document} = item
-    const preview = itemPreview.getItem(item)
-    if (!preview) {
-      return
-    }
     document.history.push(new ItemChangeCommand('Move Path', item, {
       nodeArray: preview.nodeArray,
       offset: new Vec2(),
       resizedSize: undefined
     }))
-    itemPreview.clear()
   }
 
   render () {
-    const {item, index} = this.props
-    const preview = itemPreview.previewItem(item)
+    const {preview, index} = this.props
     const node = preview.nodes[index]
     const p = preview.transformPos(node.position)
     const h1 = preview.transformPos(node.handle1)
     const h2 = preview.transformPos(node.handle2)
-    const selected = item.document.selectedPathNodes.has(index)
+    const selected = this.props.item.document.selectedPathNodes.has(index)
 
     const positionHandle = <PointerEvents onPointerDown={this.onPointerDownPosition} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
       <circle cx={p.x} cy={p.y} r={4} fill={selected ? '#2196f3' : 'white'} stroke='grey' />
@@ -122,20 +112,11 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
   }
 }
 
-export class PathNodeAddOverlay extends React.Component<{width: number, height: number, item: PathItem, onFinish: () => void}, {}> {
+export class PathNodeAddOverlay extends React.Component<{width: number, height: number, item: PathItem, preview: PathItem, onFinish: () => void}, {}> {
   clicked = false
   hasPreviewNode = false
   closingNode = false
   draggingHandle = false
-  preview: PathItem
-
-  componentDidMount () {
-    this.preview = itemPreview.previewItem(this.props.item)
-    normalizeNodes(this.preview)
-  }
-  componentWillUnmount () {
-    itemPreview.clear()
-  }
 
   render () {
     const {width, height} = this.props
@@ -151,7 +132,7 @@ export class PathNodeAddOverlay extends React.Component<{width: number, height: 
   @action private onPointerDown = (event: PointerEvent) => {
     this.clicked = true
     const pos = DrawArea.posFromEvent(event)
-    const {preview} = this
+    const {preview} = this.props
     if (pos.sub(preview.nodes[0].position).length() < snapDistance) {
       this.closingNode = true
       preview.closed = true
@@ -163,7 +144,7 @@ export class PathNodeAddOverlay extends React.Component<{width: number, height: 
 
   @action private onPointerMove = (event: PointerEvent) => {
     const pos = DrawArea.posFromEvent(event)
-    const {preview} = this
+    const {preview} = this.props
     if (this.clicked) {
       if (!this.draggingHandle) {
         const distance = pos.sub(preview.nodes[preview.nodes.length - 1].position).length()
@@ -190,7 +171,7 @@ export class PathNodeAddOverlay extends React.Component<{width: number, height: 
   @action private onPointerUp = (event: PointerEvent) => {
     this.clicked = false
     this.draggingHandle = false
-    const {preview} = this
+    const {preview} = this.props
     this.commit()
     if (this.closingNode) {
       this.props.onFinish()
@@ -202,21 +183,20 @@ export class PathNodeAddOverlay extends React.Component<{width: number, height: 
 
   private setPreviewNode (node: PathNode) {
     this.removePreviewNode()
-    this.preview.nodes.push(node)
+    this.props.preview.nodes.push(node)
     this.hasPreviewNode = true
   }
 
   private removePreviewNode () {
     if (this.hasPreviewNode) {
-      this.preview.nodes.pop()
+      this.props.preview.nodes.pop()
     }
     this.hasPreviewNode = false
   }
 
   @action private commit () {
-    const {item} = this.props
+    const {item, preview} = this.props
     const {document} = item
-    const {preview} = this
     const nodeArray = this.hasPreviewNode ? preview.nodeArray.slice(0, -1) : preview.nodeArray
     document.history.push(new ItemChangeCommand('Move Path', item, {
       nodeArray,
@@ -227,8 +207,13 @@ export class PathNodeAddOverlay extends React.Component<{width: number, height: 
   }
 }
 
-@observer
-export class PathEditor extends React.Component<{item: PathItem, width: number, height: number}, {}> {
+@observer export class PathEditor extends React.Component<{item: PathItem, width: number, height: number}, {}> {
+  preview = itemPreview.addItem(this.props.item)
+
+  componentWillUnmount () {
+    itemPreview.clear()
+  }
+
   render () {
     const {item} = this.props
     const preview = itemPreview.previewItem(item)
@@ -240,7 +225,7 @@ export class PathEditor extends React.Component<{item: PathItem, width: number, 
         fill='transparent'
         onClick={this.onClickOutside} onDoubleClick={this.onDoubleClickOutside} />
       <g transform={`translate(${-scroll.x}, ${-scroll.y})`}>
-        {preview.nodes.map((n, i) => <PathNodeHandle item={item} index={i} key={i} />)}
+        {preview.nodes.map((n, i) => <PathNodeHandle item={item} preview={this.preview} index={i} key={i} />)}
       </g>
     </g>
   }
