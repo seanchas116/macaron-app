@@ -137,96 +137,22 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
   }
 }
 
-class PathNodeAddUnderlay extends React.Component<{width: number, height: number, item: PathItem, preview: PathItem}, {}> {
-  clicked = false
-  hasPreviewNode = false
-  closingNode = false
-  draggingHandle = false
-
+class PathEditorBackground extends React.Component<{item: PathItem, width: number, height: number, state: PathEditorState}, {}> {
   render () {
-    const {width, height} = this.props
-    return <PointerEvents
-      onPointerDown={this.onPointerDown}
-      onPointerMove={this.onPointerMove}
-      onPointerUp={this.onPointerUp}
-    >
-      <rect width={width} height={height} fill='transparent' />
-    </PointerEvents>
+    return <rect
+      x={0} y={0} width={this.props.width} height={this.props.height}
+      fill='transparent'
+      onClick={this.onClick} onDoubleClick={this.onDoubleClick} />
   }
 
-  @action private onPointerDown = (event: PointerEvent) => {
-    this.clicked = true
-    const pos = DrawArea.posFromEvent(event)
-    const {preview} = this.props
-    if (pos.sub(preview.nodes[0].position).length() < snapDistance) {
-      this.closingNode = true
-      preview.closed = true
-    } else {
-      this.removePreviewNode()
-      preview.nodes.push({position: pos, handle1: pos, handle2: pos, type: 'straight'})
-    }
+  @action private onClick = () => {
+    const {document} = this.props.item
+    document.selectedPathNodes.clear()
   }
 
-  @action private onPointerMove = (event: PointerEvent) => {
-    const pos = DrawArea.posFromEvent(event)
-    const {preview} = this.props
-    if (this.clicked) {
-      if (!this.draggingHandle) {
-        const distance = pos.sub(preview.nodes[preview.nodes.length - 1].position).length()
-        if (distance < snapDistance) {
-          return
-        }
-        this.draggingHandle = true
-      }
-      const node = this.closingNode ? preview.nodes[0] : preview.nodes[preview.nodes.length - 1]
-      node.handle1 = node.position.mulScalar(2).sub(pos)
-      node.handle2 = pos
-      node.type = 'symmetric'
-    } else {
-      if (pos.sub(preview.nodes[0].position).length() < snapDistance) {
-        this.removePreviewNode()
-        preview.closed = true
-      } else {
-        this.setPreviewNode({position: pos, handle1: pos, handle2: pos, type: 'straight'})
-        preview.closed = false
-      }
-    }
-  }
-
-  @action private onPointerUp = (event: PointerEvent) => {
-    this.clicked = false
-    this.draggingHandle = false
-    const {preview} = this.props
-    this.commit()
-    if (!this.closingNode) {
-      const lastEdge = preview.nodes[preview.nodes.length - 1]
-      this.setPreviewNode(lastEdge)
-    }
-  }
-
-  private setPreviewNode (node: PathNode) {
-    this.removePreviewNode()
-    this.props.preview.nodes.push(node)
-    this.hasPreviewNode = true
-  }
-
-  private removePreviewNode () {
-    if (this.hasPreviewNode) {
-      this.props.preview.nodes.pop()
-    }
-    this.hasPreviewNode = false
-  }
-
-  @action private commit () {
-    const {item, preview} = this.props
-    const {document} = item
-    const nodeArray = this.hasPreviewNode ? preview.nodeArray.slice(0, -1) : preview.nodeArray
-    document.history.push(new ItemChangeCommand('Move Path', item, {
-      nodeArray,
-      offset: new Vec2(),
-      resizedSize: undefined,
-      closed: preview.closed
-    }))
+  @action private onDoubleClick = () => {
+    const {document} = this.props.item
+    document.focusedItem = undefined
   }
 }
 
@@ -243,23 +169,10 @@ class PathNodeAddUnderlay extends React.Component<{width: number, height: number
     const {scroll} = item.document
 
     return <g>
-      <rect
-        x={0} y={0} width={this.props.width} height={this.props.height}
-        fill='transparent'
-        onClick={this.onClickOutside} onDoubleClick={this.onDoubleClickOutside} />
+      <PathEditorBackground item={item} width={this.props.width} height={this.props.height} state={this.state} />
       <g transform={`translate(${-scroll.x}, ${-scroll.y})`}>
         {preview.nodes.map((n, i) => <PathNodeHandle item={item} state={this.state} index={i} key={i} />)}
       </g>
     </g>
-  }
-
-  @action private onClickOutside = () => {
-    const {document} = this.props.item
-    document.selectedPathNodes.clear()
-  }
-
-  @action private onDoubleClickOutside = () => {
-    const {document} = this.props.item
-    document.focusedItem = undefined
   }
 }
