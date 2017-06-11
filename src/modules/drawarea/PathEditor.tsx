@@ -24,6 +24,7 @@ function normalizeNodes (item: PathItem) {
 class PathEditorState {
   readonly nodes = observable([...this.item.nodes])
   readonly preview = itemPreview.addItem(this.item)
+  @observable insertPreview: PathNode|undefined = undefined
 
   @computed get insertMode () {
     const {selectedPathNodes} = this.item.document
@@ -39,11 +40,23 @@ class PathEditorState {
     return 'none'
   }
 
+  @computed get nodesWithInsertPreview () {
+    const nodes = [...this.nodes]
+    if (this.insertPreview) {
+      if (this.insertMode === 'prepend') {
+        nodes.unshift(this.insertPreview)
+      } else if (this.insertMode === 'append') {
+        nodes.push(this.insertPreview)
+      }
+    }
+    return Object.freeze(nodes)
+  }
+
   private disposers = [
     reaction(() => [...this.item.nodes], nodes => {
       this.nodes.replace(nodes)
     }),
-    reaction(() => [...this.nodes], nodes => {
+    reaction(() => [...this.nodesWithInsertPreview], nodes => {
       this.preview.nodes.replace(nodes)
     })
   ]
