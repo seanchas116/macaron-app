@@ -25,6 +25,20 @@ class PathEditorState {
   readonly nodes = observable([...this.item.nodes])
   readonly preview = itemPreview.addItem(this.item)
 
+  @computed get insertMode () {
+    const {selectedPathNodes} = this.item.document
+    if (selectedPathNodes.size === 1) {
+      const selected = [...selectedPathNodes][0]
+      if (selected === 0) {
+        return 'prepend'
+      }
+      if (selected === this.item.nodes.length - 1) {
+        return 'append'
+      }
+    }
+    return 'none'
+  }
+
   private disposers = [
     reaction(() => [...this.item.nodes], nodes => {
       this.nodes.replace(nodes)
