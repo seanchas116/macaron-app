@@ -15,9 +15,6 @@ export interface ItemData {
   strokeEnabled: boolean
 }
 
-// workaround for https://github.com/Microsoft/TypeScript/issues/4521
-type GroupItem_ = GroupItem
-
 export
 abstract class Item {
   @observable name = 'Item'
@@ -26,7 +23,7 @@ abstract class Item {
   @observable stroke = '#000000'
   @observable strokeEnabled = true
   @observable strokeWidth = 1
-  @observable parent: GroupItem_|undefined
+  @observable parent: GroupItem|undefined
   readonly id: string
 
   abstract position: Vec2
