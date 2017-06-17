@@ -99,16 +99,16 @@ class PathEditorState {
 
 @observer
 class PathNodeHandle extends React.Component<{item: PathItem, index: number, state: PathEditorState}, {}> {
-  drag: {
+  private drag: {
     origNodes: Map<number, PathNode>
     draggedNodePos: Vec2
   } | undefined = undefined
-  closingPathDrag: {
+  private closingPathDrag: {
     startPos: Vec2
     insertMode: 'append' | 'prepend' | 'none'
   } | undefined = undefined
 
-  get closingPath () {
+  private get closingPath () {
     const {state, index, item} = this.props
     if (item.closed) {
       return false
@@ -122,7 +122,36 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
     return false
   }
 
-  @action onPointerDown = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
+  render () {
+    const {state, index} = this.props
+    const node = state.nodes[index]
+    const p = node.position
+    const h1 = node.handle1
+    const h2 = node.handle2
+    const selected = this.props.item.document.selectedPathNodes.has(index)
+
+    const positionHandle = <PointerEvents onPointerDown={this.onPointerDownPosition} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
+      <circle cx={p.x} cy={p.y} r={4} fill={selected ? '#2196f3' : 'white'} stroke='grey' />
+    </PointerEvents>
+
+    if (node.type === 'straight') {
+      return <g>{positionHandle}</g>
+    } else {
+      return <g>
+        <line x1={p.x} y1={p.y} x2={h1.x} y2={h1.y} stroke='lightgray' />
+        <line x1={p.x} y1={p.y} x2={h2.x} y2={h2.y} stroke='lightgray' />
+        {positionHandle}
+        <PointerEvents onPointerDown={this.onPointerDownHandle1} onPointerMove={this.onPointerMoveHandle1} onPointerUp={this.onPointerUp} >
+          <circle cx={h1.x} cy={h1.y} r={3} fill='white' stroke='grey' />
+        </PointerEvents>
+        <PointerEvents onPointerDown={this.onPointerDownHandle2} onPointerMove={this.onPointerMoveHandle2} onPointerUp={this.onPointerUp} >
+          <circle cx={h2.x} cy={h2.y} r={3} fill='white' stroke='grey' />
+        </PointerEvents>
+      </g>
+    }
+  }
+
+  @action private onPointerDown = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
     (event.target as Element).setPointerCapture(event.pointerId)
 
     if (target === 'position' && this.closingPath) {
@@ -150,11 +179,11 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
     }
   }
 
-  onPointerDownPosition = (e: PointerEvent) => this.onPointerDown('position', e)
-  onPointerDownHandle1 = (e: PointerEvent) => this.onPointerDown('handle1', e)
-  onPointerDownHandle2 = (e: PointerEvent) => this.onPointerDown('handle2', e)
+  private onPointerDownPosition = (e: PointerEvent) => this.onPointerDown('position', e)
+  private onPointerDownHandle1 = (e: PointerEvent) => this.onPointerDown('handle1', e)
+  private onPointerDownHandle2 = (e: PointerEvent) => this.onPointerDown('handle2', e)
 
-  @action onPointerMove = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
+  @action private onPointerMove = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
     const {state} = this.props
     if (target === 'position' && this.closingPath) {
       state.closed = true
@@ -186,49 +215,20 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
     }
   }
 
-  onPointerMovePosition = (e: PointerEvent) => this.onPointerMove('position', e)
-  onPointerMoveHandle1 = (e: PointerEvent) => this.onPointerMove('handle1', e)
-  onPointerMoveHandle2 = (e: PointerEvent) => this.onPointerMove('handle2', e)
+  private onPointerMovePosition = (e: PointerEvent) => this.onPointerMove('position', e)
+  private onPointerMoveHandle1 = (e: PointerEvent) => this.onPointerMove('handle1', e)
+  private onPointerMoveHandle2 = (e: PointerEvent) => this.onPointerMove('handle2', e)
 
-  @action onPointerUp = (event: PointerEvent) => {
+  @action private onPointerUp = (event: PointerEvent) => {
     this.drag = undefined
     this.closingPathDrag = undefined
     this.props.state.commit()
   }
-
-  render () {
-    const {state, index} = this.props
-    const node = state.nodes[index]
-    const p = node.position
-    const h1 = node.handle1
-    const h2 = node.handle2
-    const selected = this.props.item.document.selectedPathNodes.has(index)
-
-    const positionHandle = <PointerEvents onPointerDown={this.onPointerDownPosition} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
-      <circle cx={p.x} cy={p.y} r={4} fill={selected ? '#2196f3' : 'white'} stroke='grey' />
-    </PointerEvents>
-
-    if (node.type === 'straight') {
-      return <g>{positionHandle}</g>
-    } else {
-      return <g>
-        <line x1={p.x} y1={p.y} x2={h1.x} y2={h1.y} stroke='lightgray' />
-        <line x1={p.x} y1={p.y} x2={h2.x} y2={h2.y} stroke='lightgray' />
-        {positionHandle}
-        <PointerEvents onPointerDown={this.onPointerDownHandle1} onPointerMove={this.onPointerMoveHandle1} onPointerUp={this.onPointerUp} >
-          <circle cx={h1.x} cy={h1.y} r={3} fill='white' stroke='grey' />
-        </PointerEvents>
-        <PointerEvents onPointerDown={this.onPointerDownHandle2} onPointerMove={this.onPointerMoveHandle2} onPointerUp={this.onPointerUp} >
-          <circle cx={h2.x} cy={h2.y} r={3} fill='white' stroke='grey' />
-        </PointerEvents>
-      </g>
-    }
-  }
 }
 
 class PathEditorBackground extends React.Component<{item: PathItem, width: number, height: number, state: PathEditorState}, {}> {
-  dragStartPos = new Vec2()
-  dragInsertMode: 'none'|'prepend'|'append' = 'none'
+  private dragStartPos = new Vec2()
+  private dragInsertMode: 'none'|'prepend'|'append' = 'none'
 
   render () {
     return <PointerEvents
