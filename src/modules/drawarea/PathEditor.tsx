@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {Vec2} from 'paintvec'
-import {action, observable, reaction, computed} from 'mobx'
+import {action, observable, reaction, computed, IObservableArray} from 'mobx'
 import {observer} from 'mobx-react'
 import {PathItem, PathNode, PathUtil, ItemChangeCommand} from '../document'
 import {DrawArea} from './DrawArea'
@@ -22,13 +22,12 @@ function normalizeNodes (item: PathItem) {
 }
 
 class PathEditorState {
-  readonly nodes = observable([...this.item.nodes])
-  readonly preview = itemPreview.addItem(this.item)
-  @observable closed = this.item.closed
+  readonly nodes: IObservableArray<PathNode>
+  @observable closed: boolean
   @observable insertPreview: PathNode|undefined = undefined
 
   @computed get insertMode () {
-    if (this.item.closed) {
+    if (this.closed) {
       return 'none'
     }
     const {selectedPathNodes} = this.item.document
@@ -56,19 +55,26 @@ class PathEditorState {
     return Object.freeze(nodes)
   }
 
-  private disposers = [
-    reaction(() => this.closed, closed => {
-      this.preview.closed = closed
-    }),
-    reaction(() => [...this.item.nodes], nodes => {
-      this.nodes.replace(nodes)
-    }),
-    reaction(() => [...this.nodesWithInsertPreview], nodes => {
-      this.preview.nodes.replace(nodes)
-    })
-  ]
+  private readonly preview: PathItem
+  private disposers: (() => void)[]
 
   constructor (public readonly item: PathItem) {
+    this.preview = itemPreview.addItem(this.item)
+    normalizeNodes(this.preview)
+    this.nodes = observable([...this.preview.nodes])
+    this.closed = this.preview.closed
+
+    this.disposers = [
+      reaction(() => this.closed, closed => {
+        this.preview.closed = closed
+      }),
+      reaction(() => [...this.item.nodes], nodes => {
+        this.nodes.replace(nodes)
+      }),
+      reaction(() => [...this.nodesWithInsertPreview], nodes => {
+        this.preview.nodes.replace(nodes)
+      })
+    ]
   }
 
   dispose () {
@@ -107,7 +113,6 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
   @action onPointerDown = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
     (event.target as Element).setPointerCapture(event.pointerId)
     const {item, index, state} = this.props
-    normalizeNodes(state.preview)
 
     const origNodes = new Map<number, PathNode>()
     if (target === 'position') {
@@ -159,9 +164,9 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
   render () {
     const {state, index} = this.props
     const node = state.nodes[index]
-    const p = state.preview.transformPos(node.position)
-    const h1 = state.preview.transformPos(node.handle1)
-    const h2 = state.preview.transformPos(node.handle2)
+    const p = node.position
+    const h1 = node.handle1
+    const h2 = node.handle2
     const selected = this.props.item.document.selectedPathNodes.has(index)
 
     const positionHandle = <PointerEvents onPointerDown={this.onPointerDownPosition} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
