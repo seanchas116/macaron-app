@@ -36,7 +36,7 @@ class PathEditorState {
   }
 
   @computed get insertMode () {
-    if (this.closed) {
+    if (this.item.closed) {
       return 'none'
     }
     if (this.isOnlyFirstSelected) {
@@ -50,7 +50,7 @@ class PathEditorState {
 
   @computed get nodesWithInsertPreview () {
     const nodes = [...this.nodes]
-    if (this.insertPreview) {
+    if (this.insertPreview && !this.closed) {
       if (this.insertMode === 'prepend') {
         nodes.unshift(this.insertPreview)
       } else if (this.insertMode === 'append') {
@@ -104,10 +104,14 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
     origNodes: Map<number, PathNode>
     draggedNodePos: Vec2
     closingPath: boolean
+    closingInsertMode: 'append' | 'prepend' | 'none'
   } | undefined
 
   get closingPath () {
-    const {state, index} = this.props
+    const {state, index, item} = this.props
+    if (item.closed) {
+      return false
+    }
     if (state.isOnlyFirstSelected) {
       return index === state.nodes.length - 1
     }
@@ -121,6 +125,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
     (event.target as Element).setPointerCapture(event.pointerId)
     const {item, index, state} = this.props
     const {closingPath} = this
+    const closingInsertMode = state.insertMode
 
     const origNodes = new Map<number, PathNode>()
     if (target === 'position') {
@@ -136,7 +141,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
     } else {
       origNodes.set(index, {...state.nodes[index]})
     }
-    this.drag = {startPos: DrawArea.posFromEvent(event), origNodes, draggedNodePos: state.nodes[index].position, closingPath}
+    this.drag = {startPos: DrawArea.posFromEvent(event), origNodes, draggedNodePos: state.nodes[index].position, closingPath, closingInsertMode}
   }
 
   onPointerDownPosition = (e: PointerEvent) => this.onPointerDown('position', e)
@@ -156,7 +161,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
 
       if (target === 'position' && this.drag.closingPath) {
         if (dragPos.sub(this.drag.startPos).length() > snapDistance) {
-          if (state.insertMode === 'prepend') {
+          if (this.drag.closingInsertMode === 'prepend') {
             const index = state.nodes.length - 1
             state.nodes[index].type = 'symmetric'
             state.nodes[index] = PathUtil.moveHandle(state.nodes[index], 'handle1', DrawArea.posFromEvent(event))
