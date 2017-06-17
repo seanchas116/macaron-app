@@ -27,6 +27,9 @@ class PathEditorState {
   @observable insertPreview: PathNode|undefined = undefined
 
   @computed get insertMode () {
+    if (this.item.closed) {
+      return 'none'
+    }
     const {selectedPathNodes} = this.item.document
     if (selectedPathNodes.size === 1) {
       const selected = [...selectedPathNodes][0]
