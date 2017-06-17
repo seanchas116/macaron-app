@@ -179,7 +179,6 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
   }
 
   @action private onPointerDown = (event: PointerEvent) => {
-    console.log('pointer down')
     this.dragInsertMode = this.props.state.insertMode
     if (this.props.state.insertMode !== 'none') {
       this.onInsertPointerDown(event)
@@ -187,7 +186,6 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
   }
 
   @action private onPointerMove = (event: PointerEvent) => {
-    console.log('pointer move')
     if (this.dragInsertMode !== 'none') {
       this.onInsertPointerDrag(event)
     } else if (this.props.state.insertMode !== 'none') {
