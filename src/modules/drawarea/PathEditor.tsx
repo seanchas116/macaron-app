@@ -100,12 +100,13 @@ class PathEditorState {
 @observer
 class PathNodeHandle extends React.Component<{item: PathItem, index: number, state: PathEditorState}, {}> {
   drag: {
-    startPos: Vec2
     origNodes: Map<number, PathNode>
     draggedNodePos: Vec2
-    closingPath: boolean
-    closingInsertMode: 'append' | 'prepend' | 'none'
-  } | undefined
+  } | undefined = undefined
+  closingPathDrag: {
+    startPos: Vec2
+    insertMode: 'append' | 'prepend' | 'none'
+  } | undefined = undefined
 
   get closingPath () {
     const {state, index, item} = this.props
@@ -123,25 +124,30 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
 
   @action onPointerDown = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
     (event.target as Element).setPointerCapture(event.pointerId)
-    const {item, index, state} = this.props
-    const {closingPath} = this
-    const closingInsertMode = state.insertMode
 
-    const origNodes = new Map<number, PathNode>()
-    if (target === 'position') {
-      const {document} = item
-      if (event.shiftKey) {
-        document.selectedPathNodes.add(index)
-      } else if (!document.selectedPathNodes.has(index)) {
-        document.selectedPathNodes.replace([index])
-      }
-      for (const i of document.selectedPathNodes) {
-        origNodes.set(i , {...state.nodes[i]})
+    if (target === 'position' && this.closingPath) {
+      this.closingPathDrag = {
+        startPos: DrawArea.posFromEvent(event),
+        insertMode: this.props.state.insertMode
       }
     } else {
-      origNodes.set(index, {...state.nodes[index]})
+      const {item, index, state} = this.props
+      const origNodes = new Map<number, PathNode>()
+      if (target === 'position') {
+        const {document} = item
+        if (event.shiftKey) {
+          document.selectedPathNodes.add(index)
+        } else if (!document.selectedPathNodes.has(index)) {
+          document.selectedPathNodes.replace([index])
+        }
+        for (const i of document.selectedPathNodes) {
+          origNodes.set(i , {...state.nodes[i]})
+        }
+      } else {
+        origNodes.set(index, {...state.nodes[index]})
+      }
+      this.drag = {origNodes, draggedNodePos: state.nodes[index].position}
     }
-    this.drag = {startPos: DrawArea.posFromEvent(event), origNodes, draggedNodePos: state.nodes[index].position, closingPath, closingInsertMode}
   }
 
   onPointerDownPosition = (e: PointerEvent) => this.onPointerDown('position', e)
@@ -156,26 +162,26 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
       state.insertPreview = undefined
     }
 
-    if (this.drag) {
-      const dragPos = DrawArea.posFromEvent(event)
+    const dragPos = DrawArea.posFromEvent(event)
 
-      if (target === 'position' && this.drag.closingPath) {
-        if (dragPos.sub(this.drag.startPos).length() > snapDistance) {
-          if (this.drag.closingInsertMode === 'prepend') {
-            const index = state.nodes.length - 1
-            state.nodes[index].type = 'symmetric'
-            state.nodes[index] = PathUtil.moveHandle(state.nodes[index], 'handle1', DrawArea.posFromEvent(event))
-          } else {
-            const index = 0
-            state.nodes[index].type = 'symmetric'
-            state.nodes[index] = PathUtil.moveHandle(state.nodes[index], 'handle2', DrawArea.posFromEvent(event))
-          }
+    if (this.closingPathDrag) {
+      if (dragPos.sub(this.closingPathDrag.startPos).length() > snapDistance) {
+        if (this.closingPathDrag.insertMode === 'prepend') {
+          const index = state.nodes.length - 1
+          state.nodes[index].type = 'symmetric'
+          state.nodes[index] = PathUtil.moveHandle(state.nodes[index], 'handle1', DrawArea.posFromEvent(event))
+        } else {
+          const index = 0
+          state.nodes[index].type = 'symmetric'
+          state.nodes[index] = PathUtil.moveHandle(state.nodes[index], 'handle2', DrawArea.posFromEvent(event))
         }
-      } else {
-        for (const [index, origNode] of this.drag.origNodes) {
-          const pos = dragPos.add(origNode.position.sub(this.drag.draggedNodePos))
-          state.nodes[index] = PathUtil.moveHandle(origNode, target, pos)
-        }
+      }
+    }
+
+    if (this.drag) {
+      for (const [index, origNode] of this.drag.origNodes) {
+        const pos = dragPos.add(origNode.position.sub(this.drag.draggedNodePos))
+        state.nodes[index] = PathUtil.moveHandle(origNode, target, pos)
       }
     }
   }
@@ -186,6 +192,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
 
   @action onPointerUp = (event: PointerEvent) => {
     this.drag = undefined
+    this.closingPathDrag = undefined
     this.props.state.commit()
   }
 
