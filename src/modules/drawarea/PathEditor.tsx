@@ -33,7 +33,7 @@ class PathEditorState {
       if (selected === 0) {
         return 'prepend'
       }
-      if (selected === this.item.nodes.length - 1) {
+      if (selected === this.nodes.length - 1) {
         return 'append'
       }
     }
@@ -166,7 +166,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
 }
 
 class PathEditorBackground extends React.Component<{item: PathItem, width: number, height: number, state: PathEditorState}, {}> {
-  dragged = false
+  dragInsertMode: 'none'|'prepend'|'append' = 'none'
 
   render () {
     return <PointerEvents
@@ -179,27 +179,31 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
   }
 
   @action private onPointerDown = (event: PointerEvent) => {
-    this.dragged = true
+    console.log('pointer down')
+    this.dragInsertMode = this.props.state.insertMode
     if (this.props.state.insertMode !== 'none') {
       this.onInsertPointerDown(event)
     }
   }
 
   @action private onPointerMove = (event: PointerEvent) => {
-    if (this.props.state.insertMode !== 'none') {
+    console.log('pointer move')
+    if (this.dragInsertMode !== 'none') {
+      this.onInsertPointerDrag(event)
+    } else if (this.props.state.insertMode !== 'none') {
       this.onInsertPointerHover(event)
     }
   }
 
   @action private onPointerUp = (event: PointerEvent) => {
-    this.dragged = false
+    this.dragInsertMode = 'none'
     if (this.props.state.insertMode !== 'none') {
       this.onInsertPointerUp(event)
     }
   }
 
   @action private onInsertPointerDown = (event: PointerEvent) => {
-    (event.target as HTMLElement).setPointerCapture(event.pointerId)
+    (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
     const {document} = this.props.item
     const {state} = this.props
     const pos = DrawArea.posFromEvent(event)
@@ -214,23 +218,43 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
     state.insertPreview = undefined
   }
 
-  @action private onInsertPointerHover = (event: PointerEvent) => {
+  @action private onInsertPointerDrag = (event: PointerEvent) => {
     const {state} = this.props
     const pos = DrawArea.posFromEvent(event)
-    if (this.dragged) {
-      if (state.insertPreview) {
-        const {position} = state.insertPreview
-        const handle1 = pos
-        const handle2 = pos.mulScalar(2).sub(position)
-        state.insertPreview = {type: 'symmetric', position, handle1, handle2}
+    if (this.dragInsertMode === 'append') {
+      const node = state.nodes[state.nodes.length - 1]
+      if (node) {
+        const newNode: PathNode = {
+          type: 'symmetric',
+          position: node.position,
+          handle1: node.position.mulScalar(2).sub(pos),
+          handle2: pos
+        }
+        state.nodes[state.nodes.length - 1] = newNode
       }
     } else {
-      const node: PathNode = {type: 'straight', position: pos, handle1: pos, handle2: pos}
-      state.insertPreview = node
+      const node = state.nodes[0]
+      if (node) {
+        const newNode: PathNode = {
+          type: 'symmetric',
+          position: node.position,
+          handle1: pos,
+          handle2: node.position.mulScalar(2).sub(pos)
+        }
+        state.nodes[0] = newNode
+      }
     }
   }
 
+  @action private onInsertPointerHover = (event: PointerEvent) => {
+    const {state} = this.props
+    const pos = DrawArea.posFromEvent(event)
+    const node: PathNode = {type: 'straight', position: pos, handle1: pos, handle2: pos}
+    state.insertPreview = node
+  }
+
   @action private onInsertPointerUp = (event: PointerEvent) => {
+    this.props.state.commit()
   }
 
   @action private onClick = () => {
