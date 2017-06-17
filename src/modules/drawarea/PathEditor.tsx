@@ -180,11 +180,28 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
 
   @action private onPointerDown = (event: PointerEvent) => {
     this.dragged = true
-    const {state} = this.props
-    const {document} = this.props.item
-    if (state.insertMode === 'none') {
-      return
+    if (this.props.state.insertMode !== 'none') {
+      this.onInsertPointerDown(event)
     }
+  }
+
+  @action private onPointerMove = (event: PointerEvent) => {
+    if (this.props.state.insertMode !== 'none') {
+      this.onInsertPointerHover(event)
+    }
+  }
+
+  @action private onPointerUp = (event: PointerEvent) => {
+    this.dragged = false
+    if (this.props.state.insertMode !== 'none') {
+      this.onInsertPointerUp(event)
+    }
+  }
+
+  @action private onInsertPointerDown = (event: PointerEvent) => {
+    (event.target as HTMLElement).setPointerCapture(event.pointerId)
+    const {document} = this.props.item
+    const {state} = this.props
     const pos = DrawArea.posFromEvent(event)
     const node: PathNode = {type: 'straight', position: pos, handle1: pos, handle2: pos}
     if (state.insertMode === 'prepend') {
@@ -197,18 +214,23 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
     state.insertPreview = undefined
   }
 
-  @action private onPointerMove = (event: PointerEvent) => {
+  @action private onInsertPointerHover = (event: PointerEvent) => {
     const {state} = this.props
-    if (state.insertMode === 'none') {
-      return
-    }
     const pos = DrawArea.posFromEvent(event)
-    const node: PathNode = {type: 'straight', position: pos, handle1: pos, handle2: pos}
-    state.insertPreview = node
+    if (this.dragged) {
+      if (state.insertPreview) {
+        const {position} = state.insertPreview
+        const handle1 = pos
+        const handle2 = pos.mulScalar(2).sub(position)
+        state.insertPreview = {type: 'symmetric', position, handle1, handle2}
+      }
+    } else {
+      const node: PathNode = {type: 'straight', position: pos, handle1: pos, handle2: pos}
+      state.insertPreview = node
+    }
   }
 
-  @action private onPointerUp = (event: PointerEvent) => {
-    this.dragged = false
+  @action private onInsertPointerUp = (event: PointerEvent) => {
   }
 
   @action private onClick = () => {
