@@ -24,6 +24,7 @@ function normalizeNodes (item: PathItem) {
 class PathEditorState {
   readonly nodes = observable([...this.item.nodes])
   readonly preview = itemPreview.addItem(this.item)
+  @observable closed = this.item.closed
   @observable insertPreview: PathNode|undefined = undefined
 
   @computed get insertMode () {
@@ -56,6 +57,9 @@ class PathEditorState {
   }
 
   private disposers = [
+    reaction(() => this.closed, closed => {
+      this.preview.closed = closed
+    }),
     reaction(() => [...this.item.nodes], nodes => {
       this.nodes.replace(nodes)
     }),
@@ -89,6 +93,17 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
     draggedNodePos: Vec2
   } | undefined
 
+  get closingPath () {
+    const {state, index} = this.props
+    if (state.insertMode === 'prepend') {
+      return index === state.nodes.length - 1
+    }
+    if (state.insertMode === 'append') {
+      return index === 0
+    }
+    return false
+  }
+
   @action onPointerDown = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
     (event.target as Element).setPointerCapture(event.pointerId)
     const {item, index, state} = this.props
@@ -116,16 +131,19 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
   onPointerDownHandle2 = (e: PointerEvent) => this.onPointerDown('handle2', e)
 
   @action onPointerMove = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
-    this.props.state.insertPreview = undefined
-    if (!this.drag) {
-      return
-    }
     const {state} = this.props
-    const dragPos = DrawArea.posFromEvent(event)
+    if (target === 'position' && this.closingPath) {
+      state.closed = true
+    }
+    state.insertPreview = undefined
 
-    for (const [index, origNode] of this.drag.origNodes) {
-      const pos = dragPos.add(origNode.position.sub(this.drag.draggedNodePos))
-      state.nodes[index] = PathUtil.moveHandle(origNode, target, pos)
+    if (this.drag) {
+      const dragPos = DrawArea.posFromEvent(event)
+
+      for (const [index, origNode] of this.drag.origNodes) {
+        const pos = dragPos.add(origNode.position.sub(this.drag.draggedNodePos))
+        state.nodes[index] = PathUtil.moveHandle(origNode, target, pos)
+      }
     }
   }
 
@@ -257,6 +275,7 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
     const pos = DrawArea.posFromEvent(event)
     const node: PathNode = {type: 'straight', position: pos, handle1: pos, handle2: pos}
     state.insertPreview = node
+    state.closed = false
   }
 
   @action private onInsertPointerUp = (event: PointerEvent) => {
