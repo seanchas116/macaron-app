@@ -169,6 +169,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
 }
 
 class PathEditorBackground extends React.Component<{item: PathItem, width: number, height: number, state: PathEditorState}, {}> {
+  dragStartPos = new Vec2()
   dragInsertMode: 'none'|'prepend'|'append' = 'none'
 
   render () {
@@ -183,6 +184,7 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
 
   @action private onPointerDown = (event: PointerEvent) => {
     this.dragInsertMode = this.props.state.insertMode
+    this.dragStartPos = DrawArea.posFromEvent(event)
     if (this.props.state.insertMode !== 'none') {
       this.onInsertPointerDown(event)
     }
@@ -222,6 +224,9 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
   @action private onInsertPointerDrag = (event: PointerEvent) => {
     const {state} = this.props
     const pos = DrawArea.posFromEvent(event)
+    if (pos.sub(this.dragStartPos).length() <= snapDistance) {
+      return
+    }
     if (this.dragInsertMode === 'append') {
       const node = state.nodes[state.nodes.length - 1]
       if (node) {
