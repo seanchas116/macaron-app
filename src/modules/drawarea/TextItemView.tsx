@@ -45,7 +45,7 @@ class TextItemView extends React.Component<{item: TextItem}, {}> {
           tabIndex={-1}
           onBlur={this.onBlur}
           onKeyDown={this.onKeyDown}
-          ref={e => this.editor = e}>
+          ref={e => this.editor = e!}>
           {item.text}
         </div>
       </foreignObject>

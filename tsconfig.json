@@ -19,6 +19,7 @@
     },
     "exclude": [
         "node_modules",
+        "node_modules/@types/react-dom/node_modules", // workaround for @types/react-dom wrongly containing @types/react
         "build"
     ],
     "compileOnSave": false
