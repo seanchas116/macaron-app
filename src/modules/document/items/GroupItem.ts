@@ -37,16 +37,16 @@ class GroupItem extends Item {
     super.dispose()
   }
 
-  clone ({deep = true} = {}) {
+  clone ({shallow = true} = {}) {
     const item = new GroupItem(this.document)
-    item.loadData(this.toData(), {deep, assignNewID: true})
+    item.loadData(this.toData(), {shallow, assignNewID: true})
     return item
   }
 
-  loadData (data: GroupItemData, {deep = true, assignNewID = true} = {}) {
+  loadData (data: GroupItemData, {shallow = false, assignNewID = true} = {}) {
     super.loadData(data)
     this.collapsed = data.collapsed
-    if (deep) {
+    if (!shallow) {
       this.children.replace(data.children.map(c => itemFromData(this.document, c, {assignNewID})))
     }
   }
