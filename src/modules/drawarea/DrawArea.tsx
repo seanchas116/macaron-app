@@ -43,7 +43,7 @@ export class DrawArea extends React.Component<{}, {}> {
     const currentTool = toolManager.current
     const {width, height} = this.size
     // TODO: improve scroll performance
-    return <div className={styles.root} ref={e => this.root = e}>
+    return <div className={styles.root} ref={e => this.root = e!}>
       <svg className={styles.svg} width={width + 'px'} height={height + 'px'} onWheel={this.onWheel} >
         <rect x={0} y={0} width={width} height={height} onClick={this.deselect} fill='white' />
         <g transform={`translate(${-scroll.x}, ${-scroll.y})`} >

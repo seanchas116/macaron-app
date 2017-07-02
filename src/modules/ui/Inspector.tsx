@@ -21,7 +21,7 @@ class ValueInput extends React.Component<ValueInputProps, {}> {
   }
 
   render () {
-    return <input type='number' ref={e => this.element = e} onKeyDown={this.onKeyDown} onBlur={this.onBlur} />
+    return <input type='number' ref={e => this.element = e!} onKeyDown={this.onKeyDown} onBlur={this.onBlur} />
   }
 
   private onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

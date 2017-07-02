@@ -10,7 +10,7 @@ class PathTool extends Tool {
   overlay: PathToolOverlay|undefined
 
   renderOverlay (size: Vec2) {
-    return <PathToolOverlay size={size} ref={e => this.overlay = e} />
+    return <PathToolOverlay size={size} ref={e => this.overlay = e!} />
   }
 
   onKeyDown (event: React.KeyboardEvent<HTMLElement>) {
