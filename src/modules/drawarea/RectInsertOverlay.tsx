@@ -8,7 +8,7 @@ import { PointerEvents } from '../../util/components/PointerEvents'
 import { editorState } from './EditorState'
 
 export
-class RectToolOverlay extends React.Component<{width: number, height: number}, {}> {
+class RectInsertOverlay extends React.Component<{width: number, height: number}, {}> {
   startPos: Vec2|undefined
   parent: GroupItem|undefined
   item: RectLikeItem|undefined
