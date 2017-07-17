@@ -8,7 +8,7 @@ import { PointerEvents } from '../../util/components/PointerEvents'
 import { editorState } from './EditorState'
 
 export
-class RectToolOverlay extends React.Component<{size: Vec2}, {}> {
+class RectToolOverlay extends React.Component<{width: number, height: number}, {}> {
   startPos: Vec2|undefined
   parent: GroupItem|undefined
   item: RectLikeItem|undefined
@@ -26,7 +26,7 @@ class RectToolOverlay extends React.Component<{size: Vec2}, {}> {
   }
 
   render () {
-    const {width, height} = this.props.size
+    const {width, height} = this.props
     return <PointerEvents
       onPointerDown={this.onPointerDown}
       onPointerMove={this.onPointerMove}

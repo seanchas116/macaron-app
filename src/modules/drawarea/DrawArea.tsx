@@ -6,8 +6,10 @@ import { documentManager, PathItem } from '../document'
 import { toolManager } from './ToolManager'
 import { ItemResizeHandles } from './ItemResizeHandles'
 import { PathEditor } from './PathEditor'
+import { RectInsertOverlay } from './RectInsertOverlay'
 import { SnapLines } from './SnapLines'
 import { GroupItemView } from './GroupItemView'
+import { editorState } from './EditorState'
 const styles = require('./DrawArea.css')
 
 @observer
@@ -52,6 +54,7 @@ export class DrawArea extends React.Component<{}, {}> {
           {!focusedItem && <ItemResizeHandles items={[...selectedItems]} />}
         </g>
         {focusedItem instanceof PathItem && <PathEditor item={focusedItem} width={width} height={height} />}
+        {['rect', 'oval', 'text'].includes(editorState.insertMode) && <RectInsertOverlay width={width} height={height} />}
         {currentTool && currentTool.renderOverlay(this.size)}
       </svg>
     </div>
