@@ -17,4 +17,5 @@ async function openFileFromHash () {
   }
 }
 
+// tslint:disable-next-line
 openFileFromHash()

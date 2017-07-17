@@ -14,7 +14,7 @@ export class FileSaveAction extends Action {
     if (document.filePath) {
       await save(document, document.filePath)
     } else {
-      new FileSaveAsAction().run()
+      await new FileSaveAsAction().run()
     }
   }
 }
