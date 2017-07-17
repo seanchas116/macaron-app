@@ -1,7 +1,7 @@
-import {Action, addAction} from '../menu'
-import {itemFromData, documentManager, CompositeCommand, ItemInsertCommand} from '../document'
-import {clipboardDataType, ClipboardData} from './ClipboardData'
-import {Clipboard} from '../../util/Clipboard'
+import { Action, addAction } from '../menu'
+import { itemFromData, documentManager, CompositeCommand, ItemInsertCommand } from '../document'
+import { clipboardDataType, ClipboardData } from './ClipboardData'
+import { Clipboard } from '../../util/Clipboard'
 
 @addAction
 export class PasteAction extends Action {

@@ -1,7 +1,7 @@
-import {Action, addAction} from '../../menu'
-import {documentManager} from '../../document'
-import {FileSaveAsAction} from './FileSaveAsAction'
-import {save} from '../save'
+import { Action, addAction } from '../../menu'
+import { documentManager } from '../../document'
+import { FileSaveAsAction } from './FileSaveAsAction'
+import { save } from '../save'
 
 @addAction
 export class FileSaveAction extends Action {

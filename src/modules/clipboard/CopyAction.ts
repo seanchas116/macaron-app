@@ -1,7 +1,7 @@
-import {Action, addAction} from '../menu'
-import {Clipboard} from '../../util/Clipboard'
-import {documentManager} from '../document'
-import {clipboardDataType, ClipboardData} from './ClipboardData'
+import { Action, addAction } from '../menu'
+import { Clipboard } from '../../util/Clipboard'
+import { documentManager } from '../document'
+import { clipboardDataType, ClipboardData } from './ClipboardData'
 
 @addAction
 export class CopyAction extends Action {

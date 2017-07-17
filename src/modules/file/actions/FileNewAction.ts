@@ -1,5 +1,5 @@
-import {Action, addAction} from '../../menu'
-import {ipcRenderer} from 'electron'
+import { Action, addAction } from '../../menu'
+import { ipcRenderer } from 'electron'
 
 @addAction
 export class FileNewAction extends Action {

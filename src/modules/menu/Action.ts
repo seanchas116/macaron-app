@@ -5,4 +5,3 @@ export abstract class Action {
   abstract enabled: boolean
   abstract run (): void
 }
-

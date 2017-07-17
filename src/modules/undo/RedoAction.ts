@@ -1,6 +1,6 @@
-import {computed} from 'mobx'
-import {Action, addAction} from '../menu'
-import {documentManager} from '../document'
+import { computed } from 'mobx'
+import { Action, addAction } from '../menu'
+import { documentManager } from '../document'
 
 @addAction
 export class UndoAction extends Action {

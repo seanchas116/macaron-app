@@ -1,4 +1,4 @@
-import {Command} from './Command'
+import { Command } from './Command'
 
 export class CompositeCommand extends Command {
   constructor (public readonly title: string, public readonly commands: Command[]) {

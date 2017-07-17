@@ -2,8 +2,8 @@ import * as fs from 'fs'
 import * as temp from 'temp'
 import * as JSZip from 'jszip'
 import * as msgpack from 'msgpack-lite'
-import {Document} from '../document'
-import {DocumentData} from './DocumentData'
+import { Document } from '../document'
+import { DocumentData } from './DocumentData'
 
 export async function save (document: Document, filePath: string) {
   const zip = new JSZip()

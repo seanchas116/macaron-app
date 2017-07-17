@@ -1,4 +1,4 @@
-import {app, BrowserWindow, ipcMain} from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import * as qs from 'querystring'
 type BrowserWindow = Electron.BrowserWindow
 const argv = require('minimist')(process.argv.slice(2))

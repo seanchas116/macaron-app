@@ -1,5 +1,5 @@
-import {ObservableMap} from '../../util/ObservableMap'
-import {Item, GroupItem} from '../document'
+import { ObservableMap } from '../../util/ObservableMap'
+import { Item, GroupItem } from '../document'
 
 export class ItemPreview {
   private readonly items = new ObservableMap<Item, Item>()

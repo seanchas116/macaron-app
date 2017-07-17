@@ -1,5 +1,5 @@
-import {observable, computed} from 'mobx'
-import {Tool} from './Tool'
+import { observable, computed } from 'mobx'
+import { Tool } from './Tool'
 
 export
 class ToolManager {

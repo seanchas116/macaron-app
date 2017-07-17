@@ -1,4 +1,4 @@
-import {RectLikeItem, RectLikeItemData} from './RectLikeItem'
+import { RectLikeItem, RectLikeItemData } from './RectLikeItem'
 
 export interface OvalItemData extends RectLikeItemData {
   type: 'oval'
