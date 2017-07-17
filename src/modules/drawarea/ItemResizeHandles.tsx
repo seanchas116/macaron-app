@@ -1,12 +1,12 @@
 import * as React from 'react'
-import {observer} from 'mobx-react'
-import {action, reaction, computed, observable} from 'mobx'
-import {Rect, Vec2} from 'paintvec'
-import {ResizeHandles} from './ResizeHandles'
-import {Item, Command, CompositeCommand, ItemChangeCommand, documentManager} from '../document'
-import {snapper} from './Snapper'
-import {itemPreview} from './ItemPreview'
-import {Alignment} from '../../util/Types'
+import { observer } from 'mobx-react'
+import { action, reaction, computed, observable } from 'mobx'
+import { Rect, Vec2 } from 'paintvec'
+import { ResizeHandles } from './ResizeHandles'
+import { Item, Command, CompositeCommand, ItemChangeCommand, documentManager } from '../document'
+import { snapper } from './Snapper'
+import { itemPreview } from './ItemPreview'
+import { Alignment } from '../../util/Types'
 
 @observer
 export

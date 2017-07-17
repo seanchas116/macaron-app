@@ -1,4 +1,4 @@
-import {Atom} from 'mobx'
+import { Atom } from 'mobx'
 
 export class ObservableSet<T> implements Iterable<T> {
   private atom = new Atom('ObservableSet')

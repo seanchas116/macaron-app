@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {Rect} from 'paintvec'
+import { Rect } from 'paintvec'
 
 export const SizeLabel = (props: {rect: Rect}) => {
   const {rect} = props

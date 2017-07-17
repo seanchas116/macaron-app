@@ -1,8 +1,8 @@
 import * as React from 'react'
-import {observer} from 'mobx-react'
+import { observer } from 'mobx-react'
 import * as classNames from 'classnames'
-import {Tool, toolManager} from '../drawarea'
-import {CSSVariables} from '../../util/components/CSSVariables'
+import { Tool, toolManager } from '../drawarea'
+import { CSSVariables } from '../../util/components/CSSVariables'
 const styles = require('./ToolSelect.css')
 
 const ToolSelectItem = observer((props: {tool: Tool}) => {

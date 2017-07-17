@@ -1,9 +1,9 @@
 import * as React from 'react'
-import {action} from 'mobx'
-import {Vec2} from 'paintvec'
-import {GroupItem, PathNode, PathItem, documentManager, ItemInsertCommand} from '../document'
-import {itemPreview, toolManager} from '../drawarea'
-import {PointerEvents} from '../../util/components/PointerEvents'
+import { action } from 'mobx'
+import { Vec2 } from 'paintvec'
+import { GroupItem, PathNode, PathItem, documentManager, ItemInsertCommand } from '../document'
+import { itemPreview, toolManager } from '../drawarea'
+import { PointerEvents } from '../../util/components/PointerEvents'
 
 const snapDistance = 4
 

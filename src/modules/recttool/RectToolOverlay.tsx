@@ -1,10 +1,10 @@
 import * as React from 'react'
-import {action} from 'mobx'
-import {Vec2, Rect} from 'paintvec'
-import {Document, documentManager, GroupItem, RectLikeItem, RectItem, TextItem, OvalItem, ItemInsertCommand} from '../document'
-import {toolManager, itemPreview, snapper} from '../drawarea'
-import {PointerEvents} from '../../util/components/PointerEvents'
-import {RectToolType} from './RectTool'
+import { action } from 'mobx'
+import { Vec2, Rect } from 'paintvec'
+import { Document, documentManager, GroupItem, RectLikeItem, RectItem, TextItem, OvalItem, ItemInsertCommand } from '../document'
+import { toolManager, itemPreview, snapper } from '../drawarea'
+import { PointerEvents } from '../../util/components/PointerEvents'
+import { RectToolType } from './RectTool'
 
 export
 class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, {}> {

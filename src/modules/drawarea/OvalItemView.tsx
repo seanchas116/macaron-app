@@ -1,8 +1,8 @@
 import * as React from 'react'
-import {observer} from 'mobx-react'
-import {OvalItem} from '../document'
-import {Movable} from './Movable'
-import {itemPreview} from './ItemPreview'
+import { observer } from 'mobx-react'
+import { OvalItem } from '../document'
+import { Movable } from './Movable'
+import { itemPreview } from './ItemPreview'
 
 @observer
 export class OvalItemView extends React.Component<{item: OvalItem}, {}> {

@@ -1,14 +1,14 @@
 import * as React from 'react'
-import {observer} from 'mobx-react'
+import { observer } from 'mobx-react'
 
-import {Item, GroupItem, RectItem, OvalItem, TextItem, PathItem} from '../document'
+import { Item, GroupItem, RectItem, OvalItem, TextItem, PathItem } from '../document'
 
-import {RectItemView} from './RectItemView'
-import {OvalItemView} from './OvalItemView'
-import {TextItemView} from './TextItemView'
-import {PathItemView} from './PathItemView'
+import { RectItemView } from './RectItemView'
+import { OvalItemView } from './OvalItemView'
+import { TextItemView } from './TextItemView'
+import { PathItemView } from './PathItemView'
 
-import {itemPreview} from './ItemPreview'
+import { itemPreview } from './ItemPreview'
 
 export function renderItem (item: Item): JSX.Element|undefined {
   if (item instanceof GroupItem) {

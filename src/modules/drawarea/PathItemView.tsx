@@ -1,8 +1,8 @@
 import * as React from 'react'
-import {observer} from 'mobx-react'
-import {PathItem} from '../document'
-import {Movable} from './Movable'
-import {itemPreview} from './ItemPreview'
+import { observer } from 'mobx-react'
+import { PathItem } from '../document'
+import { Movable } from './Movable'
+import { itemPreview } from './ItemPreview'
 
 @observer
 export class PathItemView extends React.Component<{item: PathItem}, {}> {

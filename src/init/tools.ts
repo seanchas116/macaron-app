@@ -1,4 +1,4 @@
-import {toolManager} from '../modules/drawarea'
+import { toolManager } from '../modules/drawarea'
 
 toolManager.toolOrder.replace([
   'org.macaron.rect.rect',

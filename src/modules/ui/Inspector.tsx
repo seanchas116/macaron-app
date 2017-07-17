@@ -1,7 +1,7 @@
 import * as React from 'react'
-import {observer} from 'mobx-react'
-import {Rect} from 'paintvec'
-import {documentManager, ItemChangeCommand, Item, RectItem} from '../document'
+import { observer } from 'mobx-react'
+import { Rect } from 'paintvec'
+import { documentManager, ItemChangeCommand, Item, RectItem } from '../document'
 const styles = require('./Inspector.css')
 
 interface ValueInputProps {
@@ -58,7 +58,6 @@ const CheckboxInput = (props: {value: boolean, onChange: (value: boolean) => voi
   }
   return <input type='checkbox' checked={props.value} onChange={onChange} />
 }
-
 
 const RectEdit = observer((props: {item: Item}) => {
   const {item} = props
@@ -128,7 +127,6 @@ const StrokeEdit = observer((props: {item: Item}) => {
     <ValueInput value={item.strokeWidth} onChange={onChangeStrokeWidth} />
   </div>
 })
-
 
 @observer
 export class Inspector extends React.Component<{}, {}> {
