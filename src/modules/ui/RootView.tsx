@@ -3,7 +3,7 @@ import { action } from 'mobx'
 import { ToolSelect } from './ToolSelect'
 import { ItemHierarchy } from './ItemHierarchy'
 import { Inspector } from './Inspector'
-import { DrawArea, toolManager } from '../drawarea'
+import { DrawArea } from '../drawarea'
 import { documentManager, CompositeCommand, ItemRemoveCommand } from '../document'
 import { isTextInput } from '../../util/isTextInput'
 const styles = require('./RootView.css')
@@ -24,12 +24,6 @@ class RootView extends React.Component<{}, {}> {
   @action private onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
     if (isTextInput(document.activeElement)) {
       return
-    }
-    if (toolManager.current) {
-      toolManager.current.onKeyDown(e)
-      if (e.defaultPrevented) {
-        return
-      }
     }
     if (e.key === 'Delete' || e.key === 'Backspace') {
       this.removeItems()

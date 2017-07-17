@@ -3,7 +3,6 @@ import { observable, action } from 'mobx'
 import { observer } from 'mobx-react'
 import { Vec2 } from 'paintvec'
 import { documentManager, PathItem } from '../document'
-import { toolManager } from './ToolManager'
 import { ItemResizeHandles } from './ItemResizeHandles'
 import { PathEditor } from './PathEditor'
 import { RectInsertOverlay } from './RectInsertOverlay'
@@ -42,7 +41,6 @@ export class DrawArea extends React.Component<{}, {}> {
 
   render () {
     const {rootItem, selectedItems, scroll, focusedItem} = documentManager.document
-    const currentTool = toolManager.current
     const {width, height} = this.size
     // TODO: improve scroll performance
     return <div className={styles.root} ref={e => this.root = e!}>
@@ -55,7 +53,6 @@ export class DrawArea extends React.Component<{}, {}> {
         </g>
         {focusedItem instanceof PathItem && <PathEditor item={focusedItem} width={width} height={height} />}
         {['rect', 'oval', 'text'].includes(editorState.insertMode) && <RectInsertOverlay width={width} height={height} />}
-        {currentTool && currentTool.renderOverlay(this.size)}
       </svg>
     </div>
   }
