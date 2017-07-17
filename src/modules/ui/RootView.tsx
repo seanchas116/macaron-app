@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { action } from 'mobx'
-import { ToolSelect } from './ToolSelect'
+import { InsertPalette } from './InsertPalette'
 import { ItemHierarchy } from './ItemHierarchy'
 import { Inspector } from './Inspector'
 import { DrawArea } from '../drawarea'
@@ -13,7 +13,7 @@ class RootView extends React.Component<{}, {}> {
   render () {
     return (
       <div className={styles.RootView} tabIndex={-1} onKeyDown={this.onKeyDown}>
-        <ToolSelect />
+        <InsertPalette />
         <ItemHierarchy />
         <DrawArea />
         <Inspector />
