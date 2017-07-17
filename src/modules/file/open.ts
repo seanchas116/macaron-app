@@ -1,10 +1,10 @@
 import * as fs from 'fs'
 import * as JSZip from 'jszip'
 import * as msgpack from 'msgpack-lite'
-import {action} from 'mobx'
-import {Vec2} from 'paintvec'
-import {Document, GroupItem, itemFromData} from '../document'
-import {DocumentData} from './DocumentData'
+import { action } from 'mobx'
+import { Vec2 } from 'paintvec'
+import { Document, GroupItem, itemFromData } from '../document'
+import { DocumentData } from './DocumentData'
 
 export const open = action(async (filePath: string) => {
   const fileData = await new Promise<Buffer>((resolve, reject) => {

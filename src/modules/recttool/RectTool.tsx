@@ -1,7 +1,7 @@
 import * as React from 'react'
-import {Vec2} from 'paintvec'
-import {Tool} from '../drawarea'
-import {RectToolOverlay} from './RectToolOverlay'
+import { Vec2 } from 'paintvec'
+import { Tool } from '../drawarea'
+import { RectToolOverlay } from './RectToolOverlay'
 
 export type RectToolType = 'rect' | 'oval' | 'text'
 

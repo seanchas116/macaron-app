@@ -1,6 +1,6 @@
-import {computed, action} from 'mobx'
-import {Action, addAction} from '../menu'
-import {documentManager, Command, CompositeCommand, ItemRemoveCommand, ItemMoveCommand, Item, GroupItem} from '../document'
+import { computed, action } from 'mobx'
+import { Action, addAction } from '../menu'
+import { documentManager, Command, CompositeCommand, ItemRemoveCommand, ItemMoveCommand, Item, GroupItem } from '../document'
 
 @addAction
 export class UngroupItemsAction extends Action {

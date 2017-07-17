@@ -1,6 +1,6 @@
-import {Vec2} from 'paintvec'
-import {observable} from 'mobx'
-import {Item, ItemData} from './Item'
+import { Vec2 } from 'paintvec'
+import { observable } from 'mobx'
+import { Item, ItemData } from './Item'
 
 export interface RectLikeItemData extends ItemData {
   x: number

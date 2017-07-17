@@ -1,10 +1,10 @@
 import * as React from 'react'
-import {Vec2, Rect} from 'paintvec'
-import {action} from 'mobx'
-import {PointerEvents} from '../../util/components/PointerEvents'
-import {Item, Command, CompositeCommand, ItemChangeCommand, documentManager} from '../document'
-import {snapper} from './Snapper'
-import {itemPreview} from './ItemPreview'
+import { Vec2, Rect } from 'paintvec'
+import { action } from 'mobx'
+import { PointerEvents } from '../../util/components/PointerEvents'
+import { Item, Command, CompositeCommand, ItemChangeCommand, documentManager } from '../document'
+import { snapper } from './Snapper'
+import { itemPreview } from './ItemPreview'
 
 export
 class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {

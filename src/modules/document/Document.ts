@@ -1,10 +1,10 @@
 import * as path from 'path'
-import {observable, action, computed, reaction} from 'mobx'
-import {Vec2} from 'paintvec'
-import {Item} from './items/Item'
-import {GroupItem} from './items/GroupItem'
-import {History} from './History'
-import {ObservableSet} from '../../util/ObservableSet'
+import { observable, action, computed, reaction } from 'mobx'
+import { Vec2 } from 'paintvec'
+import { Item } from './items/Item'
+import { GroupItem } from './items/GroupItem'
+import { History } from './History'
+import { ObservableSet } from '../../util/ObservableSet'
 
 export class Document {
   itemForId = new Map<string, Item>()

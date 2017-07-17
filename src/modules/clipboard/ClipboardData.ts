@@ -1,4 +1,4 @@
-import {ItemData} from '../document'
+import { ItemData } from '../document'
 
 export const clipboardDataType = 'com.sketchglass.macaron'
 

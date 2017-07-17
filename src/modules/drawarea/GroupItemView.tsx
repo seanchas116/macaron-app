@@ -1,14 +1,25 @@
 import * as React from 'react'
-import {observer} from 'mobx-react'
+import { observer } from 'mobx-react'
 
-import {Item, GroupItem, RectItem, OvalItem, TextItem, PathItem} from '../document'
+import { Item, GroupItem, RectItem, OvalItem, TextItem, PathItem } from '../document'
 
-import {RectItemView} from './RectItemView'
-import {OvalItemView} from './OvalItemView'
-import {TextItemView} from './TextItemView'
-import {PathItemView} from './PathItemView'
+import { RectItemView } from './RectItemView'
+import { OvalItemView } from './OvalItemView'
+import { TextItemView } from './TextItemView'
+import { PathItemView } from './PathItemView'
 
-import {itemPreview} from './ItemPreview'
+import { itemPreview } from './ItemPreview'
+
+@observer
+export class GroupItemView extends React.Component<{item: GroupItem}, {}> {
+  render () {
+    const {item} = this.props
+    const children = itemPreview.previewChildren(item)
+    return <g key={item.id}>
+      {[...children].reverse().map(renderItem)}
+    </g>
+  }
+}
 
 export function renderItem (item: Item): JSX.Element|undefined {
   if (item instanceof GroupItem) {
@@ -25,16 +36,5 @@ export function renderItem (item: Item): JSX.Element|undefined {
   }
   if (item instanceof PathItem) {
     return <PathItemView item={item} key={item.id} />
-  }
-}
-
-@observer
-export class GroupItemView extends React.Component<{item: GroupItem}, {}> {
-  render () {
-    const {item} = this.props
-    const children = itemPreview.previewChildren(item)
-    return <g key={item.id}>
-      {[...children].reverse().map(renderItem)}
-    </g>
   }
 }

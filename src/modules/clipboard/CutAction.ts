@@ -1,6 +1,6 @@
-import {Action, addAction} from '../menu'
-import {CopyAction} from './CopyAction'
-import {ItemRemoveCommand, CompositeCommand, documentManager} from '../document'
+import { Action, addAction } from '../menu'
+import { CopyAction } from './CopyAction'
+import { ItemRemoveCommand, CompositeCommand, documentManager } from '../document'
 
 @addAction
 export class CutAction extends Action {

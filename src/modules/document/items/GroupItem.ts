@@ -1,8 +1,8 @@
-import {observable, action, IArrayChange, IArraySplice} from 'mobx'
-import {Rect} from 'paintvec'
-import {Item, ItemData} from './Item'
-import {Document} from '../Document'
-import {itemFromData} from './itemFromData'
+import { observable, action, IArrayChange, IArraySplice } from 'mobx'
+import { Rect } from 'paintvec'
+import { Item, ItemData } from './Item'
+import { Document } from '../Document'
+import { itemFromData } from './itemFromData'
 
 export interface GroupItemData extends ItemData {
   type: 'group'

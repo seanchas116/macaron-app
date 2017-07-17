@@ -1,11 +1,11 @@
 import * as React from 'react'
-import {action} from 'mobx'
-import {ToolSelect} from './ToolSelect'
-import {ItemHierarchy} from './ItemHierarchy'
-import {Inspector} from './Inspector'
-import {DrawArea, toolManager} from '../drawarea'
-import {documentManager, CompositeCommand, ItemRemoveCommand} from '../document'
-import {isTextInput} from '../../util/isTextInput'
+import { action } from 'mobx'
+import { ToolSelect } from './ToolSelect'
+import { ItemHierarchy } from './ItemHierarchy'
+import { Inspector } from './Inspector'
+import { DrawArea, toolManager } from '../drawarea'
+import { documentManager, CompositeCommand, ItemRemoveCommand } from '../document'
+import { isTextInput } from '../../util/isTextInput'
 const styles = require('./RootView.css')
 
 export

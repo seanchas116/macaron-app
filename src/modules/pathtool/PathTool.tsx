@@ -1,7 +1,7 @@
 import * as React from 'react'
-import {Vec2} from 'paintvec'
-import {Tool} from '../drawarea'
-import {PathToolOverlay} from './PathToolOverlay'
+import { Vec2 } from 'paintvec'
+import { Tool } from '../drawarea'
+import { PathToolOverlay } from './PathToolOverlay'
 
 export
 class PathTool extends Tool {

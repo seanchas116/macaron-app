@@ -1,5 +1,5 @@
-import {observable} from 'mobx'
-import {RectLikeItem, RectLikeItemData} from './RectLikeItem'
+import { observable } from 'mobx'
+import { RectLikeItem, RectLikeItemData } from './RectLikeItem'
 
 export interface TextItemData extends RectLikeItemData {
   type: 'text'

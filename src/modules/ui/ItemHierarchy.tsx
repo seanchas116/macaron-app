@@ -1,9 +1,9 @@
 import * as React from 'react'
-import {TreeView, TreeDelegate, TreeRowInfo} from 'react-draggable-tree'
-import {observer} from 'mobx-react'
+import { TreeView, TreeDelegate, TreeRowInfo } from 'react-draggable-tree'
+import { observer } from 'mobx-react'
 import * as classNames from 'classnames'
 
-import {Item, GroupItem, documentManager, CompositeCommand, ItemMoveCommand, ItemInsertCommand} from '../document'
+import { Item, GroupItem, documentManager, CompositeCommand, ItemMoveCommand, ItemInsertCommand } from '../document'
 
 const styles = require('./ItemHierarchy.css')
 require('react-draggable-tree/lib/index.css')

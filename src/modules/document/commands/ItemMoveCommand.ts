@@ -1,6 +1,6 @@
-import {Command} from './Command'
-import {Item} from '../items/Item'
-import {GroupItem} from '../items/GroupItem'
+import { Command } from './Command'
+import { Item } from '../items/Item'
+import { GroupItem } from '../items/GroupItem'
 
 export class ItemMoveCommand extends Command {
   title = 'Move Item'

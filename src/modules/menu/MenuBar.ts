@@ -1,7 +1,7 @@
-import {remote} from 'electron'
+import { remote } from 'electron'
 const {Menu} = remote
-import {autorun, observable} from 'mobx'
-import {actionManager} from './ActionManager'
+import { autorun, observable } from 'mobx'
+import { actionManager } from './ActionManager'
 
 export interface MenuDescription extends Electron.MenuItemConstructorOptions {
   action?: string

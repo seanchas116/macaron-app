@@ -1,11 +1,11 @@
 import * as React from 'react'
-import {Vec2} from 'paintvec'
-import {action, observable, reaction, computed, IObservableArray} from 'mobx'
-import {observer} from 'mobx-react'
-import {PathItem, PathNode, PathUtil, ItemChangeCommand} from '../document'
-import {DrawArea} from './DrawArea'
-import {itemPreview} from './ItemPreview'
-import {PointerEvents} from '../../util/components/PointerEvents'
+import { Vec2 } from 'paintvec'
+import { action, observable, reaction, computed, IObservableArray } from 'mobx'
+import { observer } from 'mobx-react'
+import { PathItem, PathNode, PathUtil, ItemChangeCommand } from '../document'
+import { DrawArea } from './DrawArea'
+import { itemPreview } from './ItemPreview'
+import { PointerEvents } from '../../util/components/PointerEvents'
 
 const snapDistance = 4
 

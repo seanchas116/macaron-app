@@ -1,4 +1,4 @@
-import {Atom} from 'mobx'
+import { Atom } from 'mobx'
 
 export class ObservableMap<K, T> implements Iterable<[K, T]> {
   private atom = new Atom('ObservableMap')

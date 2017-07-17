@@ -1,9 +1,9 @@
 import * as React from 'react'
-import {observable, action, reaction} from 'mobx'
-import {observer} from 'mobx-react'
-import {Movable} from './Movable'
-import {TextItem} from '../document'
-import {itemPreview} from './ItemPreview'
+import { observable, action, reaction } from 'mobx'
+import { observer } from 'mobx-react'
+import { Movable } from './Movable'
+import { TextItem } from '../document'
+import { itemPreview } from './ItemPreview'
 
 @observer
 export

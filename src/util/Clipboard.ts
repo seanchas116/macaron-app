@@ -1,5 +1,5 @@
-import {remote} from 'electron'
-import {openClipboard, clearClipboard, setClipboardData, getClipboardData, closeClipboard} from '../native'
+import { remote } from 'electron'
+import { openClipboard, clearClipboard, setClipboardData, getClipboardData, closeClipboard } from '../native'
 
 export class Clipboard {
   constructor () {
@@ -22,4 +22,3 @@ export class Clipboard {
     closeClipboard()
   }
 }
-

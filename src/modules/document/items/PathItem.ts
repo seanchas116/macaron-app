@@ -1,7 +1,7 @@
-import {observable, computed} from 'mobx'
-import {Vec2, Rect} from 'paintvec'
+import { observable, computed } from 'mobx'
+import { Vec2, Rect } from 'paintvec'
 const Bezier = require('bezier-js')
-import {Item, ItemData} from './Item'
+import { Item, ItemData } from './Item'
 
 export type PathNodeType = 'symmetric' | 'asymmetric' | 'disconnected' | 'straight'
 

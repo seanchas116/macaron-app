@@ -1,6 +1,6 @@
 import * as React from 'react'
-import {observer} from 'mobx-react'
-import {snapper} from './Snapper'
+import { observer } from 'mobx-react'
+import { snapper } from './Snapper'
 
 @observer
 export class SnapLines extends React.Component<{}, {}> {

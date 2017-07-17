@@ -1,10 +1,10 @@
-import {ItemData} from './Item'
-import {RectItem, RectItemData} from './RectItem'
-import {OvalItem, OvalItemData} from './OvalItem'
-import {TextItem, TextItemData} from './TextItem'
-import {PathItem, PathItemData} from './PathItem'
-import {GroupItem, GroupItemData} from './GroupItem'
-import {Document} from '../Document'
+import { ItemData } from './Item'
+import { RectItem, RectItemData } from './RectItem'
+import { OvalItem, OvalItemData } from './OvalItem'
+import { TextItem, TextItemData } from './TextItem'
+import { PathItem, PathItemData } from './PathItem'
+import { GroupItem, GroupItemData } from './GroupItem'
+import { Document } from '../Document'
 
 export function itemFromData (document: Document, data: ItemData, {assignNewID = true} = {}) {
   const id = assignNewID ? undefined : data.id

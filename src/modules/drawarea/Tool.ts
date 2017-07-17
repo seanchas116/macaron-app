@@ -1,4 +1,4 @@
-import {Vec2} from 'paintvec'
+import { Vec2 } from 'paintvec'
 
 export
 abstract class Tool {

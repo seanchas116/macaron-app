@@ -4,8 +4,8 @@ import './actions/FileSaveAction'
 import './actions/FileSaveAsAction'
 
 import * as qs from 'querystring'
-import {open} from './open'
-import {documentManager} from '../document'
+import { open } from './open'
+import { documentManager } from '../document'
 
 async function openFileFromHash () {
   if (location.hash) {
@@ -17,4 +17,5 @@ async function openFileFromHash () {
   }
 }
 
+// tslint:disable-next-line
 openFileFromHash()

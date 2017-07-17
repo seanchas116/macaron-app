@@ -1,6 +1,6 @@
-import {remote} from 'electron'
-import {observable, autorun} from 'mobx'
-import {Document} from './Document'
+import { remote } from 'electron'
+import { observable, autorun } from 'mobx'
+import { Document } from './Document'
 
 export class DocumentManager {
   @observable document = new Document()
