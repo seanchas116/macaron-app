@@ -10,6 +10,17 @@ import { PathItemView } from './PathItemView'
 
 import { itemPreview } from './ItemPreview'
 
+@observer
+export class GroupItemView extends React.Component<{item: GroupItem}, {}> {
+  render () {
+    const {item} = this.props
+    const children = itemPreview.previewChildren(item)
+    return <g key={item.id}>
+      {[...children].reverse().map(renderItem)}
+    </g>
+  }
+}
+
 export function renderItem (item: Item): JSX.Element|undefined {
   if (item instanceof GroupItem) {
     return <GroupItemView item={item} key={item.id} />
@@ -25,16 +36,5 @@ export function renderItem (item: Item): JSX.Element|undefined {
   }
   if (item instanceof PathItem) {
     return <PathItemView item={item} key={item.id} />
-  }
-}
-
-@observer
-export class GroupItemView extends React.Component<{item: GroupItem}, {}> {
-  render () {
-    const {item} = this.props
-    const children = itemPreview.previewChildren(item)
-    return <g key={item.id}>
-      {[...children].reverse().map(renderItem)}
-    </g>
   }
 }
