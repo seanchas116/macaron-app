@@ -43,8 +43,6 @@ export class DrawArea extends React.Component<{}, {}> {
     const {rootItem, selectedItems, scroll, focusedItem} = documentManager.document
     const {width, height} = this.size
 
-    const pathItemVisible = focusedItem instanceof PathItem || editorState.insertMode === 'path'
-
     // TODO: improve scroll performance
     return <div className={styles.root} ref={e => this.root = e!}>
       <svg className={styles.svg} width={width + 'px'} height={height + 'px'} onWheel={this.onWheel} >
@@ -54,7 +52,9 @@ export class DrawArea extends React.Component<{}, {}> {
           <SnapLines />
           {!focusedItem && <ItemResizeHandles items={[...selectedItems]} />}
         </g>
-        {pathItemVisible && <PathEditor width={width} height={height} />}
+        {(focusedItem instanceof PathItem || editorState.insertMode === 'path') &&
+          <PathEditor item={focusedItem instanceof PathItem ? focusedItem : undefined} width={width} height={height} />
+        }
         {['rect', 'oval', 'text'].includes(editorState.insertMode) && <RectInsertOverlay width={width} height={height} />}
       </svg>
     </div>

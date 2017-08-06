@@ -22,7 +22,7 @@ function normalizeNodes (item: PathItem) {
 }
 
 class PathEditorState {
-  @observable item: PathItem|undefined
+  readonly item: PathItem
   readonly nodes = observable<PathNode>([])
   @observable closed: boolean
   @observable insertPreview: PathNode|undefined = undefined
@@ -67,36 +67,30 @@ class PathEditorState {
     return Object.freeze(nodes)
   }
 
-  @observable private preview: PathItem|undefined
+  @observable private preview: PathItem
   private disposers: (() => void)[]
+  private isItemInserted: boolean
 
-  @computed get itemNodes () {
-    return this.item ? this.item.nodes.peek() : []
-  }
+  constructor (item: PathItem|undefined) {
+    if (item) {
+      this.isItemInserted = true
+    } else {
+      item = new PathItem(documentManager.document)
+      item.name = 'Path'
+      this.isItemInserted = false
+    }
+    this.item = item
+    this.preview = itemPreview.addItem(item)
+    normalizeNodes(this.preview)
+    this.closed = this.preview.closed
+    this.nodes.replace(this.preview.nodeArray as PathNode[])
 
-  constructor () {
     this.disposers = [
-      reaction(() => documentManager.document.focusedItem, item => {
-        if (item instanceof PathItem && this.item !== item) {
-          this.item = item
-        }
-      }),
-      reaction(() => this.item, (item) => {
-        if (item) {
-          this.preview = itemPreview.addItem(item)
-          normalizeNodes(this.preview)
-          this.closed = this.preview.closed
-        } else {
-          itemPreview.clear()
-        }
-      }),
       reaction(() => this.closed, closed => {
-        if (this.preview) {
-          this.preview.closed = closed
-        }
+        this.preview.closed = closed
       }),
-      reaction(() => this.itemNodes, nodes => {
-        this.nodes.replace(nodes)
+      reaction(() => this.item.nodeArray, nodes => {
+        this.nodes.replace(nodes as PathNode[])
       }),
       reaction(() => [...this.nodesWithInsertPreview], nodes => {
         if (this.preview) {
@@ -124,13 +118,13 @@ class PathEditorState {
   }
 
   insertItem () {
+    if (this.isItemInserted) {
+      return
+    }
     const {document} = documentManager
-    const item = new PathItem(document)
-    item.name = 'Path'
     const parent = document.rootItem
-    document.history.push(new ItemInsertCommand('Add Path', parent, item, parent.childAt(0)))
-    document.focusedItem = item
-    this.item = item
+    document.history.push(new ItemInsertCommand('Add Path', parent, this.item, parent.childAt(0)))
+    this.isItemInserted = true
   }
 }
 
@@ -307,6 +301,7 @@ class PathEditorBackground extends React.Component<{width: number, height: numbe
   @action private onInsertPointerDown = (event: PointerEvent) => {
     (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
     const {state} = this.props
+    state.insertItem()
     const {document} = documentManager
     const pos = DrawArea.posFromEvent(event)
     const node: PathNode = {type: 'straight', position: pos, handle1: pos, handle2: pos}
@@ -372,8 +367,21 @@ class PathEditorBackground extends React.Component<{width: number, height: numbe
   }
 }
 
-@observer export class PathEditor extends React.Component<{width: number, height: number}, {}> {
-  state = new PathEditorState()
+interface PathEditorProps {
+  item: PathItem|undefined
+  width: number
+  height: number
+}
+
+@observer export class PathEditor extends React.Component<PathEditorProps, {}> {
+  state = new PathEditorState(this.props.item)
+
+  componentWillReceiveProps (newProps: PathEditorProps) {
+    if (newProps.item !== this.props.item) {
+      this.state.dispose()
+      this.state = new PathEditorState(newProps.item)
+    }
+  }
 
   componentWillUnmount () {
     this.state.dispose()
