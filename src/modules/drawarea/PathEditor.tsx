@@ -47,7 +47,7 @@ class PathEditorState {
     this.onFocusedItemChange(item)
   }
 
-  private onFocusedItemChange (item: Item|undefined) {
+  @action private onFocusedItemChange (item: Item|undefined) {
     if (this.targetState) {
       if (this.targetState.item === item) {
         return
