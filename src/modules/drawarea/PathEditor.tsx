@@ -153,7 +153,7 @@ class PathNodeHandle extends React.Component<{index: number, targetState: PathEd
 
   private get closingPath () {
     const {targetState, index} = this.props
-    if (targetState.item.closed) {
+    if (targetState.item.closed || targetState.item.nodes.length <= 1) {
       return false
     }
     if (targetState.isOnlyFirstSelected) {
