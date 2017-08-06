@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { Vec2 } from 'paintvec'
-import { action, observable, reaction, computed, IObservableArray } from 'mobx'
+import { action, observable, reaction, computed } from 'mobx'
 import { observer } from 'mobx-react'
-import { Item, PathItem, PathNode, PathUtil, ItemChangeCommand, documentManager, Document, ItemInsertCommand } from '../document'
+import { PathItem, PathNode, PathUtil, ItemChangeCommand, documentManager, ItemInsertCommand } from '../document'
 import { DrawArea } from './DrawArea'
 import { itemPreview } from './ItemPreview'
 import { PointerEvents } from '../../util/components/PointerEvents'
@@ -22,60 +22,24 @@ function normalizeNodes (item: PathItem) {
 }
 
 class PathEditorState {
-  @observable targetState: PathEditorTargetState|undefined = undefined
-  private disposers: (() => void)[]
-
-  constructor (public document: Document) {
-    this.disposers = [
-      reaction(() => document.focusedItem, item => this.onFocusedItemChange(item))
-    ]
-  }
-
-  dispose () {
-    if (this.targetState) {
-      this.targetState.dispose()
-    }
-  }
-
-  insertItem () {
-    const {document} = this
-    const item = new PathItem(document)
-    item.name = 'Path'
-    const parent = document.rootItem
-    document.history.push(new ItemInsertCommand('Add Path', parent, item, parent.childAt(0)))
-    document.focusedItem = item
-    this.onFocusedItemChange(item)
-  }
-
-  @action private onFocusedItemChange (item: Item|undefined) {
-    if (this.targetState) {
-      if (this.targetState.item === item) {
-        return
-      }
-      this.targetState.dispose()
-      this.targetState = undefined
-    }
-    if (item && item instanceof PathItem) {
-      this.targetState = new PathEditorTargetState(item)
-    }
-  }
-}
-
-class PathEditorTargetState {
-  readonly nodes: IObservableArray<PathNode>
+  @observable item: PathItem|undefined
+  readonly nodes = observable<PathNode>([])
   @observable closed: boolean
   @observable insertPreview: PathNode|undefined = undefined
 
   @computed get isOnlyFirstSelected () {
-    const {selectedPathNodes} = this.item.document
+    const {selectedPathNodes} = documentManager.document
     return selectedPathNodes.size === 1 && selectedPathNodes.has(0)
   }
   @computed get isOnlyLastSelected () {
-    const {selectedPathNodes} = this.item.document
+    const {selectedPathNodes} = documentManager.document
     return selectedPathNodes.size === 1 && selectedPathNodes.has(this.nodes.length - 1)
   }
 
   @computed get insertMode () {
+    if (!this.item) {
+      return 'none'
+    }
     if (this.item.nodes.length === 0) {
       return 'prepend'
     }
@@ -103,24 +67,41 @@ class PathEditorTargetState {
     return Object.freeze(nodes)
   }
 
-  private readonly preview: PathItem
+  @observable private preview: PathItem|undefined
   private disposers: (() => void)[]
 
-  constructor (public readonly item: PathItem) {
-    this.preview = itemPreview.addItem(this.item)
-    normalizeNodes(this.preview)
-    this.nodes = observable([...this.preview.nodes])
-    this.closed = this.preview.closed
+  @computed get itemNodes () {
+    return this.item ? this.item.nodes.peek() : []
+  }
 
+  constructor () {
     this.disposers = [
-      reaction(() => this.closed, closed => {
-        this.preview.closed = closed
+      reaction(() => documentManager.document.focusedItem, item => {
+        if (item instanceof PathItem && this.item !== item) {
+          this.item = item
+        }
       }),
-      reaction(() => [...this.item.nodes], nodes => {
+      reaction(() => this.item, (item) => {
+        if (item) {
+          this.preview = itemPreview.addItem(item)
+          normalizeNodes(this.preview)
+          this.closed = this.preview.closed
+        } else {
+          itemPreview.clear()
+        }
+      }),
+      reaction(() => this.closed, closed => {
+        if (this.preview) {
+          this.preview.closed = closed
+        }
+      }),
+      reaction(() => this.itemNodes, nodes => {
         this.nodes.replace(nodes)
       }),
       reaction(() => [...this.nodesWithInsertPreview], nodes => {
-        this.preview.nodes.replace(nodes)
+        if (this.preview) {
+          this.preview.nodes.replace(nodes)
+        }
       })
     ]
   }
@@ -131,17 +112,30 @@ class PathEditorTargetState {
   }
 
   commit () {
-    this.item.document.history.push(new ItemChangeCommand('Move Path', this.item, {
+    if (!this.item || !this.preview) {
+      return
+    }
+    documentManager.document.history.push(new ItemChangeCommand('Move Path', this.item, {
       nodeArray: [...this.nodes],
       closed: this.preview.closed,
       offset: this.preview.offset,
       resizedSize: this.preview.resizedSize
     }))
   }
+
+  insertItem () {
+    const {document} = documentManager
+    const item = new PathItem(document)
+    item.name = 'Path'
+    const parent = document.rootItem
+    document.history.push(new ItemInsertCommand('Add Path', parent, item, parent.childAt(0)))
+    document.focusedItem = item
+    this.item = item
+  }
 }
 
 @observer
-class PathNodeHandle extends React.Component<{index: number, targetState: PathEditorTargetState}, {}> {
+class PathNodeHandle extends React.Component<{index: number, state: PathEditorState}, {}> {
   private drag: {
     origNodes: Map<number, PathNode>
     draggedNodePos: Vec2
@@ -152,26 +146,26 @@ class PathNodeHandle extends React.Component<{index: number, targetState: PathEd
   } | undefined = undefined
 
   private get closingPath () {
-    const {targetState, index} = this.props
-    if (targetState.item.closed || targetState.item.nodes.length <= 1) {
+    const {state, index} = this.props
+    if (!state.item || state.item.closed || state.item.nodes.length <= 1) {
       return false
     }
-    if (targetState.isOnlyFirstSelected) {
-      return index === targetState.nodes.length - 1
+    if (state.isOnlyFirstSelected) {
+      return index === state.nodes.length - 1
     }
-    if (targetState.isOnlyLastSelected) {
+    if (state.isOnlyLastSelected) {
       return index === 0
     }
     return false
   }
 
   render () {
-    const {targetState, index} = this.props
-    const node = targetState.nodes[index]
+    const {state, index} = this.props
+    const node = state.nodes[index]
     const p = node.position
     const h1 = node.handle1
     const h2 = node.handle2
-    const selected = targetState.item.document.selectedPathNodes.has(index)
+    const selected = documentManager.document.selectedPathNodes.has(index)
 
     const positionHandle = <PointerEvents onPointerDown={this.onPointerDownPosition} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
       <circle cx={p.x} cy={p.y} r={4} fill={selected ? '#2196f3' : 'white'} stroke='grey' />
@@ -200,25 +194,25 @@ class PathNodeHandle extends React.Component<{index: number, targetState: PathEd
     if (target === 'position' && this.closingPath) {
       this.closingPathDrag = {
         startPos: DrawArea.posFromEvent(event),
-        insertMode: this.props.targetState.insertMode
+        insertMode: this.props.state.insertMode
       }
     } else {
-      const {index, targetState} = this.props
+      const {index, state} = this.props
       const origNodes = new Map<number, PathNode>()
       if (target === 'position') {
-        const {document} = targetState.item
+        const {document} = documentManager
         if (event.shiftKey) {
           document.selectedPathNodes.add(index)
         } else if (!document.selectedPathNodes.has(index)) {
           document.selectedPathNodes.replace([index])
         }
         for (const i of document.selectedPathNodes) {
-          origNodes.set(i , {...targetState.nodes[i]})
+          origNodes.set(i , {...state.nodes[i]})
         }
       } else {
-        origNodes.set(index, {...targetState.nodes[index]})
+        origNodes.set(index, {...state.nodes[index]})
       }
-      this.drag = {origNodes, draggedNodePos: targetState.nodes[index].position}
+      this.drag = {origNodes, draggedNodePos: state.nodes[index].position}
     }
   }
 
@@ -227,11 +221,11 @@ class PathNodeHandle extends React.Component<{index: number, targetState: PathEd
   private onPointerDownHandle2 = (e: PointerEvent) => this.onPointerDown('handle2', e)
 
   @action private onPointerMove = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
-    const {targetState} = this.props
+    const {state} = this.props
     if (target === 'position' && this.closingPath) {
-      targetState.closed = true
+      state.closed = true
     } else {
-      targetState.insertPreview = undefined
+      state.insertPreview = undefined
     }
 
     const dragPos = DrawArea.posFromEvent(event)
@@ -239,13 +233,13 @@ class PathNodeHandle extends React.Component<{index: number, targetState: PathEd
     if (this.closingPathDrag) {
       if (dragPos.sub(this.closingPathDrag.startPos).length() > snapDistance) {
         if (this.closingPathDrag.insertMode === 'prepend') {
-          const index = targetState.nodes.length - 1
-          targetState.nodes[index].type = 'symmetric'
-          targetState.nodes[index] = PathUtil.moveHandle(targetState.nodes[index], 'handle1', DrawArea.posFromEvent(event))
+          const index = state.nodes.length - 1
+          state.nodes[index].type = 'symmetric'
+          state.nodes[index] = PathUtil.moveHandle(state.nodes[index], 'handle1', DrawArea.posFromEvent(event))
         } else {
           const index = 0
-          targetState.nodes[index].type = 'symmetric'
-          targetState.nodes[index] = PathUtil.moveHandle(targetState.nodes[index], 'handle2', DrawArea.posFromEvent(event))
+          state.nodes[index].type = 'symmetric'
+          state.nodes[index] = PathUtil.moveHandle(state.nodes[index], 'handle2', DrawArea.posFromEvent(event))
         }
       }
     }
@@ -253,7 +247,7 @@ class PathNodeHandle extends React.Component<{index: number, targetState: PathEd
     if (this.drag) {
       for (const [index, origNode] of this.drag.origNodes) {
         const pos = dragPos.add(origNode.position.sub(this.drag.draggedNodePos))
-        targetState.nodes[index] = PathUtil.moveHandle(origNode, target, pos)
+        state.nodes[index] = PathUtil.moveHandle(origNode, target, pos)
       }
     }
   }
@@ -265,7 +259,7 @@ class PathNodeHandle extends React.Component<{index: number, targetState: PathEd
   @action private onPointerUp = (event: PointerEvent) => {
     this.drag = undefined
     this.closingPathDrag = undefined
-    this.props.targetState.commit()
+    this.props.state.commit()
   }
 }
 
@@ -284,65 +278,56 @@ class PathEditorBackground extends React.Component<{width: number, height: numbe
   }
 
   @action private onPointerDown = (event: PointerEvent) => {
-    if (!this.props.state.targetState) {
-      this.props.state.insertItem()
+    const {state} = this.props
+    if (!state.item) {
+      state.insertItem()
     }
-    const {targetState} = this.props.state
-    if (!targetState) {
-      return
-    }
-    this.dragInsertMode = targetState.insertMode
+    this.dragInsertMode = state.insertMode
     this.dragStartPos = DrawArea.posFromEvent(event)
-    if (targetState.insertMode !== 'none') {
-      this.onInsertPointerDown(targetState, event)
+    if (state.insertMode !== 'none') {
+      this.onInsertPointerDown(event)
     }
   }
 
   @action private onPointerMove = (event: PointerEvent) => {
-    const {targetState} = this.props.state
-    if (!targetState) {
-      return
-    }
     if (this.dragInsertMode !== 'none') {
-      this.onInsertPointerDrag(targetState, event)
-    } else if (targetState.insertMode !== 'none') {
-      this.onInsertPointerHover(targetState, event)
+      this.onInsertPointerDrag(event)
+    } else if (this.props.state.insertMode !== 'none') {
+      this.onInsertPointerHover(event)
     }
   }
 
   @action private onPointerUp = (event: PointerEvent) => {
     this.dragInsertMode = 'none'
-    const {targetState} = this.props.state
-    if (!targetState) {
-      return
-    }
-    if (targetState.insertMode !== 'none') {
-      this.onInsertPointerUp(targetState, event)
+    if (this.props.state.insertMode !== 'none') {
+      this.onInsertPointerUp(event)
     }
   }
 
-  @action private onInsertPointerDown = (targetState: PathEditorTargetState, event: PointerEvent) => {
+  @action private onInsertPointerDown = (event: PointerEvent) => {
     (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
-    const {document} = targetState.item
+    const {state} = this.props
+    const {document} = documentManager
     const pos = DrawArea.posFromEvent(event)
     const node: PathNode = {type: 'straight', position: pos, handle1: pos, handle2: pos}
-    if (targetState.insertMode === 'prepend') {
-      targetState.nodes.unshift(node)
+    if (state.insertMode === 'prepend') {
+      state.nodes.unshift(node)
       document.selectedPathNodes.replace([0])
     } else {
-      targetState.nodes.push(node)
-      document.selectedPathNodes.replace([targetState.nodes.length - 1])
+      state.nodes.push(node)
+      document.selectedPathNodes.replace([state.nodes.length - 1])
     }
-    targetState.insertPreview = undefined
+    state.insertPreview = undefined
   }
 
-  @action private onInsertPointerDrag = (targetState: PathEditorTargetState, event: PointerEvent) => {
+  @action private onInsertPointerDrag = (event: PointerEvent) => {
+    const {state} = this.props
     const pos = DrawArea.posFromEvent(event)
     if (pos.sub(this.dragStartPos).length() <= snapDistance) {
       return
     }
     if (this.dragInsertMode === 'append') {
-      const node = targetState.nodes[targetState.nodes.length - 1]
+      const node = state.nodes[state.nodes.length - 1]
       if (node) {
         const newNode: PathNode = {
           type: 'symmetric',
@@ -350,10 +335,10 @@ class PathEditorBackground extends React.Component<{width: number, height: numbe
           handle1: node.position.mulScalar(2).sub(pos),
           handle2: pos
         }
-        targetState.nodes[targetState.nodes.length - 1] = newNode
+        state.nodes[state.nodes.length - 1] = newNode
       }
     } else {
-      const node = targetState.nodes[0]
+      const node = state.nodes[0]
       if (node) {
         const newNode: PathNode = {
           type: 'symmetric',
@@ -361,48 +346,46 @@ class PathEditorBackground extends React.Component<{width: number, height: numbe
           handle1: pos,
           handle2: node.position.mulScalar(2).sub(pos)
         }
-        targetState.nodes[0] = newNode
+        state.nodes[0] = newNode
       }
     }
   }
 
-  @action private onInsertPointerHover = (targetState: PathEditorTargetState, event: PointerEvent) => {
+  @action private onInsertPointerHover = (event: PointerEvent) => {
+    const {state} = this.props
     const pos = DrawArea.posFromEvent(event)
     const node: PathNode = {type: 'straight', position: pos, handle1: pos, handle2: pos}
-    targetState.insertPreview = node
-    targetState.closed = false
+    state.insertPreview = node
+    state.closed = false
   }
 
-  @action private onInsertPointerUp = (targetState: PathEditorTargetState, event: PointerEvent) => {
-    targetState.commit()
+  @action private onInsertPointerUp = (event: PointerEvent) => {
+    this.props.state.commit()
   }
 
   @action private onClick = () => {
-    const {document} = this.props.state
-    document.selectedPathNodes.clear()
+    documentManager.document.selectedPathNodes.clear()
   }
 
   @action private onDoubleClick = () => {
-    const {document} = this.props.state
-    document.focusedItem = undefined
+    documentManager.document.focusedItem = undefined
   }
 }
 
 @observer export class PathEditor extends React.Component<{width: number, height: number}, {}> {
-  state = new PathEditorState(documentManager.document)
+  state = new PathEditorState()
 
   componentWillUnmount () {
     this.state.dispose()
   }
 
   render () {
-    const {targetState} = this.state
-    const {scroll} = this.state.document
+    const {scroll} = documentManager.document
 
     return <g>
       <PathEditorBackground width={this.props.width} height={this.props.height} state={this.state} />
-      {targetState && <g transform={`translate(${-scroll.x}, ${-scroll.y})`}>
-        {targetState.nodes.map((n, i) => <PathNodeHandle targetState={targetState} index={i} key={i} />)}
+      {this.state.item && <g transform={`translate(${-scroll.x}, ${-scroll.y})`}>
+        {this.state.nodes.map((n, i) => <PathNodeHandle state={this.state} index={i} key={i} />)}
       </g>}
     </g>
   }
