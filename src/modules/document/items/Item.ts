@@ -15,9 +15,19 @@ export interface ItemData {
   strokeEnabled: boolean
 }
 
+function itemProperty (target: Item, key: string, descriptor?: PropertyDescriptor) {
+  const newDescriptor: PropertyDescriptor = {...observable(target, key, descriptor)}
+  const oldSet = newDescriptor.set!
+  newDescriptor.set = function (value: any) {
+    (this as Item).isDirty = true
+    oldSet.call(this, value)
+  }
+  Object.defineProperty(target, key, newDescriptor)
+}
+
 export
 abstract class Item {
-  @observable name = 'Item'
+  @itemProperty name = 'Item'
   @observable fill = '#888888'
   @observable fillEnabled = true
   @observable stroke = '#000000'
@@ -25,6 +35,7 @@ abstract class Item {
   @observable strokeWidth = 1
   @observable parent: GroupItem|undefined
   readonly id: string
+  isDirty = false
 
   abstract position: Vec2
   abstract size: Vec2
