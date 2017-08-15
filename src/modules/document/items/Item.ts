@@ -16,16 +16,29 @@ export interface ItemData {
 }
 
 export function undoable (target: Item, key: string, descriptor?: PropertyDescriptor): any {
+  let newDescriptor: PropertyDescriptor
   if (descriptor) {
-    const newDescriptor: PropertyDescriptor = {...descriptor}
-    const oldSet = newDescriptor.set!
-    newDescriptor.set = function (value: any) {
-      (this as Item).isDirty = true
-      oldSet.call(this, value)
+    const oldSet = descriptor.set!
+    newDescriptor = {
+      ...descriptor,
+      set (value: any) {
+        (this as Item).isDirty = true
+        oldSet.call(this, value)
+      }
     }
-    Object.defineProperty(target, key, newDescriptor)
-    return newDescriptor
+  } else {
+    newDescriptor = {
+      get () {
+        return this[key]
+      },
+      set (value: any) {
+        (this as Item).isDirty = true
+        this[key] = value
+      }
+    }
   }
+  Object.defineProperty(target, key, newDescriptor)
+  return newDescriptor
 }
 
 export
