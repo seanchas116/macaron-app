@@ -15,24 +15,27 @@ export interface ItemData {
   strokeEnabled: boolean
 }
 
-function itemProperty (target: Item, key: string, descriptor?: PropertyDescriptor) {
-  const newDescriptor: PropertyDescriptor = {...observable(target, key, descriptor)}
-  const oldSet = newDescriptor.set!
-  newDescriptor.set = function (value: any) {
-    (this as Item).isDirty = true
-    oldSet.call(this, value)
+export function undoable (target: Item, key: string, descriptor?: PropertyDescriptor): any {
+  if (descriptor) {
+    const newDescriptor: PropertyDescriptor = {...descriptor}
+    const oldSet = newDescriptor.set!
+    newDescriptor.set = function (value: any) {
+      (this as Item).isDirty = true
+      oldSet.call(this, value)
+    }
+    Object.defineProperty(target, key, newDescriptor)
+    return newDescriptor
   }
-  Object.defineProperty(target, key, newDescriptor)
 }
 
 export
 abstract class Item {
-  @itemProperty name = 'Item'
-  @observable fill = '#888888'
-  @observable fillEnabled = true
-  @observable stroke = '#000000'
-  @observable strokeEnabled = true
-  @observable strokeWidth = 1
+  @undoable @observable name = 'Item'
+  @undoable @observable fill = '#888888'
+  @undoable @observable fillEnabled = true
+  @undoable @observable stroke = '#000000'
+  @undoable @observable strokeEnabled = true
+  @undoable @observable strokeWidth = 1
   @observable parent: GroupItem|undefined
   readonly id: string
   isDirty = false
