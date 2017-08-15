@@ -1,7 +1,7 @@
 import { observable, computed } from 'mobx'
 import { Vec2, Rect } from 'paintvec'
 const Bezier = require('bezier-js')
-import { Item, ItemData } from './Item'
+import { Item, ItemData, undoable } from './Item'
 
 export type PathNodeType = 'symmetric' | 'asymmetric' | 'disconnected' | 'straight'
 
@@ -33,10 +33,10 @@ export interface PathItemData extends ItemData {
 }
 
 export class PathItem extends Item {
-  readonly nodes = observable<PathNode>([])
-  @observable offset = new Vec2()
-  @observable closed = false
-  @observable resizedSize: Vec2|undefined
+  @undoable readonly nodes = observable<PathNode>([])
+  @undoable @observable offset = new Vec2()
+  @undoable @observable closed = false
+  @undoable @observable resizedSize: Vec2|undefined
 
   // nodes as settable immutable array property
   get nodeArray (): ReadonlyArray<PathNode> {

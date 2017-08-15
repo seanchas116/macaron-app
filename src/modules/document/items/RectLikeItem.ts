@@ -1,6 +1,6 @@
 import { Vec2 } from 'paintvec'
 import { observable } from 'mobx'
-import { Item, ItemData } from './Item'
+import { Item, ItemData, undoable } from './Item'
 
 export interface RectLikeItemData extends ItemData {
   x: number
@@ -11,8 +11,8 @@ export interface RectLikeItemData extends ItemData {
 
 export
 abstract class RectLikeItem extends Item {
-  @observable position = new Vec2()
-  @observable size = new Vec2()
+  @undoable @observable position = new Vec2()
+  @undoable @observable size = new Vec2()
 
   loadData (data: RectLikeItemData) {
     super.loadData(data)

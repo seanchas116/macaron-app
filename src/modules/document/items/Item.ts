@@ -1,4 +1,4 @@
-import { observable } from 'mobx'
+import { observable, isObservableArray } from 'mobx'
 import * as uuid from 'uuid'
 import { Vec2, Rect } from 'paintvec'
 import { Document } from '../Document'
@@ -15,25 +15,33 @@ export interface ItemData {
   strokeEnabled: boolean
 }
 
-export function undoable (target: Item, key: string, descriptor?: PropertyDescriptor): any {
+export const undoable = (target: Item, key: string, descriptor?: PropertyDescriptor): any => {
+  const markDirty = (target: Item, value: any) => {
+    target.isDirty = true
+    if (isObservableArray(value)) {
+      value.observe(() => target.isDirty = true)
+    }
+  }
+
   let newDescriptor: PropertyDescriptor
   if (descriptor) {
     const oldSet = descriptor.set!
     newDescriptor = {
       ...descriptor,
       set (value: any) {
-        (this as Item).isDirty = true
+        markDirty(this as Item, value)
         oldSet.call(this, value)
       }
     }
   } else {
+    const privateKey = Symbol(key)
     newDescriptor = {
       get () {
-        return this[key]
+        return this[privateKey]
       },
       set (value: any) {
-        (this as Item).isDirty = true
-        this[key] = value
+        markDirty(this as Item, value)
+        this[privateKey] = value
       }
     }
   }
