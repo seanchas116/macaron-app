@@ -3,6 +3,7 @@ import { observable, action, computed, reaction } from 'mobx'
 import { Vec2 } from 'paintvec'
 import { Item } from './items/Item'
 import { GroupItem } from './items/GroupItem'
+import { VersionControl } from './VersionControl'
 import { History } from './History'
 import { ObservableSet } from '../../util/ObservableSet'
 
@@ -18,7 +19,8 @@ export class Document {
   @observable filePath = ''
   @observable tempName = 'Untitled'
 
-  readonly history = new History()
+  readonly versionControl = new VersionControl(this)
+  readonly history = new History() // TODO remove
 
   @computed get fileName () {
     if (this.filePath) {
