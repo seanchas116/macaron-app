@@ -3,7 +3,7 @@ import * as JSZip from 'jszip'
 import * as msgpack from 'msgpack-lite'
 import { action } from 'mobx'
 import { Vec2 } from 'paintvec'
-import { Document, GroupItem, itemFromData } from '../document'
+import { Document, unpackItems } from '../document'
 import { DocumentData } from './DocumentData'
 
 export const open = action(async (filePath: string) => {
@@ -18,12 +18,8 @@ export const open = action(async (filePath: string) => {
   const rootItemData = msgpack.decode(await zip.file(documentData.pages[0].path).async('nodebuffer'))
 
   const document = new Document()
-  const rootItem = itemFromData(document, rootItemData, {assignNewID: false})
-  if (!(rootItem instanceof GroupItem)) {
-    throw new Error('root item must be group')
-  }
-  document.rootItem.dispose()
-  document.rootItem = rootItem
+  const items = unpackItems(document, rootItemData, {newID: false})
+  document.rootItem.children.replace(items)
   document.scroll = new Vec2(documentData.scrollX, documentData.scrollY)
   document.selectedItems.clear()
   for (const id of documentData.selectedItemIds) {
