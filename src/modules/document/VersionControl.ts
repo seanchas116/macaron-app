@@ -1,6 +1,7 @@
 import { Document } from './Document'
-import { Item, ItemData } from './items/Item'
+import { ItemData } from './items/Item'
 import { UndoStack, UndoCommand } from '../../util/UndoStack'
+import { itemFromData } from './items/ItemPack'
 
 export class Commit implements UndoCommand {
   constructor (
@@ -8,12 +9,31 @@ export class Commit implements UndoCommand {
     public readonly additions: ItemData[], public readonly removals: ItemData[], public readonly changes: [ItemData, ItemData][]
   ) {}
 
+  revert () {
+    const reversedChanges = this.changes.map((c): [ItemData, ItemData] => [c[1], c[0]])
+    return new Commit(this.document, `Revert ${this.title}`, this.removals, this.additions, reversedChanges)
+  }
+
   undo () {
-    // TODO
+    this.revert().redo()
   }
 
   redo () {
-    // TODO
+    for (const addition of this.additions) {
+      itemFromData(this.document, addition, addition.id) // just create item
+    }
+    for (const removal of this.removals) {
+      const item = this.document.itemForId.get(removal.id)
+      if (item) {
+        item.dispose()
+      }
+    }
+    for (const [oldData, newData] of this.changes) {
+      const item = this.document.itemForId.get(oldData.id)
+      if (item) {
+        item.loadData(newData)
+      }
+    }
   }
 }
 
