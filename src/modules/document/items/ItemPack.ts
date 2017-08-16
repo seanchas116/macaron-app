@@ -6,7 +6,7 @@ import { PathItem } from './PathItem'
 import { GroupItem, GroupItemData } from './GroupItem'
 import { Document } from '../Document'
 
-export function createItem (type: string, document: Document, id?: string): Item {
+export function createItem (document: Document, type: string, id?: string): Item {
   switch (type) {
     case 'rect':
       return new RectItem(document, id)
@@ -21,6 +21,12 @@ export function createItem (type: string, document: Document, id?: string): Item
     default:
       throw new Error('Cannot load item')
   }
+}
+
+export function itemFromData (document: Document, data: ItemData, id?: string) {
+  const item = createItem(document, data.type, id)
+  item.loadData(data)
+  return item
 }
 
 export function packItems (items: Item[]): ItemData[] {
@@ -38,8 +44,7 @@ export function packItems (items: Item[]): ItemData[] {
 export function unpackItems (document: Document, datas: ItemData[], opts: {newID: boolean}) {
   const itemForDataId = new Map<string, Item>()
   for (const data of datas) {
-    const item = createItem(data.type, document, opts.newID ? undefined : data.id)
-    item.loadData(data)
+    const item = itemFromData(document, data, opts.newID ? undefined : data.id)
     itemForDataId.set(data.id, item)
   }
   for (const data of datas) {
