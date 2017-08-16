@@ -2,12 +2,13 @@ import * as React from 'react'
 import { action } from 'mobx'
 import { Vec2, Rect } from 'paintvec'
 import { Document, documentManager, GroupItem, RectLikeItem, RectItem, TextItem, OvalItem, ItemInsertCommand } from '../document'
-import { toolManager, itemPreview, snapper } from '../drawarea'
+import { snapper } from './Snapper'
+import { itemPreview } from './ItemPreview'
 import { PointerEvents } from '../../util/components/PointerEvents'
-import { RectToolType } from './RectTool'
+import { editorState } from './EditorState'
 
 export
-class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, {}> {
+class RectInsertOverlay extends React.Component<{width: number, height: number}, {}> {
   startPos: Vec2|undefined
   parent: GroupItem|undefined
   item: RectLikeItem|undefined
@@ -25,7 +26,7 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
   }
 
   render () {
-    const {width, height} = this.props.size
+    const {width, height} = this.props
     return <PointerEvents
       onPointerDown={this.onPointerDown}
       onPointerMove={this.onPointerMove}
@@ -36,7 +37,7 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
   }
 
   private newItem (document: Document) {
-    switch (this.props.type) {
+    switch (editorState.insertMode) {
       case 'oval':
         return new OvalItem(document)
       case 'text':
@@ -73,7 +74,7 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     this.commit()
     this.startPos = undefined
     this.item = undefined
-    toolManager.currentId = undefined
+    editorState.insertMode = 'none'
     itemPreview.clear()
   }
 

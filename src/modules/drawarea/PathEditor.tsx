@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { Vec2 } from 'paintvec'
-import { action, observable, reaction, computed, IObservableArray } from 'mobx'
+import { action, observable, reaction, computed } from 'mobx'
 import { observer } from 'mobx-react'
-import { PathItem, PathNode, PathUtil, ItemChangeCommand } from '../document'
+import { PathItem, PathNode, PathUtil, ItemChangeCommand, documentManager, ItemInsertCommand } from '../document'
 import { DrawArea } from './DrawArea'
 import { itemPreview } from './ItemPreview'
 import { PointerEvents } from '../../util/components/PointerEvents'
@@ -22,20 +22,27 @@ function normalizeNodes (item: PathItem) {
 }
 
 class PathEditorState {
-  readonly nodes: IObservableArray<PathNode>
+  readonly item: PathItem
+  readonly nodes = observable<PathNode>([])
   @observable closed: boolean
   @observable insertPreview: PathNode|undefined = undefined
 
   @computed get isOnlyFirstSelected () {
-    const {selectedPathNodes} = this.item.document
+    const {selectedPathNodes} = documentManager.document
     return selectedPathNodes.size === 1 && selectedPathNodes.has(0)
   }
   @computed get isOnlyLastSelected () {
-    const {selectedPathNodes} = this.item.document
+    const {selectedPathNodes} = documentManager.document
     return selectedPathNodes.size === 1 && selectedPathNodes.has(this.nodes.length - 1)
   }
 
   @computed get insertMode () {
+    if (!this.item) {
+      return 'none'
+    }
+    if (this.item.nodes.length === 0) {
+      return 'prepend'
+    }
     if (this.item.closed) {
       return 'none'
     }
@@ -60,24 +67,35 @@ class PathEditorState {
     return Object.freeze(nodes)
   }
 
-  private readonly preview: PathItem
+  @observable private preview: PathItem
   private disposers: (() => void)[]
+  private isItemInserted: boolean
 
-  constructor (public readonly item: PathItem) {
-    this.preview = itemPreview.addItem(this.item)
+  constructor (item: PathItem|undefined) {
+    if (item) {
+      this.isItemInserted = true
+    } else {
+      item = new PathItem(documentManager.document)
+      item.name = 'Path'
+      this.isItemInserted = false
+    }
+    this.item = item
+    this.preview = itemPreview.addItem(item)
     normalizeNodes(this.preview)
-    this.nodes = observable([...this.preview.nodes])
     this.closed = this.preview.closed
+    this.nodes.replace(this.preview.nodeArray as PathNode[])
 
     this.disposers = [
       reaction(() => this.closed, closed => {
         this.preview.closed = closed
       }),
-      reaction(() => [...this.item.nodes], nodes => {
-        this.nodes.replace(nodes)
+      reaction(() => this.item.nodeArray, nodes => {
+        this.nodes.replace(nodes as PathNode[])
       }),
       reaction(() => [...this.nodesWithInsertPreview], nodes => {
-        this.preview.nodes.replace(nodes)
+        if (this.preview) {
+          this.preview.nodes.replace(nodes)
+        }
       })
     ]
   }
@@ -88,17 +106,30 @@ class PathEditorState {
   }
 
   commit () {
-    this.item.document.history.push(new ItemChangeCommand('Move Path', this.item, {
+    if (!this.item || !this.preview) {
+      return
+    }
+    documentManager.document.history.push(new ItemChangeCommand('Move Path', this.item, {
       nodeArray: [...this.nodes],
       closed: this.preview.closed,
       offset: this.preview.offset,
       resizedSize: this.preview.resizedSize
     }))
   }
+
+  insertItem () {
+    if (this.isItemInserted) {
+      return
+    }
+    const {document} = documentManager
+    const parent = document.rootItem
+    document.history.push(new ItemInsertCommand('Add Path', parent, this.item, parent.childAt(0)))
+    this.isItemInserted = true
+  }
 }
 
 @observer
-class PathNodeHandle extends React.Component<{item: PathItem, index: number, state: PathEditorState}, {}> {
+class PathNodeHandle extends React.Component<{index: number, state: PathEditorState}, {}> {
   private drag: {
     origNodes: Map<number, PathNode>
     draggedNodePos: Vec2
@@ -109,8 +140,8 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
   } | undefined = undefined
 
   private get closingPath () {
-    const {state, index, item} = this.props
-    if (item.closed) {
+    const {state, index} = this.props
+    if (!state.item || state.item.closed || state.item.nodes.length <= 1) {
       return false
     }
     if (state.isOnlyFirstSelected) {
@@ -128,7 +159,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
     const p = node.position
     const h1 = node.handle1
     const h2 = node.handle2
-    const selected = this.props.item.document.selectedPathNodes.has(index)
+    const selected = documentManager.document.selectedPathNodes.has(index)
 
     const positionHandle = <PointerEvents onPointerDown={this.onPointerDownPosition} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
       <circle cx={p.x} cy={p.y} r={4} fill={selected ? '#2196f3' : 'white'} stroke='grey' />
@@ -160,10 +191,10 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
         insertMode: this.props.state.insertMode
       }
     } else {
-      const {item, index, state} = this.props
+      const {index, state} = this.props
       const origNodes = new Map<number, PathNode>()
       if (target === 'position') {
-        const {document} = item
+        const {document} = documentManager
         if (event.shiftKey) {
           document.selectedPathNodes.add(index)
         } else if (!document.selectedPathNodes.has(index)) {
@@ -226,7 +257,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number, sta
   }
 }
 
-class PathEditorBackground extends React.Component<{item: PathItem, width: number, height: number, state: PathEditorState}, {}> {
+class PathEditorBackground extends React.Component<{width: number, height: number, state: PathEditorState}, {}> {
   private dragStartPos = new Vec2()
   private dragInsertMode: 'none'|'prepend'|'append' = 'none'
 
@@ -241,9 +272,13 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
   }
 
   @action private onPointerDown = (event: PointerEvent) => {
-    this.dragInsertMode = this.props.state.insertMode
+    const {state} = this.props
+    if (!state.item) {
+      state.insertItem()
+    }
+    this.dragInsertMode = state.insertMode
     this.dragStartPos = DrawArea.posFromEvent(event)
-    if (this.props.state.insertMode !== 'none') {
+    if (state.insertMode !== 'none') {
       this.onInsertPointerDown(event)
     }
   }
@@ -265,8 +300,9 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
 
   @action private onInsertPointerDown = (event: PointerEvent) => {
     (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
-    const {document} = this.props.item
     const {state} = this.props
+    state.insertItem()
+    const {document} = documentManager
     const pos = DrawArea.posFromEvent(event)
     const node: PathNode = {type: 'straight', position: pos, handle1: pos, handle2: pos}
     if (state.insertMode === 'prepend') {
@@ -323,32 +359,42 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
   }
 
   @action private onClick = () => {
-    const {document} = this.props.item
-    document.selectedPathNodes.clear()
+    documentManager.document.selectedPathNodes.clear()
   }
 
   @action private onDoubleClick = () => {
-    const {document} = this.props.item
-    document.focusedItem = undefined
+    documentManager.document.focusedItem = undefined
   }
 }
 
-@observer export class PathEditor extends React.Component<{item: PathItem, width: number, height: number}, {}> {
+interface PathEditorProps {
+  item: PathItem|undefined
+  width: number
+  height: number
+}
+
+@observer export class PathEditor extends React.Component<PathEditorProps, {}> {
   state = new PathEditorState(this.props.item)
+
+  componentWillReceiveProps (newProps: PathEditorProps) {
+    if (newProps.item !== this.props.item) {
+      this.state.dispose()
+      this.state = new PathEditorState(newProps.item)
+    }
+  }
 
   componentWillUnmount () {
     this.state.dispose()
   }
 
   render () {
-    const {item} = this.props
-    const {scroll} = item.document
+    const {scroll} = documentManager.document
 
     return <g>
-      <PathEditorBackground item={item} width={this.props.width} height={this.props.height} state={this.state} />
-      <g transform={`translate(${-scroll.x}, ${-scroll.y})`}>
-        {this.state.nodes.map((n, i) => <PathNodeHandle item={item} state={this.state} index={i} key={i} />)}
-      </g>
+      <PathEditorBackground width={this.props.width} height={this.props.height} state={this.state} />
+      {this.state.item && <g transform={`translate(${-scroll.x}, ${-scroll.y})`}>
+        {this.state.nodes.map((n, i) => <PathNodeHandle state={this.state} index={i} key={i} />)}
+      </g>}
     </g>
   }
 }

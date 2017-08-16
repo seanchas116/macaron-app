@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { action } from 'mobx'
-import { ToolSelect } from './ToolSelect'
+import { InsertPalette } from './InsertPalette'
 import { ItemHierarchy } from './ItemHierarchy'
 import { Inspector } from './Inspector'
-import { DrawArea, toolManager } from '../drawarea'
+import { DrawArea, editorState } from '../drawarea'
 import { documentManager, CompositeCommand, ItemRemoveCommand } from '../document'
 import { isTextInput } from '../../util/isTextInput'
 const styles = require('./RootView.css')
@@ -13,7 +13,7 @@ class RootView extends React.Component<{}, {}> {
   render () {
     return (
       <div className={styles.RootView} tabIndex={-1} onKeyDown={this.onKeyDown}>
-        <ToolSelect />
+        <InsertPalette />
         <ItemHierarchy />
         <DrawArea />
         <Inspector />
@@ -25,16 +25,11 @@ class RootView extends React.Component<{}, {}> {
     if (isTextInput(document.activeElement)) {
       return
     }
-    if (toolManager.current) {
-      toolManager.current.onKeyDown(e)
-      if (e.defaultPrevented) {
-        return
-      }
-    }
     if (e.key === 'Delete' || e.key === 'Backspace') {
       this.removeItems()
     }
     if (e.key === 'Escape' || e.key === 'Enter') {
+      editorState.insertMode = 'none'
       documentManager.document.focusedItem = undefined
     }
   }

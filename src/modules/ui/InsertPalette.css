@@ -1,4 +1,4 @@
-.ToolSelect {
+.InsertPalette {
   width: 32px;
   border-right: 1px solid #D8D8D8;
   background-color: #F0F0F0;
@@ -12,7 +12,7 @@
     background-color: #606060;
   }
 }
-.itemCurrent {
+.itemSelected {
   background-color: #2196f3;
   &:hover {
     background-color: #2196f3;
