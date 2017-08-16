@@ -1,6 +1,6 @@
 import { computed, action } from 'mobx'
 import { Action, addAction } from '../menu'
-import { documentManager, CompositeCommand, ItemInsertCommand, ItemMoveCommand, GroupItem } from '../document'
+import { documentManager, GroupItem } from '../document'
 
 @addAction
 export class GroupItemsAction extends Action {
@@ -21,13 +21,17 @@ export class GroupItemsAction extends Action {
     if (!parent) {
       return
     }
+    const index = parent.children.indexOf(items[0])
 
     const group = new GroupItem(document)
-    const commands = [
-      new ItemInsertCommand('Add Group', parent, group, items[0]),
-      ...items.map(item => new ItemMoveCommand(group, item, undefined))
-    ]
-    document.history.push(new CompositeCommand('Group Item', commands))
+    for (const item of items) {
+      if (item.parent) {
+        item.parent.removeChild(item)
+      }
+    }
+    group.children.replace(items)
+    parent.children.splice(index, 0, group)
+    document.versionControl.commit('Group Item')
     document.selectedItems.replace([group])
   }
 }
