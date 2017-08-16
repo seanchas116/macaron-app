@@ -47,10 +47,10 @@ export function unpackItems (document: Document, datas: ItemData[]) {
       if (!(group instanceof GroupItem)) {
         throw new Error('Cannot find created group item')
       }
-      for (const childData of (data as GroupItemData).children) {
-        const child = itemForId.get(childData.id)
+      for (const childId of (data as GroupItemData).childIds) {
+        const child = itemForId.get(childId)
         if (!child) {
-          throw new Error(`Child ${childData.id} is not included in data`)
+          throw new Error(`Child ${childId} is not included in data`)
         }
         group.children.push(child)
       }

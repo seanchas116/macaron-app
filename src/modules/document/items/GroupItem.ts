@@ -2,12 +2,11 @@ import { observable, action, IArrayChange, IArraySplice } from 'mobx'
 import { Rect } from 'paintvec'
 import { Item, ItemData } from './Item'
 import { Document } from '../Document'
-import { itemFromData } from './itemFromData'
 
 export interface GroupItemData extends ItemData {
   type: 'group'
   collapsed: boolean
-  children: ItemData[]
+  childIds: string[]
 }
 
 export
@@ -39,26 +38,26 @@ class GroupItem extends Item {
 
   clone ({shallow = true} = {}) {
     const item = new GroupItem(this.document)
-    item.loadData(this.toData(), {shallow, assignNewID: true})
+    item.loadData(this.toData())
+    if (!shallow) {
+      item.children.replace(this.children.map(c => c.clone()))
+    }
     return item
   }
 
-  loadData (data: GroupItemData, {shallow = false, assignNewID = true} = {}) {
+  loadData (data: GroupItemData) {
     super.loadData(data)
     this.collapsed = data.collapsed
-    if (!shallow) {
-      this.children.replace(data.children.map(c => itemFromData(this.document, c, {assignNewID})))
-    }
   }
 
   toData (): GroupItemData {
     const {collapsed} = this
-    const children = this.children.map(c => c.toData())
+    const childIds = this.children.map(c => c.id)
     return {
       ...super.toData(),
       type: 'group',
       collapsed,
-      children
+      childIds
     }
   }
 
