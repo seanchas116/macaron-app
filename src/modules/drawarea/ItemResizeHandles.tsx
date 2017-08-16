@@ -3,9 +3,8 @@ import { observer } from 'mobx-react'
 import { action, reaction, computed, observable } from 'mobx'
 import { Rect, Vec2 } from 'paintvec'
 import { ResizeHandles } from './ResizeHandles'
-import { Item, Command, CompositeCommand, ItemChangeCommand, documentManager } from '../document'
+import { Item, documentManager } from '../document'
 import { snapper } from './Snapper'
-import { itemPreview } from './ItemPreview'
 import { Alignment } from '../../util/Types'
 
 @observer
@@ -19,8 +18,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
   private originalRects = new Map<Item, Rect>()
 
   @computed get rect () {
-    const previews = this.props.items.map(item => itemPreview.previewItem(item))
-    return Rect.union(...previews.map(i => i.rect))
+    return Rect.union(...this.props.items.map(i => i.rect))
   }
 
   componentDidMount () {
@@ -75,7 +73,6 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
           snapTargets.push(sibling.rect)
         }
       }
-      itemPreview.addItem(item)
     }
     snapper.targets = snapTargets
   }
@@ -85,24 +82,20 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
       return
     }
     for (const item of this.items) {
-      const preview = itemPreview.getItem(item)
-      if (!preview) {
-        return
-      }
       const origRect = this.originalRects.get(item)!
       const [origP1, origP2] = this.originalPositions
       const ratio = p2.sub(p1).div(origP2.sub(origP1))
       const topLeft = origRect.topLeft.sub(origP1).mul(ratio).add(p1)
       const bottomRight = origRect.bottomRight.sub(origP1).mul(ratio).add(p1)
       const rect = Rect.fromTwoPoints(topLeft, bottomRight)
-      preview.rect = rect
+      item.rect = rect
     }
 
     this.positions = [p1, p2]
   }
 
   @action private onChangeEnd = () => {
-    this.commit()
+    documentManager.document.versionControl.commit('Resize Items')
 
     this.dragging = false
     this.items = []
@@ -111,20 +104,6 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
 
     this.updatePositions()
     snapper.clear()
-    itemPreview.clear()
-  }
-
-  private commit () {
-    const commands: Command[] = []
-    for (const item of this.items) {
-      const preview = itemPreview.getItem(item)
-      if (preview && !preview.rect.equals(item.rect)) {
-        commands.push(new ItemChangeCommand('Resize Item', item, {rect: preview.rect}))
-      }
-    }
-    if (commands.length > 0) {
-      documentManager.document.history.push(new CompositeCommand('Resize Items', commands))
-    }
   }
 
   private updatePositions () {
