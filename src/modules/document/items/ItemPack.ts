@@ -29,7 +29,7 @@ export function itemFromData (document: Document, data: ItemData, id?: string) {
   return item
 }
 
-export function packItems (items: Item[]): ItemData[] {
+export function packItems (items: ReadonlyArray<Item>): ItemData[] {
   const datas: ItemData[] = []
   for (const item of items) {
     const data = item.toData()
@@ -41,7 +41,7 @@ export function packItems (items: Item[]): ItemData[] {
   return datas
 }
 
-export function unpackItems (document: Document, datas: ItemData[], opts: {newID: boolean}) {
+export function unpackItems (document: Document, datas: ReadonlyArray<ItemData>, opts: {newID: boolean}) {
   const itemForDataId = new Map<string, Item>()
   for (const data of datas) {
     const item = itemFromData(document, data, opts.newID ? undefined : data.id)

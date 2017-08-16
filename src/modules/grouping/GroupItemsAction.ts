@@ -25,12 +25,9 @@ export class GroupItemsAction extends Action {
 
     const group = new GroupItem(document)
     for (const item of items) {
-      if (item.parent) {
-        item.parent.removeChild(item)
-      }
+      group.appendChild(item)
     }
-    group.children.replace(items)
-    parent.children.splice(index, 0, group)
+    parent.insertBefore(group, parent.childAt(index))
     document.versionControl.commit('Group Item')
     document.selectedItems.replace([group])
   }

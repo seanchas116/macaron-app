@@ -78,6 +78,10 @@ abstract class Item {
   }
 
   dispose () {
+    this.document.selectedItems.delete(this)
+    if (this.document.focusedItem === this) {
+      this.document.focusedItem = undefined
+    }
     this.document.itemForId.delete(this.id)
   }
 
@@ -115,7 +119,7 @@ abstract class Item {
     }
   }
 
-  get siblings (): Item[] {
+  get siblings (): ReadonlyArray<Item> {
     if (this.parent) {
       return this.parent.children
     } else {

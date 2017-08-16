@@ -19,7 +19,9 @@ export const open = action(async (filePath: string) => {
 
   const document = new Document()
   const items = unpackItems(document, rootItemData, {newID: false})
-  document.rootItem.children.replace(items)
+  for (const item of items) {
+    document.rootItem.appendChild(item)
+  }
   document.scroll = new Vec2(documentData.scrollX, documentData.scrollY)
   document.selectedItems.clear()
   for (const id of documentData.selectedItemIds) {

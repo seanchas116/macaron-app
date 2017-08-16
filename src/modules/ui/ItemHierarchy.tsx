@@ -25,7 +25,7 @@ class ItemTreeDelegate implements TreeDelegate<Item> {
   }
   getChildren (item: Item) {
     if (item instanceof GroupItem) {
-      return item.children
+      return item.children as Item[]
     }
   }
   getCollapsed (item: Item) {

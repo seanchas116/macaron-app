@@ -1,4 +1,4 @@
-import { observable, action, IArrayChange, IArraySplice } from 'mobx'
+import { observable } from 'mobx'
 import { Rect } from 'paintvec'
 import { Item, ItemData } from './Item'
 import { Document } from '../Document'
@@ -11,8 +11,8 @@ export interface GroupItemData extends ItemData {
 
 export
 class GroupItem extends Item {
-  readonly children = observable<Item>([])
   @observable collapsed = false
+  private readonly _children = observable<Item>([])
 
   get position () {
     return this.rect.topLeft
@@ -23,12 +23,15 @@ class GroupItem extends Item {
   }
 
   get rect () {
-    return Rect.union(...this.children.map(i => i.rect)) || new Rect()
+    return Rect.union(...this._children.map(i => i.rect)) || new Rect()
+  }
+
+  get children (): ReadonlyArray<Item> {
+    return this._children.peek()
   }
 
   constructor (document: Document, id?: string) {
     super(document, id)
-    this.children.observe(change => this.onChildChange(change))
   }
 
   dispose () {
@@ -40,7 +43,7 @@ class GroupItem extends Item {
     const item = new GroupItem(this.document)
     item.loadData(this.toData())
     if (!shallow) {
-      item.children.replace(this.children.map(c => c.clone()))
+      item._children.replace(this.children.map(c => c.clone()))
     }
     return item
   }
@@ -48,13 +51,13 @@ class GroupItem extends Item {
   loadData (data: GroupItemData) {
     super.loadData(data)
     this.collapsed = data.collapsed
-    this.children.clear()
+    this._children.clear()
     for (const childId of data.childIds) {
       const item = this.document.itemForId.get(childId)
       if (!item) {
         throw new Error(`Child ${childId} is not found`)
       }
-      this.children.push(item)
+      this._children.push(item)
     }
   }
 
@@ -71,14 +74,15 @@ class GroupItem extends Item {
 
   childAt (i: number) {
     if (0 <= i && i < this.children.length) {
-      return this.children[i]
+      return this._children[i]
     }
   }
 
   removeChild (item: Item) {
     const index = this.children.indexOf(item)
     if (index >= 0) {
-      this.children.splice(index, 1)
+      this._children.splice(index, 1)
+      item.parent = undefined
     }
   }
 
@@ -89,31 +93,15 @@ class GroupItem extends Item {
 
     const oldParent = item.parent
     if (oldParent) {
-      const oldIndex = oldParent.children.indexOf(item)
-      oldParent.children.splice(oldIndex, 1)
+      oldParent.removeChild(item)
     }
 
     const index = reference ? this.children.indexOf(reference) : this.children.length
-    this.children.splice(index, 0, item)
+    this._children.splice(index, 0, item)
+    item.parent = this
   }
 
-  @action private onChildChange (change: IArrayChange<Item>|IArraySplice<Item>) {
-    const onAdded = (child: Item) => {
-      child.parent = this
-    }
-    const onRemoved = (child: Item) => {
-      child.parent = undefined
-      this.document.selectedItems.delete(child)
-      if (this.document.focusedItem === child) {
-        this.document.focusedItem = undefined
-      }
-    }
-    if (change.type === 'splice') {
-      change.added.forEach(onAdded)
-      change.removed.forEach(onRemoved)
-    } else {
-      onRemoved(change.oldValue)
-      onAdded(change.newValue)
-    }
+  appendChild (item: Item) {
+    this.insertBefore(item, undefined)
   }
 }

@@ -52,7 +52,7 @@ export class Document {
     for (const item of this.selectedItems) {
       const {parent} = item
       if (parent) {
-        parent.children.remove(item)
+        parent.removeChild(item)
       }
     }
   }

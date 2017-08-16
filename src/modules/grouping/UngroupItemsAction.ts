@@ -28,7 +28,10 @@ export class UngroupItemsAction extends Action {
       }
       const index = parent.children.indexOf(item)
       parent.removeChild(item)
-      parent.children.splice(index, 0, ...item.children)
+      const beforeRef = parent.childAt(index)
+      for (const child of item.children) {
+        parent.insertBefore(child, beforeRef)
+      }
     }
     document.versionControl.commit('Ungroup Items')
     document.selectedItems.replace(newSelectedItems)
