@@ -3,7 +3,7 @@ import { RectItem } from './RectItem'
 import { OvalItem } from './OvalItem'
 import { TextItem } from './TextItem'
 import { PathItem } from './PathItem'
-import { GroupItem, GroupItemData } from './GroupItem'
+import { GroupItem } from './GroupItem'
 import { Document } from '../Document'
 
 export function createItem (document: Document, type: string, id?: string): Item {
@@ -33,10 +33,10 @@ export function packItems (items: Item[]): ItemData[] {
   const datas: ItemData[] = []
   for (const item of items) {
     const data = item.toData()
-    datas.push(data)
     if (item instanceof GroupItem) {
       datas.push(...packItems(item.children))
     }
+    datas.push(data)
   }
   return datas
 }
@@ -46,21 +46,6 @@ export function unpackItems (document: Document, datas: ItemData[], opts: {newID
   for (const data of datas) {
     const item = itemFromData(document, data, opts.newID ? undefined : data.id)
     itemForDataId.set(data.id, item)
-  }
-  for (const data of datas) {
-    if (data.type === 'group') {
-      const group = itemForDataId.get(data.id)
-      if (!(group instanceof GroupItem)) {
-        throw new Error('Cannot find created group item')
-      }
-      for (const childId of (data as GroupItemData).childIds) {
-        const child = itemForDataId.get(childId)
-        if (!child) {
-          throw new Error(`Child ${childId} is not included in data`)
-        }
-        group.children.push(child)
-      }
-    }
   }
   const rootItems: Item[] = []
   for (const item of itemForDataId.values()) {

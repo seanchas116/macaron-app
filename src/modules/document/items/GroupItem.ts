@@ -48,6 +48,14 @@ class GroupItem extends Item {
   loadData (data: GroupItemData) {
     super.loadData(data)
     this.collapsed = data.collapsed
+    this.children.clear()
+    for (const childId of data.childIds) {
+      const item = this.document.itemForId.get(childId)
+      if (!item) {
+        throw new Error(`Child ${childId} is not found`)
+      }
+      this.children.push(item)
+    }
   }
 
   toData (): GroupItemData {
