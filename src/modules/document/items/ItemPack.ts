@@ -36,19 +36,20 @@ export function packItems (items: Item[]): ItemData[] {
 }
 
 export function unpackItems (document: Document, datas: ItemData[], opts: {newID: boolean}) {
-  const itemForId = new Map<string, Item>()
+  const itemForDataId = new Map<string, Item>()
   for (const data of datas) {
     const item = createItem(data.type, document, opts.newID ? undefined : data.id)
     item.loadData(data)
+    itemForDataId.set(data.id, item)
   }
   for (const data of datas) {
     if (data.type === 'group') {
-      const group = itemForId.get(data.id)
+      const group = itemForDataId.get(data.id)
       if (!(group instanceof GroupItem)) {
         throw new Error('Cannot find created group item')
       }
       for (const childId of (data as GroupItemData).childIds) {
-        const child = itemForId.get(childId)
+        const child = itemForDataId.get(childId)
         if (!child) {
           throw new Error(`Child ${childId} is not included in data`)
         }
@@ -57,7 +58,7 @@ export function unpackItems (document: Document, datas: ItemData[], opts: {newID
     }
   }
   const rootItems: Item[] = []
-  for (const item of itemForId.values()) {
+  for (const item of itemForDataId.values()) {
     if (!item.parent) {
       rootItems.push(item)
     }
