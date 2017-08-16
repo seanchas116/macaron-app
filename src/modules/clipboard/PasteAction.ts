@@ -1,5 +1,5 @@
 import { Action, addAction } from '../menu'
-import { unpackItems, documentManager, CompositeCommand, ItemInsertCommand } from '../document'
+import { unpackItems, documentManager } from '../document'
 import { clipboardDataType, ClipboardData } from './ClipboardData'
 import { Clipboard } from '../../util/Clipboard'
 
@@ -25,8 +25,10 @@ export class PasteAction extends Action {
       if (!parent) {
         return
       }
-      const commands = items.map(item => new ItemInsertCommand('Paste Item', parent, item, nextItem))
-      document.history.push(new CompositeCommand('Paste Items', commands))
+      for (const item of items) {
+        parent.insertBefore(item, nextItem)
+      }
+      document.versionControl.commit('Paste Iteims')
       document.selectedItems.replace(items)
     }
   }
