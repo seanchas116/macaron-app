@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { action } from 'mobx'
 import { Vec2, Rect } from 'paintvec'
-import { Document, documentManager, GroupItem, RectLikeItem, RectItem, TextItem, OvalItem, ItemInsertCommand } from '../document'
-import { toolManager, itemPreview, snapper } from '../drawarea'
+import { Document, documentManager, GroupItem, RectLikeItem, RectItem, TextItem, OvalItem } from '../document'
+import { toolManager, snapper } from '../drawarea'
 import { PointerEvents } from '../../util/components/PointerEvents'
 import { RectToolType } from './RectTool'
 
@@ -57,8 +57,7 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     this.parent = document.rootItem
     this.item = this.newItem(document)
     this.item.rect = new Rect(this.startPos, this.startPos).translate(document.scroll)
-    const children = [this.item, ...this.parent.children]
-    itemPreview.addChildren(this.parent, children)
+    this.parent.children.unshift(this.item)
   }
 
   @action private onPointerMove = (event: PointerEvent) => {
@@ -70,21 +69,14 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
   }
 
   @action private onPointerUp = (event: PointerEvent) => {
-    this.commit()
+    if (!this.item) {
+      return
+    }
+    documentManager.document.versionControl.commit('Add Item')
+    documentManager.document.selectedItems.replace([this.item])
     this.startPos = undefined
     this.item = undefined
     toolManager.currentId = undefined
-    itemPreview.clear()
-  }
-
-  @action private commit () {
-    const {item, parent} = this
-    if (!item || !parent) {
-      return
-    }
-    const {document} = documentManager
-    document.history.push(new ItemInsertCommand('Add Item', parent, item, parent.childAt(0)))
-    document.selectedItems.replace([item])
   }
 
   private snap (pos: Vec2) {
