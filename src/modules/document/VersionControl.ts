@@ -1,14 +1,25 @@
 import { Document } from './Document'
 import { Item, ItemData } from './items/Item'
+import { UndoStack, UndoCommand } from '../../util/UndoStack'
 
-interface Commit {
-  additions: ItemData[]
-  changes: [ItemData, ItemData][]
-  removals: ItemData[]
+export class Commit implements UndoCommand {
+  constructor (
+    public readonly document: Document, public readonly title: string,
+    public readonly additions: ItemData[], public readonly removals: ItemData[], public readonly changes: [ItemData, ItemData][]
+  ) {}
+
+  undo () {
+    // TODO
+  }
+
+  redo () {
+    // TODO
+  }
 }
 
 export class VersionControl {
-  itemSnapshots = new Map<string, ItemData>()
+  commitHistory = new UndoStack<Commit>()
+  private itemSnapshots = new Map<string, ItemData>()
 
   constructor (public document: Document) {
   }
@@ -39,5 +50,8 @@ export class VersionControl {
         }
       }
     }
+
+    const commit = new Commit(this.document, title, additions, removals, changes)
+    this.commitHistory.push(commit)
   }
 }

@@ -29,7 +29,6 @@ export class UndoStack<T extends UndoCommand> {
   }
 
   @action push (command: T) {
-    command.redo()
     if (this.canRedo) {
       this.commands.replace(this.commands.slice(0, this.doneCount))
     }
