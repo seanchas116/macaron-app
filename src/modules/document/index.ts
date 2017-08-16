@@ -9,7 +9,7 @@ export {RectItem, RectItemData} from './items/RectItem'
 export {OvalItem, OvalItemData} from './items/OvalItem'
 export {TextItem, TextItemData} from './items/TextItem'
 export {PathNodeType, PathNode, PathNodeData, PathItem, PathItemData, PathUtil} from './items/PathItem'
-export {itemFromData} from './items/itemFromData'
+export {createItem, packItems, unpackItems} from './items/ItemPack'
 
 export {Command} from './commands/Command'
 export {CompositeCommand} from './commands/CompositeCommand'

@@ -9,7 +9,7 @@ import { ObservableSet } from '../../util/ObservableSet'
 export class Document {
   itemForId = new Map<string, Item>()
 
-  @observable rootItem = new GroupItem(this)
+  readonly rootItem = new GroupItem(this)
   readonly selectedItems = new ObservableSet<Item>()
   @observable focusedItem: Item|undefined = undefined
   readonly selectedPathNodes = new ObservableSet<number>()
