@@ -24,7 +24,7 @@ export async function save (document: Document, filePath: string) {
   }
   zip.file('document.msgpack', msgpack.encode(documentData))
 
-  const pageData = msgpack.encode(packItems([document.rootItem]))
+  const pageData = msgpack.encode(packItems(document.rootItem.children))
   zip.file(pagePath, pageData)
 
   const tempPath = temp.path()
