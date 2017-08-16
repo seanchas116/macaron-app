@@ -3,7 +3,7 @@ import * as JSZip from 'jszip'
 import * as msgpack from 'msgpack-lite'
 import { action } from 'mobx'
 import { Vec2 } from 'paintvec'
-import { Document, GroupItem, itemFromData } from '../document'
+import { Document, GroupItem, unpackItems } from '../document'
 import { DocumentData } from './DocumentData'
 
 export const open = action(async (filePath: string) => {
@@ -18,7 +18,7 @@ export const open = action(async (filePath: string) => {
   const rootItemData = msgpack.decode(await zip.file(documentData.pages[0].path).async('nodebuffer'))
 
   const document = new Document()
-  const rootItem = itemFromData(document, rootItemData, {assignNewID: false})
+  const rootItem = unpackItems(document, rootItemData, {newID: false})
   if (!(rootItem instanceof GroupItem)) {
     throw new Error('root item must be group')
   }

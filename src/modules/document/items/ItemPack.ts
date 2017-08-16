@@ -35,10 +35,10 @@ export function packItems (items: Item[]): ItemData[] {
   return datas
 }
 
-export function unpackItems (document: Document, datas: ItemData[]) {
+export function unpackItems (document: Document, datas: ItemData[], opts: {newID: boolean}) {
   const itemForId = new Map<string, Item>()
   for (const data of datas) {
-    const item = createItem(data.type, document)
+    const item = createItem(data.type, document, opts.newID ? undefined : data.id)
     item.loadData(data)
   }
   for (const data of datas) {

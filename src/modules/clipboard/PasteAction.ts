@@ -1,5 +1,5 @@
 import { Action, addAction } from '../menu'
-import { itemFromData, documentManager, CompositeCommand, ItemInsertCommand } from '../document'
+import { unpackItems, documentManager, CompositeCommand, ItemInsertCommand } from '../document'
 import { clipboardDataType, ClipboardData } from './ClipboardData'
 import { Clipboard } from '../../util/Clipboard'
 
@@ -18,7 +18,7 @@ export class PasteAction extends Action {
     }
     const data: ClipboardData = JSON.parse(buffer.toString())
     if (data.items) {
-      const items = data.items.map(data => itemFromData(document, data))
+      const items = unpackItems(document, data.items, {newID: true})
       const selectedItems = [...document.selectedItems]
       const nextItem = selectedItems.length > 0 ? selectedItems[0] : document.rootItem.childAt(0)
       const parent = nextItem ? nextItem.parent : document.rootItem
