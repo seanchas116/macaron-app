@@ -45,6 +45,8 @@ export class VersionControl {
   }
 
   commit (title: string) {
+    this.document.disposeUnreferencedItems()
+
     const additions: ItemData[] = []
     for (const id of this.document.itemForId.keys()) {
       if (!this.itemSnapshots.has(id)) {
