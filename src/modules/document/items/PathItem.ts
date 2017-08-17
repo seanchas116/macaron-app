@@ -187,6 +187,21 @@ export class PathItem extends Item {
       return pos.add(this.offset)
     }
   }
+
+  normalizeNodes () {
+    if (this.offset.equals(new Vec2()) && !this.resizedSize) {
+      return
+    }
+    const newNodes = this.nodes.map(n => ({
+      type: n.type,
+      position: this.transformPos(n.position),
+      handle1: this.transformPos(n.handle1),
+      handle2: this.transformPos(n.handle2)
+    }))
+    this.nodes.replace(newNodes)
+    this.offset = new Vec2()
+    this.resizedSize = undefined
+  }
 }
 
 export const PathUtil = {

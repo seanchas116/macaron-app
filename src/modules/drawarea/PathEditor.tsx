@@ -8,18 +8,6 @@ import { PointerEvents } from '../../util/components/PointerEvents'
 
 const snapDistance = 4
 
-function normalizeNodes (item: PathItem) {
-  const newNodes = item.nodes.map(n => ({
-    type: n.type,
-    position: item.transformPos(n.position),
-    handle1: item.transformPos(n.handle1),
-    handle2: item.transformPos(n.handle2)
-  }))
-  item.nodes.replace(newNodes)
-  item.offset = new Vec2()
-  item.resizedSize = undefined
-}
-
 function isOnlyFirstSelected (item: PathItem) {
   const {selectedPathNodes} = item.document
   return selectedPathNodes.size === 1 && selectedPathNodes.has(0)
