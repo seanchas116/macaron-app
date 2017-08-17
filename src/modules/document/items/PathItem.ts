@@ -37,8 +37,11 @@ export class PathItem extends Item {
   @undoable @observable offset = new Vec2()
   @undoable @observable closed = false
   @undoable @observable resizedSize: Vec2|undefined = undefined
+
+  // PathEditor-related info
   @observable prependPreview: PathNode|undefined = undefined
   @observable appendPreview: PathNode|undefined = undefined
+  @observable closingPath = false
 
   // nodes as settable immutable array property
   get nodeArray (): ReadonlyArray<PathNode> {
@@ -140,7 +143,7 @@ export class PathItem extends Item {
   }
 
   @computed get svgPathData () {
-    const {nodes} = this
+    const nodes = Array.from(this.nodes)
     if (this.prependPreview) {
       nodes.unshift(this.prependPreview)
     }
