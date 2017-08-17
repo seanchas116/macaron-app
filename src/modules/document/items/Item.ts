@@ -119,6 +119,17 @@ abstract class Item {
     }
   }
 
+  get allDescendants (): ReadonlyArray<Item> {
+    const descendants: Item[] = []
+    if (this instanceof GroupItem) {
+      for (const child of this.children) {
+        descendants.push(...child.allDescendants)
+      }
+    }
+    descendants.push(this)
+    return descendants
+  }
+
   get siblings (): ReadonlyArray<Item> {
     if (this.parent) {
       return this.parent.children
