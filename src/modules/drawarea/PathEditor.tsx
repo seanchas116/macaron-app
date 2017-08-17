@@ -267,7 +267,21 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
   }
 }
 
-@observer export class PathEditor extends React.Component<{item: PathItem, width: number, height: number}, {}> {
+interface PathEditorProps {
+  item: PathItem
+  width: number
+  height: number
+}
+
+@observer export class PathEditor extends React.Component<PathEditorProps, {}> {
+  componentWillReceiveProps (newProps: PathEditorProps) {
+    newProps.item.normalizeNodes()
+  }
+
+  componentDidMount () {
+    this.props.item.normalizeNodes()
+  }
+
   render () {
     const {item} = this.props
     const {scroll} = item.document
