@@ -85,7 +85,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     (event.target as Element).setPointerCapture(event.pointerId)
     const {item, index} = this.props
 
-    if (target === 'position' && item.closingPath) {
+    if (target === 'position' && item.isInsertingNode) {
       this.closingPathDrag = {
         startPos: DrawArea.posFromEvent(event),
         insertMode: getInsertMode(this.props.item)
@@ -115,10 +115,13 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
 
   @action private onPointerMove = (target: 'position' | 'handle1' | 'handle2', event: PointerEvent) => {
     const {item} = this.props
-    if (target === 'position' && item.closingPath) {
-      item.closed = true
-    } else {
-      item.appendPreview = item.prependPreview = undefined
+    if (target === 'position' && item.isInsertingNode) {
+      const insertMode = getInsertMode(item)
+      if (insertMode === 'prepend') {
+        item.prependPreview = {...item.nodes[item.nodes.length - 1]}
+      } else if (insertMode === 'append') {
+        item.appendPreview = {...item.nodes[0]}
+      }
     }
 
     const dragPos = DrawArea.posFromEvent(event)
@@ -152,8 +155,14 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
   @action private onPointerUp = (event: PointerEvent) => {
     this.drag = undefined
     this.closingPathDrag = undefined
-    this.props.item.document.versionControl.commit('Move Path Node')
-    this.props.item.closingPath = false
+    const {item} = this.props
+    item.document.versionControl.commit('Move Path Node')
+    if (item.isInsertingNode) {
+      item.closed = true
+      item.isInsertingNode = false
+      item.prependPreview = undefined
+      item.appendPreview = undefined
+    }
   }
 }
 
@@ -251,7 +260,7 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
     } else if (insertMode === 'append') {
       item.appendPreview = node
     }
-    item.closingPath = true
+    item.isInsertingNode = true
     item.closed = false
   }
 

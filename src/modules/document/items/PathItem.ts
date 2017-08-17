@@ -41,7 +41,7 @@ export class PathItem extends Item {
   // PathEditor-related info
   @observable prependPreview: PathNode|undefined = undefined
   @observable appendPreview: PathNode|undefined = undefined
-  @observable closingPath = false
+  @observable isInsertingNode = false
 
   // nodes as settable immutable array property
   get nodeArray (): ReadonlyArray<PathNode> {
