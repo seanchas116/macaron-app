@@ -1,6 +1,5 @@
 export {Document} from './Document'
 export {DocumentManager, documentManager} from './DocumentManager'
-export {History} from './History'
 
 export {Item, ItemData} from './items/Item'
 export {GroupItem, GroupItemData} from './items/GroupItem'
