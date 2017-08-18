@@ -8,7 +8,9 @@ export class Commit implements UndoCommand {
   constructor (
     public readonly document: Document, public readonly title: string,
     public readonly additions: ItemData[], public readonly removals: ItemData[], public readonly changes: [ItemData, ItemData][]
-  ) {}
+  ) {
+    console.log(additions, removals, changes)
+  }
 
   revert () {
     const reversedChanges = this.changes.map((c): [ItemData, ItemData] => [c[1], c[0]])
@@ -61,7 +63,10 @@ export class VersionControl {
     for (const id of this.document.itemForId.keys()) {
       if (!this.itemSnapshots.has(id)) {
         const data = this.document.itemForId.get(id)!.toData()
-        additions.push(data)
+        this.itemSnapshots.set(id, data)
+        if (id !== this.document.rootItem.id) {
+          additions.push(data)
+        }
       }
     }
 
@@ -76,10 +81,12 @@ export class VersionControl {
     for (const item of this.document.itemForId.values()) {
       if (item.isDirty) {
         const oldData = this.itemSnapshots.get(item.id)
-        if (oldData) {
-          const newData = item.toData()
-          changes.push([oldData, newData])
+        if (!oldData) {
+          throw new Error(`Cannot find item ${item.id} in snapshots`)
         }
+        const newData = item.toData()
+        changes.push([oldData, newData])
+        this.itemSnapshots.set(item.id, newData)
       }
     }
 
