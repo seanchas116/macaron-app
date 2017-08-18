@@ -78,6 +78,9 @@ abstract class Item {
   }
 
   dispose () {
+    if (this.parent) {
+      this.parent.removeChild(this)
+    }
     this.document.selectedItems.delete(this)
     if (this.document.focusedItem === this) {
       this.document.focusedItem = undefined
