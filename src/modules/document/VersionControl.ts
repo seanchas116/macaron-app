@@ -1,5 +1,6 @@
 import { Document } from './Document'
 import { ItemData } from './items/Item'
+import { GroupItem, GroupItemData } from './items/GroupItem'
 import { UndoStack, UndoCommand } from '../../util/UndoStack'
 import { itemFromData } from './items/ItemPack'
 
@@ -21,6 +22,12 @@ export class Commit implements UndoCommand {
   redo () {
     for (const addition of this.additions) {
       itemFromData(this.document, addition, addition.id) // just create item
+    }
+    for (const addition of this.additions) {
+      const item = this.document.itemForId.get(addition.id)
+      if (item instanceof GroupItem) {
+        item.loadChildren((addition as GroupItemData).childIds)
+      }
     }
     for (const removal of this.removals) {
       const item = this.document.itemForId.get(removal.id)
