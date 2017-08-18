@@ -39,6 +39,9 @@ export class Commit implements UndoCommand {
       const item = this.document.itemForId.get(oldData.id)
       if (item) {
         item.loadData(newData)
+        if (item instanceof GroupItem) {
+          item.loadChildren((newData as GroupItemData).childIds)
+        }
       }
     }
   }
