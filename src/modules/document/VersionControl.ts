@@ -24,7 +24,7 @@ export class Commit implements UndoCommand {
   redo () {
     for (const addition of this.additions) {
       itemFromData(this.document, addition, addition.id) // just create item
-      this.document.versionControl.itemSnapshots.set(addition.id, addition)
+      this.document.versionControl.updateSnapshot(addition)
     }
     for (const addition of this.additions) {
       const item = this.document.itemForId.get(addition.id)
@@ -45,7 +45,7 @@ export class Commit implements UndoCommand {
         if (item instanceof GroupItem) {
           item.loadChildren((newData as GroupItemData).childIds)
         }
-        this.document.versionControl.itemSnapshots.set(newData.id, newData)
+        this.document.versionControl.updateSnapshot(newData)
       }
     }
   }
@@ -53,11 +53,11 @@ export class Commit implements UndoCommand {
 
 export class VersionControl {
   commitHistory = new UndoStack<Commit>()
-  itemSnapshots = new Map<string, ItemData>()
+  private itemSnapshots = new Map<string, ItemData>()
 
   constructor (public document: Document) {
     for (const item of document.rootItem.allDescendants) {
-      this.itemSnapshots.set(item.id, item.toData())
+      this.updateSnapshot(item.toData())
     }
   }
 
@@ -68,7 +68,7 @@ export class VersionControl {
     for (const id of this.document.itemForId.keys()) {
       if (!this.itemSnapshots.has(id)) {
         const data = this.document.itemForId.get(id)!.toData()
-        this.itemSnapshots.set(id, data)
+        this.updateSnapshot(data)
         if (id !== this.document.rootItem.id) {
           additions.push(data)
         }
@@ -91,12 +91,16 @@ export class VersionControl {
         }
         const newData = item.toData()
         changes.push([oldData, newData])
-        this.itemSnapshots.set(item.id, newData)
+        this.updateSnapshot(newData)
         item.isDirty = false
       }
     }
 
     const commit = new Commit(this.document, title, additions, removals, changes)
     this.commitHistory.push(commit)
+  }
+
+  updateSnapshot (data: ItemData) {
+    this.itemSnapshots.set(data.id, data)
   }
 }
