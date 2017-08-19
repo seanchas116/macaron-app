@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { action } from 'mobx'
 import { Vec2 } from 'paintvec'
-import { GroupItem, PathNode, PathItem, documentManager, ItemInsertCommand } from '../document'
-import { itemPreview, toolManager } from '../drawarea'
+import { GroupItem, PathNode, PathItem, documentManager } from '../document'
+import { toolManager } from '../drawarea'
 import { PointerEvents } from '../../util/components/PointerEvents'
 
 const snapDistance = 4
@@ -106,8 +106,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     const item = new PathItem(document)
     item.fillEnabled = false
     const parent = document.rootItem
-    const children = [item, ...parent.children]
-    itemPreview.addChildren(parent, children)
+    parent.insertBefore(item, parent.childAt(0))
     item.nodes.push({type: 'straight', position: pos, handle1: pos, handle2: pos})
     this.editingInfo = {item, parent}
     document.focusedItem = item
@@ -145,11 +144,10 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     if (!this.editingInfo) {
       return
     }
-    const {parent, item} = this.editingInfo
+    const {item} = this.editingInfo
     this.removePreviewNode()
-    itemPreview.clear()
     const {document} = documentManager
-    document.history.push(new ItemInsertCommand('Add Item', parent, item, parent.childAt(0)))
+    document.versionControl.commit('Add Item')
     document.selectedItems.replace([item])
     document.focusedItem = undefined
     toolManager.currentId = undefined

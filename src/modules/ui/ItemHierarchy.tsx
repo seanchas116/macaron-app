@@ -3,7 +3,7 @@ import { TreeView, TreeDelegate, TreeRowInfo } from 'react-draggable-tree'
 import { observer } from 'mobx-react'
 import * as classNames from 'classnames'
 
-import { Item, GroupItem, documentManager, CompositeCommand, ItemMoveCommand, ItemInsertCommand } from '../document'
+import { Item, GroupItem, documentManager } from '../document'
 
 const styles = require('./ItemHierarchy.css')
 require('react-draggable-tree/lib/index.css')
@@ -25,7 +25,7 @@ class ItemTreeDelegate implements TreeDelegate<Item> {
   }
   getChildren (item: Item) {
     if (item instanceof GroupItem) {
-      return item.children
+      return item.children as Item[]
     }
   }
   getCollapsed (item: Item) {
@@ -54,18 +54,22 @@ class ItemTreeDelegate implements TreeDelegate<Item> {
     if (!(parent instanceof GroupItem)) {
       return
     }
-    const beforeReference = parent.childAt(destIndex)
-    const commands = src.map(info => new ItemMoveCommand(parent, info.item, beforeReference))
-    documentManager.document.history.push(new CompositeCommand('Move Items', commands))
+    const beforeRef = parent.childAt(destIndex)
+    for (const {item} of src) {
+      parent.insertBefore(item, beforeRef)
+    }
+    parent.document.versionControl.commit('Move Items')
   }
   onCopy (src: TreeRowInfo<Item>[], dest: TreeRowInfo<Item>, destIndex: number) {
     const parent = dest.item
     if (!(parent instanceof GroupItem)) {
       return
     }
-    const beforeReference = parent.childAt(destIndex)
-    const commands = src.map(info => new ItemInsertCommand('Copy Item', parent, info.item.clone(), beforeReference))
-    documentManager.document.history.push(new CompositeCommand('Copy Items', commands))
+    const beforeRef = parent.childAt(destIndex)
+    for (const {item} of src) {
+      parent.insertBefore(item.clone(), beforeRef)
+    }
+    parent.document.versionControl.commit('Copy Items')
   }
 }
 

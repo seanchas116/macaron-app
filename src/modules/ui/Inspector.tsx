@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
 import { Rect } from 'paintvec'
-import { documentManager, ItemChangeCommand, Item, RectItem } from '../document'
+import { documentManager, Item, RectItem } from '../document'
 const styles = require('./Inspector.css')
 
 interface ValueInputProps {
@@ -62,10 +62,10 @@ const CheckboxInput = (props: {value: boolean, onChange: (value: boolean) => voi
 const RectEdit = observer((props: {item: Item}) => {
   const {item} = props
   const {left, top, width, height} = item.rect
-  const {history} = documentManager.document
 
   const onChangeRect = (title: string, rect: Rect) => {
-    history.push(new ItemChangeCommand(title, item, {rect}))
+    item.rect = rect
+    item.document.versionControl.commit(title)
   }
 
   return <div className={styles.rect} >
@@ -82,9 +82,9 @@ const RectEdit = observer((props: {item: Item}) => {
 
 const RadiusEdit = observer((props: {item: RectItem}) => {
   const {item} = props
-  const {history} = documentManager.document
   const onChangeRadius = (radius: number) => {
-    history.push(new ItemChangeCommand('Change Radius', item, {radius}))
+    item.radius = radius
+    item.document.versionControl.commit('Change Radius')
   }
   return <div className={styles.radius}>
     <label>Radius</label>
@@ -94,13 +94,14 @@ const RadiusEdit = observer((props: {item: RectItem}) => {
 
 const FillEdit = observer((props: {item: Item}) => {
   const {item} = props
-  const {history} = documentManager.document
   const onChangeFill = (fill: string) => {
-    history.push(new ItemChangeCommand('Change Fill', item, {fill}))
+    item.fill = fill
+    item.document.versionControl.commit('Change Fill')
   }
   const onChangeFillEnabled = (fillEnabled: boolean) => {
     const title = fillEnabled ? 'Enable Fill' : 'Disable Fill'
-    history.push(new ItemChangeCommand(title, item, {fillEnabled}))
+    item.fillEnabled = fillEnabled
+    item.document.versionControl.commit(title)
   }
   return <div className={styles.fill}>
     <label><CheckboxInput value={item.fillEnabled} onChange={onChangeFillEnabled} />Fill</label>
@@ -110,16 +111,18 @@ const FillEdit = observer((props: {item: Item}) => {
 
 const StrokeEdit = observer((props: {item: Item}) => {
   const {item} = props
-  const {history} = documentManager.document
   const onChangeStroke = (stroke: string) => {
-    history.push(new ItemChangeCommand('Change Stroke', item, {stroke}))
+    item.stroke = stroke
+    item.document.versionControl.commit('Change Stroke')
   }
   const onChangeStrokeWidth = (strokeWidth: number) => {
-    history.push(new ItemChangeCommand('Change Stroke Width', item, {strokeWidth}))
+    item.strokeWidth = strokeWidth
+    item.document.versionControl.commit('Change Stroke Width')
   }
   const onChangeStrokeEnabled = (strokeEnabled: boolean) => {
     const title = strokeEnabled ? 'Enable Border' : 'Disable Border'
-    history.push(new ItemChangeCommand(title, item, {strokeEnabled}))
+    item.strokeEnabled = strokeEnabled
+    item.document.versionControl.commit(title)
   }
   return <div className={styles.stroke}>
     <label><CheckboxInput value={item.strokeEnabled} onChange={onChangeStrokeEnabled} />Border</label>

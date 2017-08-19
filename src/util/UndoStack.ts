@@ -1,8 +1,12 @@
 import { observable, action, computed } from 'mobx'
-import { Command } from './commands/Command'
 
-export class History {
-  private readonly commands = observable<Command>([])
+export interface UndoCommand {
+  undo (): void
+  redo (): void
+}
+
+export class UndoStack<T extends UndoCommand> {
+  private readonly commands = observable<T>([])
   @observable private doneCount = 0
 
   @computed get commandToUndo () {
@@ -24,8 +28,7 @@ export class History {
     return this.doneCount < this.commands.length
   }
 
-  @action push (command: Command) {
-    command.redo()
+  @action push (command: T) {
     if (this.canRedo) {
       this.commands.replace(this.commands.slice(0, this.doneCount))
     }

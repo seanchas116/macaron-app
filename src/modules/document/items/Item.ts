@@ -1,4 +1,5 @@
-import { observable } from 'mobx'
+import { observable, observe, IObjectChange } from 'mobx'
+import 'reflect-metadata'
 import * as uuid from 'uuid'
 import { Vec2, Rect } from 'paintvec'
 import { Document } from '../Document'
@@ -15,16 +16,29 @@ export interface ItemData {
   strokeEnabled: boolean
 }
 
+const metadataUndoable = Symbol('Item.undoable')
+
+export function undoable (target: Item, key: string) {
+  Reflect.defineMetadata(metadataUndoable, true, target, key)
+}
+
+export function undoableArray<T> (target: Item, array: T[]) {
+  const observableArray = observable(array)
+  observableArray.observe(() => target.isDirty = true)
+  return observableArray
+}
+
 export
 abstract class Item {
-  @observable name = 'Item'
-  @observable fill = '#888888'
-  @observable fillEnabled = true
-  @observable stroke = '#000000'
-  @observable strokeEnabled = true
-  @observable strokeWidth = 1
+  @undoable @observable name = 'Item'
+  @undoable @observable fill = '#888888'
+  @undoable @observable fillEnabled = true
+  @undoable @observable stroke = '#000000'
+  @undoable @observable strokeEnabled = true
+  @undoable @observable strokeWidth = 1
   @observable parent: GroupItem|undefined
   readonly id: string
+  isDirty = false
 
   abstract position: Vec2
   abstract size: Vec2
@@ -40,9 +54,18 @@ abstract class Item {
   constructor (public readonly document: Document, id?: string) {
     this.id = id || uuid()
     document.itemForId.set(this.id, this)
+
+    observe(this, change => this.onPropertyChange(change))
   }
 
   dispose () {
+    if (this.parent) {
+      this.parent.removeChild(this)
+    }
+    this.document.selectedItems.delete(this)
+    if (this.document.focusedItem === this) {
+      this.document.focusedItem = undefined
+    }
     this.document.itemForId.delete(this.id)
   }
 
@@ -80,11 +103,29 @@ abstract class Item {
     }
   }
 
-  get siblings (): Item[] {
+  get allDescendants (): ReadonlyArray<Item> {
+    const descendants: Item[] = []
+    if (this instanceof GroupItem) {
+      for (const child of this.children) {
+        descendants.push(...child.allDescendants)
+      }
+    }
+    descendants.push(this)
+    return descendants
+  }
+
+  get siblings (): ReadonlyArray<Item> {
     if (this.parent) {
       return this.parent.children
     } else {
       return []
+    }
+  }
+
+  private onPropertyChange (change: IObjectChange) {
+    const undoable = Reflect.getMetadata(metadataUndoable, this, change.name)
+    if (undoable) {
+      this.isDirty = true
     }
   }
 }

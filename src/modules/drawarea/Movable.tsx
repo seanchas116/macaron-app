@@ -2,9 +2,8 @@ import * as React from 'react'
 import { Vec2, Rect } from 'paintvec'
 import { action } from 'mobx'
 import { PointerEvents } from '../../util/components/PointerEvents'
-import { Item, Command, CompositeCommand, ItemChangeCommand, documentManager } from '../document'
+import { Item, documentManager } from '../document'
 import { snapper } from './Snapper'
-import { itemPreview } from './ItemPreview'
 
 export
 class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
@@ -44,7 +43,6 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     this.items = document.selectedItems.peek()
     for (const item of this.items) {
       this.originalRects.set(item, item.rect)
-      itemPreview.addItem(item)
     }
     this.originalRect = Rect.union(...this.originalRects.values())
 
@@ -67,31 +65,15 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     const snappedOffset = snappedRect.topLeft.sub(this.originalRect.topLeft)
     for (const item of this.items) {
       const position = this.originalRects.get(item)!.topLeft.add(snappedOffset)
-      const preview = itemPreview.getItem(item)
-      if (preview) {
-        preview.position = position
-      }
+      item.position = position
     }
   }
   @action private onPointerUp = (event: PointerEvent) => {
     if (!this.dragging) {
       return
     }
-    this.commit()
-  }
-
-  private commit () {
-    const commands: Command[] = []
-    for (const item of this.items) {
-      const preview = itemPreview.getItem(item)
-      if (preview && !preview.position.equals(item.position)) {
-        commands.push(new ItemChangeCommand('Move Item', item, {position: preview.position}))
-      }
-    }
-    if (commands.length > 0) {
-      documentManager.document.history.push(new CompositeCommand('Move Items', commands))
-    }
     this.cancel()
+    documentManager.document.versionControl.commit('Move Items')
   }
 
   private cancel () {
@@ -100,6 +82,5 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     this.originalRects = new Map()
     this.originalRect = undefined
     snapper.clear()
-    itemPreview.clear()
   }
 }

@@ -7,15 +7,15 @@ export class UndoAction extends Action {
   id = 'edit.undo'
 
   @computed get title () {
-    const {commandToUndo} = documentManager.document.history
+    const {commandToUndo} = documentManager.document.versionControl.commitHistory
     return commandToUndo ? `Undo ${commandToUndo.title}` : 'Undo'
   }
 
   @computed get enabled () {
-    return documentManager.document.history.canUndo
+    return documentManager.document.versionControl.commitHistory.canUndo
   }
 
   run () {
-    documentManager.document.history.undo()
+    documentManager.document.versionControl.commitHistory.undo()
   }
 }

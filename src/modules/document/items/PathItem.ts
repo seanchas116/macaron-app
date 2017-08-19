@@ -1,7 +1,7 @@
 import { observable, computed } from 'mobx'
 import { Vec2, Rect } from 'paintvec'
 const Bezier = require('bezier-js')
-import { Item, ItemData } from './Item'
+import { Item, ItemData, undoable, undoableArray } from './Item'
 
 export type PathNodeType = 'symmetric' | 'asymmetric' | 'disconnected' | 'straight'
 
@@ -33,10 +33,15 @@ export interface PathItemData extends ItemData {
 }
 
 export class PathItem extends Item {
-  readonly nodes = observable<PathNode>([])
-  @observable offset = new Vec2()
-  @observable closed = false
-  @observable resizedSize: Vec2|undefined
+  readonly nodes = undoableArray<PathNode>(this, [])
+  @undoable @observable offset = new Vec2()
+  @undoable @observable closed = false
+  @undoable @observable resizedSize: Vec2|undefined = undefined
+
+  // PathEditor-related info
+  @observable prependPreview: PathNode|undefined = undefined
+  @observable appendPreview: PathNode|undefined = undefined
+  @observable isInsertingNode = false
 
   // nodes as settable immutable array property
   get nodeArray (): ReadonlyArray<PathNode> {
@@ -138,7 +143,13 @@ export class PathItem extends Item {
   }
 
   @computed get svgPathData () {
-    const {nodes} = this
+    const nodes = Array.from(this.nodes)
+    if (this.prependPreview) {
+      nodes.unshift(this.prependPreview)
+    }
+    if (this.appendPreview) {
+      nodes.push(this.appendPreview)
+    }
     if (nodes.length < 2) {
       return ''
     }
@@ -175,6 +186,21 @@ export class PathItem extends Item {
     } else {
       return pos.add(this.offset)
     }
+  }
+
+  normalizeNodes () {
+    if (this.offset.equals(new Vec2()) && !this.resizedSize) {
+      return
+    }
+    const newNodes = this.nodes.map(n => ({
+      type: n.type,
+      position: this.transformPos(n.position),
+      handle1: this.transformPos(n.handle1),
+      handle2: this.transformPos(n.handle2)
+    }))
+    this.nodes.replace(newNodes)
+    this.offset = new Vec2()
+    this.resizedSize = undefined
   }
 }
 

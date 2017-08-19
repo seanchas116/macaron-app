@@ -7,15 +7,15 @@ export class UndoAction extends Action {
   id = 'edit.redo'
 
   @computed get title () {
-    const {commandToRedo} = documentManager.document.history
+    const {commandToRedo} = documentManager.document.versionControl.commitHistory
     return commandToRedo ? `Redo ${commandToRedo.title}` : 'Redo'
   }
 
   @computed get enabled () {
-    return documentManager.document.history.canRedo
+    return documentManager.document.versionControl.commitHistory.canRedo
   }
 
   run () {
-    documentManager.document.history.redo()
+    documentManager.document.versionControl.commitHistory.redo()
   }
 }

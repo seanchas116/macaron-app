@@ -6,7 +6,7 @@ import { PathItem } from './PathItem'
 import { GroupItem, GroupItemData } from './GroupItem'
 import { Document } from '../Document'
 
-export function createItem (type: string, document: Document, id?: string): Item {
+export function createItem (document: Document, type: string, id?: string): Item {
   switch (type) {
     case 'rect':
       return new RectItem(document, id)
@@ -23,38 +23,34 @@ export function createItem (type: string, document: Document, id?: string): Item
   }
 }
 
-export function packItems (items: Item[]): ItemData[] {
+export function itemFromData (document: Document, data: ItemData, id?: string) {
+  const item = createItem(document, data.type, id)
+  item.loadData(data)
+  return item
+}
+
+export function packItems (items: ReadonlyArray<Item>): ItemData[] {
   const datas: ItemData[] = []
   for (const item of items) {
     const data = item.toData()
-    datas.push(data)
     if (item instanceof GroupItem) {
       datas.push(...packItems(item.children))
     }
+    datas.push(data)
   }
   return datas
 }
 
-export function unpackItems (document: Document, datas: ItemData[], opts: {newID: boolean}) {
+export function unpackItems (document: Document, datas: ReadonlyArray<ItemData>, opts: {newID: boolean}) {
   const itemForDataId = new Map<string, Item>()
   for (const data of datas) {
-    const item = createItem(data.type, document, opts.newID ? undefined : data.id)
-    item.loadData(data)
+    const item = itemFromData(document, data, opts.newID ? undefined : data.id)
     itemForDataId.set(data.id, item)
   }
   for (const data of datas) {
-    if (data.type === 'group') {
-      const group = itemForDataId.get(data.id)
-      if (!(group instanceof GroupItem)) {
-        throw new Error('Cannot find created group item')
-      }
-      for (const childId of (data as GroupItemData).childIds) {
-        const child = itemForDataId.get(childId)
-        if (!child) {
-          throw new Error(`Child ${childId} is not included in data`)
-        }
-        group.children.push(child)
-      }
+    const item = itemForDataId.get(data.id)
+    if (item instanceof GroupItem) {
+      item.loadChildren((data as GroupItemData).childIds)
     }
   }
   const rootItems: Item[] = []

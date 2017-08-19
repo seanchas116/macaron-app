@@ -1,4 +1,5 @@
 import { observable } from 'mobx'
+import { undoable } from './Item'
 import { RectLikeItem, RectLikeItemData } from './RectLikeItem'
 
 export interface TextItemData extends RectLikeItemData {
@@ -9,7 +10,7 @@ export interface TextItemData extends RectLikeItemData {
 export
 class TextItem extends RectLikeItem {
   name = 'Text'
-  @observable text = 'Text'
+  @undoable @observable text = 'Text'
 
   clone () {
     const item = new TextItem(this.document)

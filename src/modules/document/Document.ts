@@ -3,7 +3,7 @@ import { observable, action, computed, reaction } from 'mobx'
 import { Vec2 } from 'paintvec'
 import { Item } from './items/Item'
 import { GroupItem } from './items/GroupItem'
-import { History } from './History'
+import { VersionControl } from './VersionControl'
 import { ObservableSet } from '../../util/ObservableSet'
 
 export class Document {
@@ -18,7 +18,7 @@ export class Document {
   @observable filePath = ''
   @observable tempName = 'Untitled'
 
-  readonly history = new History()
+  readonly versionControl = new VersionControl(this)
 
   @computed get fileName () {
     if (this.filePath) {
@@ -50,7 +50,16 @@ export class Document {
     for (const item of this.selectedItems) {
       const {parent} = item
       if (parent) {
-        parent.children.remove(item)
+        parent.removeChild(item)
+      }
+    }
+  }
+
+  disposeUnreferencedItems () {
+    const referencedItemIds = new Set(this.rootItem.allDescendants.map(item => item.id))
+    for (const item of this.itemForId.values()) {
+      if (!referencedItemIds.has(item.id)) {
+        item.dispose()
       }
     }
   }

@@ -1,6 +1,6 @@
 import { computed, action } from 'mobx'
 import { Action, addAction } from '../menu'
-import { documentManager, Command, CompositeCommand, ItemRemoveCommand, ItemMoveCommand, Item, GroupItem } from '../document'
+import { documentManager, Item, GroupItem } from '../document'
 
 @addAction
 export class UngroupItemsAction extends Action {
@@ -18,7 +18,6 @@ export class UngroupItemsAction extends Action {
     if (items.length === 0) {
       return
     }
-    const commands: Command[] = []
     for (const item of items) {
       if (!(item instanceof GroupItem)) {
         continue
@@ -27,10 +26,14 @@ export class UngroupItemsAction extends Action {
       if (!parent) {
         continue
       }
-      commands.push(...item.children.map(child => new ItemMoveCommand(parent, child, item)))
-      commands.push(new ItemRemoveCommand(item))
+      const index = parent.children.indexOf(item)
+      parent.removeChild(item)
+      const beforeRef = parent.childAt(index)
+      for (const child of item.children) {
+        parent.insertBefore(child, beforeRef)
+      }
     }
-    document.history.push(new CompositeCommand('Ungroup Items', commands))
+    document.versionControl.commit('Ungroup Items')
     document.selectedItems.replace(newSelectedItems)
   }
 }
