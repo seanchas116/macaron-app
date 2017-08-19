@@ -1,6 +1,6 @@
 import { observable } from 'mobx'
 import { Rect } from 'paintvec'
-import { Item, ItemData } from './Item'
+import { Item, ItemData, undoable } from './Item'
 import { Document } from '../Document'
 
 export interface GroupItemData extends ItemData {
@@ -12,7 +12,7 @@ export interface GroupItemData extends ItemData {
 export
 class GroupItem extends Item {
   @observable collapsed = false
-  private readonly _children = observable<Item>([])
+  @undoable private readonly _children = observable<Item>([])
 
   get position () {
     return this.rect.topLeft
