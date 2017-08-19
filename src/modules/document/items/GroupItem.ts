@@ -43,7 +43,7 @@ class GroupItem extends Item {
     const item = new GroupItem(this.document)
     item.loadData(this.toData())
     if (!shallow) {
-      item._children.replace(this.children.map(c => c.clone()))
+      item.appendChild(...this.children.map(c => c.clone()))
     }
     return item
   }
@@ -54,13 +54,13 @@ class GroupItem extends Item {
   }
 
   loadChildren (childIds: string[]) {
-    this._children.clear()
+    this.clearChildren()
     for (const childId of childIds) {
       const item = this.document.itemForId.get(childId)
       if (!item) {
         throw new Error(`Child ${childId} is not found`)
       }
-      this._children.push(item)
+      this.appendChild(item)
     }
   }
 
