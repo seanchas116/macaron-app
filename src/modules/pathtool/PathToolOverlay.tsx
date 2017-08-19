@@ -32,8 +32,8 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     const parent = document.rootItem
     parent.insertBefore(item, parent.childAt(0))
     item.nodes.push({type: 'straight', position: pos, handle1: pos, handle2: pos})
+    item.selectedPathNodes.replace([0])
     document.focusedItem = item
-    document.selectedPathNodes.replace([0])
   }
 
   @action private onPointerMove = (event: PointerEvent) => {

@@ -9,12 +9,10 @@ import { PointerEvents } from '../../util/components/PointerEvents'
 const snapDistance = 4
 
 function isOnlyFirstSelected (item: PathItem) {
-  const {selectedPathNodes} = item.document
-  return selectedPathNodes.size === 1 && selectedPathNodes.has(0)
+  return item.selectedPathNodes.size === 1 && item.selectedPathNodes.has(0)
 }
 function isOnlyLastSelected (item: PathItem) {
-  const {selectedPathNodes} = item.document
-  return selectedPathNodes.size === 1 && selectedPathNodes.has(item.nodes.length - 1)
+  return item.selectedPathNodes.size === 1 && item.selectedPathNodes.has(item.nodes.length - 1)
 }
 function getInsertMode (item: PathItem) {
   if (item.closed) {
@@ -46,7 +44,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     const p = node.position
     const h1 = node.handle1
     const h2 = node.handle2
-    const selected = this.props.item.document.selectedPathNodes.has(index)
+    const selected = this.props.item.selectedPathNodes.has(index)
 
     const positionHandle = <PointerEvents onPointerDown={this.onPointerDownPosition} onPointerMove={this.onPointerMovePosition} onPointerUp={this.onPointerUp} >
       <circle cx={p.x} cy={p.y} r={4} fill={selected ? '#2196f3' : 'white'} stroke='grey' />
@@ -81,13 +79,12 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     } else {
       const origNodes = new Map<number, PathNode>()
       if (target === 'position') {
-        const {document} = item
         if (event.shiftKey) {
-          document.selectedPathNodes.add(index)
-        } else if (!document.selectedPathNodes.has(index)) {
-          document.selectedPathNodes.replace([index])
+          item.selectedPathNodes.add(index)
+        } else if (!item.selectedPathNodes.has(index)) {
+          item.selectedPathNodes.replace([index])
         }
-        for (const i of document.selectedPathNodes) {
+        for (const i of item.selectedPathNodes) {
           origNodes.set(i , {...item.nodes[i]})
         }
       } else {
@@ -194,15 +191,14 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
   @action private onInsertPointerDown = (event: PointerEvent) => {
     (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
     const {item} = this.props
-    const {document} = item
     const pos = DrawArea.posFromEvent(event)
     const node: PathNode = {type: 'straight', position: pos, handle1: pos, handle2: pos}
     if (getInsertMode(item) === 'prepend') {
       item.nodes.unshift(node)
-      document.selectedPathNodes.replace([0])
+      item.selectedPathNodes.replace([0])
     } else {
       item.nodes.push(node)
-      document.selectedPathNodes.replace([item.nodes.length - 1])
+      item.selectedPathNodes.replace([item.nodes.length - 1])
     }
     item.appendPreview = item.prependPreview = undefined
   }
@@ -257,8 +253,7 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
   }
 
   @action private onClick = () => {
-    const {document} = this.props.item
-    document.selectedPathNodes.clear()
+    this.props.item.selectedPathNodes.clear()
   }
 
   @action private onDoubleClick = () => {

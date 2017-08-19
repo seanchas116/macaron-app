@@ -2,6 +2,7 @@ import { observable, computed } from 'mobx'
 import { Vec2, Rect } from 'paintvec'
 const Bezier = require('bezier-js')
 import { Item, ItemData, undoable, undoableArray } from './Item'
+import { ObservableSet } from '../../../util/ObservableSet'
 
 export type PathNodeType = 'symmetric' | 'asymmetric' | 'disconnected' | 'straight'
 
@@ -39,6 +40,7 @@ export class PathItem extends Item {
   @undoable @observable resizedSize: Vec2|undefined = undefined
 
   // PathEditor-related info
+  readonly selectedPathNodes = new ObservableSet<number>()
   @observable prependPreview: PathNode|undefined = undefined
   @observable appendPreview: PathNode|undefined = undefined
   @observable isInsertingNode = false
