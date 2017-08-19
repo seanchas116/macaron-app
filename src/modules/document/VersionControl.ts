@@ -6,14 +6,18 @@ import { itemFromData } from './items/ItemPack'
 
 export class Commit implements UndoCommand {
   constructor (
-    public readonly document: Document, public readonly title: string,
+    public readonly versionControl: VersionControl, public readonly title: string,
     public readonly additions: ItemData[], public readonly removals: ItemData[], public readonly changes: [ItemData, ItemData][]
   ) {
   }
 
+  get document () {
+    return this.versionControl.document
+  }
+
   revert () {
     const reversedChanges = this.changes.map((c): [ItemData, ItemData] => [c[1], c[0]])
-    return new Commit(this.document, `Revert ${this.title}`, this.removals, this.additions, reversedChanges)
+    return new Commit(this.versionControl, `Revert ${this.title}`, this.removals, this.additions, reversedChanges)
   }
 
   undo () {
@@ -95,7 +99,7 @@ export class VersionControl {
       }
     }
 
-    const commit = new Commit(this.document, title, additions, removals, changes)
+    const commit = new Commit(this, title, additions, removals, changes)
     this.commitHistory.push(commit)
   }
 
