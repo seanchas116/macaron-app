@@ -24,6 +24,7 @@ export class Commit implements UndoCommand {
   redo () {
     for (const addition of this.additions) {
       itemFromData(this.document, addition, addition.id) // just create item
+      this.document.versionControl.itemSnapshots.set(addition.id, addition)
     }
     for (const addition of this.additions) {
       const item = this.document.itemForId.get(addition.id)
@@ -44,6 +45,7 @@ export class Commit implements UndoCommand {
         if (item instanceof GroupItem) {
           item.loadChildren((newData as GroupItemData).childIds)
         }
+        this.document.versionControl.itemSnapshots.set(newData.id, newData)
       }
     }
   }
@@ -51,7 +53,7 @@ export class Commit implements UndoCommand {
 
 export class VersionControl {
   commitHistory = new UndoStack<Commit>()
-  private itemSnapshots = new Map<string, ItemData>()
+  itemSnapshots = new Map<string, ItemData>()
 
   constructor (public document: Document) {
     for (const item of document.rootItem.allDescendants) {
