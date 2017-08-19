@@ -1,5 +1,5 @@
 import * as path from 'path'
-import { observable, action, computed, reaction } from 'mobx'
+import { observable, action, computed } from 'mobx'
 import { Vec2 } from 'paintvec'
 import { Item } from './items/Item'
 import { GroupItem } from './items/GroupItem'
@@ -12,7 +12,6 @@ export class Document {
   readonly rootItem = new GroupItem(this)
   readonly selectedItems = new ObservableSet<Item>()
   @observable focusedItem: Item|undefined = undefined
-  readonly selectedPathNodes = new ObservableSet<number>()
   @observable scroll = new Vec2()
 
   @observable filePath = ''
@@ -26,12 +25,6 @@ export class Document {
     } else {
       return this.tempName
     }
-  }
-
-  constructor () {
-    reaction(() => this.focusedItem, () => {
-      this.selectedPathNodes.clear()
-    })
   }
 
   selectItem (item: Item, add: boolean) {
