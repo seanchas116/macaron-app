@@ -9,7 +9,6 @@ export class Commit implements UndoCommand {
     public readonly document: Document, public readonly title: string,
     public readonly additions: ItemData[], public readonly removals: ItemData[], public readonly changes: [ItemData, ItemData][]
   ) {
-    console.log(additions, removals, changes)
   }
 
   revert () {
