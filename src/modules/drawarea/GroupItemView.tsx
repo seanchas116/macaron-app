@@ -8,15 +8,12 @@ import { OvalItemView } from './OvalItemView'
 import { TextItemView } from './TextItemView'
 import { PathItemView } from './PathItemView'
 
-import { itemPreview } from './ItemPreview'
-
 @observer
 export class GroupItemView extends React.Component<{item: GroupItem}, {}> {
   render () {
     const {item} = this.props
-    const children = itemPreview.previewChildren(item)
     return <g key={item.id}>
-      {[...children].reverse().map(renderItem)}
+      {[...item.children].reverse().map(renderItem)}
     </g>
   }
 }
