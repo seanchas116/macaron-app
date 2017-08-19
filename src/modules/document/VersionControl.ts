@@ -54,6 +54,9 @@ export class VersionControl {
   private itemSnapshots = new Map<string, ItemData>()
 
   constructor (public document: Document) {
+    for (const item of document.rootItem.allDescendants) {
+      this.itemSnapshots.set(item.id, item.toData())
+    }
   }
 
   commit (title: string) {
