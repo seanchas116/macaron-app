@@ -1,4 +1,5 @@
-import { observable, isObservableArray } from 'mobx'
+import { observable, observe, IObjectChange } from 'mobx'
+import 'reflect-metadata'
 import * as uuid from 'uuid'
 import { Vec2, Rect } from 'paintvec'
 import { Document } from '../Document'
@@ -15,38 +16,16 @@ export interface ItemData {
   strokeEnabled: boolean
 }
 
-export const undoable = (target: Item, key: string, descriptor?: PropertyDescriptor): any => {
-  const markDirty = (target: Item, value: any) => {
-    target.isDirty = true
-    if (isObservableArray(value)) {
-      value.observe(() => target.isDirty = true)
-    }
-  }
+const metadataUndoable = Symbol('Item.undoable')
 
-  let newDescriptor: PropertyDescriptor
-  if (descriptor) {
-    const oldSet = descriptor.set!
-    newDescriptor = {
-      ...descriptor,
-      set (value: any) {
-        markDirty(this as Item, value)
-        oldSet.call(this, value)
-      }
-    }
-  } else {
-    const privateKey = Symbol(key)
-    newDescriptor = {
-      get () {
-        return this[privateKey]
-      },
-      set (value: any) {
-        markDirty(this as Item, value)
-        this[privateKey] = value
-      }
-    }
-  }
-  Object.defineProperty(target, key, newDescriptor)
-  return newDescriptor
+export function undoable (target: Item, key: string) {
+  Reflect.defineMetadata(metadataUndoable, true, target, key)
+}
+
+export function undoableArray<T> (target: Item, array: T[]) {
+  const observableArray = observable(array)
+  observableArray.observe(() => target.isDirty = true)
+  return observableArray
 }
 
 export
@@ -75,6 +54,8 @@ abstract class Item {
   constructor (public readonly document: Document, id?: string) {
     this.id = id || uuid()
     document.itemForId.set(this.id, this)
+
+    observe(this, change => this.onPropertyChange(change))
   }
 
   dispose () {
@@ -138,6 +119,13 @@ abstract class Item {
       return this.parent.children
     } else {
       return []
+    }
+  }
+
+  private onPropertyChange (change: IObjectChange) {
+    const undoable = Reflect.getMetadata(metadataUndoable, this, change.name)
+    if (undoable) {
+      this.isDirty = true
     }
   }
 }
