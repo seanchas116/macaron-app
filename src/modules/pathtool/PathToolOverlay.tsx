@@ -2,10 +2,8 @@ import * as React from 'react'
 import { action } from 'mobx'
 import { Vec2 } from 'paintvec'
 import { PathItem, documentManager } from '../document'
-import { toolManager, DrawArea } from '../drawarea'
+import { toolManager, DrawArea, PathEditor } from '../drawarea'
 import { PointerEvents } from '../../util/components/PointerEvents'
-
-const snapDistance = 4
 
 export
 class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
@@ -42,7 +40,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     }
     const pos = DrawArea.posFromEvent(event)
 
-    if (pos.sub(this.startPos).length() < snapDistance) {
+    if (pos.sub(this.startPos).length() < PathEditor.snapDistance) {
       this.item.nodes[0] = {
         position: this.startPos,
         handle1: this.startPos,

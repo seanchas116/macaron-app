@@ -6,8 +6,6 @@ import { PathItem, PathNode, PathUtil } from '../document'
 import { DrawArea } from './DrawArea'
 import { PointerEvents } from '../../util/components/PointerEvents'
 
-const snapDistance = 4
-
 function isOnlyFirstSelected (item: PathItem) {
   return item.selectedPathNodes.size === 1 && item.selectedPathNodes.has(0)
 }
@@ -112,7 +110,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
     const dragPos = DrawArea.posFromEvent(event)
 
     if (this.closingPathDrag) {
-      if (dragPos.sub(this.closingPathDrag.startPos).length() > snapDistance) {
+      if (dragPos.sub(this.closingPathDrag.startPos).length() > PathEditor.snapDistance) {
         if (this.closingPathDrag.insertMode === 'prepend') {
           const index = item.nodes.length - 1
           item.nodes[index].type = 'symmetric'
@@ -206,7 +204,7 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
   @action private onInsertPointerDrag = (event: PointerEvent) => {
     const {item} = this.props
     const pos = DrawArea.posFromEvent(event)
-    if (pos.sub(this.dragStartPos).length() <= snapDistance) {
+    if (pos.sub(this.dragStartPos).length() <= PathEditor.snapDistance) {
       return
     }
     if (this.dragInsertMode === 'append') {
@@ -269,6 +267,8 @@ interface PathEditorProps {
 }
 
 @observer export class PathEditor extends React.Component<PathEditorProps, {}> {
+  static readonly snapDistance = 4
+
   componentWillReceiveProps (newProps: PathEditorProps) {
     newProps.item.normalizeNodes()
   }
