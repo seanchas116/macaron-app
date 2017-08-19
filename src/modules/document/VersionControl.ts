@@ -90,6 +90,7 @@ export class VersionControl {
         const newData = item.toData()
         changes.push([oldData, newData])
         this.itemSnapshots.set(item.id, newData)
+        item.isDirty = false
       }
     }
 
