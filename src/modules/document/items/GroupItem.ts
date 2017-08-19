@@ -34,11 +34,6 @@ class GroupItem extends Item {
     super(document, id)
   }
 
-  dispose () {
-    this.children.forEach(c => c.dispose())
-    super.dispose()
-  }
-
   clone ({shallow = true} = {}) {
     const item = new GroupItem(this.document)
     item.loadData(this.toData())
