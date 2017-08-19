@@ -52,13 +52,13 @@ class TextItemView extends React.Component<{item: TextItem}, {}> {
     </Movable>
   }
 
-  @action onDoubleClick = () => {
+  @action private onDoubleClick = () => {
     this.focus = true
   }
-  @action onBlur = () => {
+  @action private onBlur = () => {
     this.focus = false
   }
-  @action onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+  @action private onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
     if (e.key === 'Escape') {
       this.focus = false
     }

@@ -7,8 +7,8 @@ import { PointerEvents } from '../../util/components/PointerEvents'
 
 export
 class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
-  startPos = new Vec2()
-  item: PathItem|undefined = undefined
+  private startPos = new Vec2()
+  private item: PathItem|undefined = undefined
 
   render () {
     const {width, height} = this.props.size
