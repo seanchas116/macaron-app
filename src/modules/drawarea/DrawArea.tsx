@@ -57,7 +57,7 @@ export class DrawArea extends React.Component<{}, {}> {
     </div>
   }
 
-  @action deselect = () => {
+  @action private deselect = () => {
     documentManager.document.deselectItems()
   }
 
