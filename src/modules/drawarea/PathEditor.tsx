@@ -282,6 +282,12 @@ interface PathEditorProps {
     this.props.item.normalizeNodes()
   }
 
+  componentWillUnmount () {
+    const {item} = this.props
+    item.appendPreview = item.prependPreview = undefined
+    item.isInsertingNode = false
+  }
+
   render () {
     const {item} = this.props
     const {scroll} = item.document
