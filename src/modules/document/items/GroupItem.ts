@@ -81,11 +81,13 @@ class GroupItem extends Item {
     }
   }
 
-  removeChild (item: Item) {
-    const index = this.children.indexOf(item)
-    if (index >= 0) {
-      this._children.splice(index, 1)
-      item.parent = undefined
+  removeChild (...items: Item[]) {
+    for (const item of items) {
+      const index = this.children.indexOf(item)
+      if (index >= 0) {
+        this._children.splice(index, 1)
+        item.parent = undefined
+      }
     }
   }
 
@@ -104,7 +106,9 @@ class GroupItem extends Item {
     item.parent = this
   }
 
-  appendChild (item: Item) {
-    this.insertBefore(item, undefined)
+  appendChild (...items: Item[]) {
+    for (const item of items) {
+      this.insertBefore(item, undefined)
+    }
   }
 }
