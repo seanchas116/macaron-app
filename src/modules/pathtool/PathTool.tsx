@@ -14,8 +14,6 @@ class PathTool extends Tool {
   }
 
   onKeyDown (event: React.KeyboardEvent<HTMLElement>) {
-    if (this.overlay) {
-      this.overlay.onKeyDown(event)
-    }
+    // do nothing
   }
 }

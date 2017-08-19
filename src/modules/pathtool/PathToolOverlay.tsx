@@ -1,28 +1,16 @@
 import * as React from 'react'
 import { action } from 'mobx'
 import { Vec2 } from 'paintvec'
-import { GroupItem, PathNode, PathItem, documentManager } from '../document'
-import { toolManager } from '../drawarea'
+import { PathItem, documentManager } from '../document'
+import { toolManager, DrawArea } from '../drawarea'
 import { PointerEvents } from '../../util/components/PointerEvents'
 
 const snapDistance = 4
 
 export
 class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
-  clicked = false
-  editingInfo: {
-    parent: GroupItem
-    item: PathItem
-    hasPreviewNode?: boolean
-    closingNode?: boolean
-    draggingHandle?: boolean
-  } | undefined
-
-  @action onKeyDown (event: React.KeyboardEvent<HTMLElement>) {
-    if (event.key === 'Enter' || event.key === 'Escape') {
-      this.endEditing()
-    }
-  }
+  startPos = new Vec2()
+  item: PathItem|undefined = undefined
 
   render () {
     const {width, height} = this.props.size
@@ -36,120 +24,47 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
   }
 
   @action private onPointerDown = (event: PointerEvent) => {
-    this.clicked = true
-    const pos = this.eventPos(event)
-    if (this.editingInfo) {
-      const {item} = this.editingInfo
-      if (pos.sub(item.nodes[0].position).length() < snapDistance) {
-        this.editingInfo.closingNode = true
-        item.closed = true
-      } else {
-        this.removePreviewNode()
-        item.nodes.push({position: pos, handle1: pos, handle2: pos, type: 'straight'})
-      }
-    } else {
-      this.startEditing(pos)
-    }
+    const pos = this.startPos = DrawArea.posFromEvent(event)
+
+    const {document} = documentManager
+    const item = this.item = new PathItem(document)
+    item.fillEnabled = false
+    const parent = document.rootItem
+    parent.insertBefore(item, parent.childAt(0))
+    item.nodes.push({type: 'straight', position: pos, handle1: pos, handle2: pos})
+    document.focusedItem = item
+    document.selectedPathNodes.replace([0])
   }
 
   @action private onPointerMove = (event: PointerEvent) => {
-    const pos = this.eventPos(event)
-    if (!this.editingInfo) {
+    if (!this.item) {
       return
     }
-    const {item} = this.editingInfo
-    if (this.clicked) {
-      if (!this.editingInfo.draggingHandle) {
-        const distance = pos.sub(item.nodes[item.nodes.length - 1].position).length()
-        if (distance < snapDistance) {
-          return
-        }
-        this.editingInfo.draggingHandle = true
+    const pos = DrawArea.posFromEvent(event)
+
+    if (pos.sub(this.startPos).length() < snapDistance) {
+      this.item.nodes[0] = {
+        position: this.startPos,
+        handle1: this.startPos,
+        handle2: this.startPos,
+        type: 'straight'
       }
-      const node = this.editingInfo.closingNode ? item.nodes[0] : item.nodes[item.nodes.length - 1]
-      node.handle1 = node.position.mulScalar(2).sub(pos)
-      node.handle2 = pos
-      node.type = 'symmetric'
     } else {
-      if (pos.sub(item.nodes[0].position).length() < snapDistance) {
-        this.removePreviewNode()
-        item.closed = true
-      } else {
-        this.setPreviewNode({position: pos, handle1: pos, handle2: pos, type: 'straight'})
-        item.closed = false
+      this.item.nodes[0] = {
+        position: this.startPos,
+        handle1: this.startPos.mulScalar(2).sub(pos),
+        handle2: pos,
+        type: 'symmetric'
       }
     }
   }
 
   @action private onPointerUp = (event: PointerEvent) => {
-    this.clicked = false
-    if (!this.editingInfo) {
+    if (!this.item) {
       return
     }
-    this.editingInfo.draggingHandle = false
-    const {item} = this.editingInfo
-    if (this.editingInfo.closingNode) {
-      this.endEditing()
-    } else {
-      const lastEdge = item.nodes[item.nodes.length - 1]
-      this.setPreviewNode(lastEdge)
-    }
-  }
-
-  private eventPos (event: PointerEvent) {
-    const pos = new Vec2(event.offsetX, event.offsetY)
-    return pos.add(documentManager.document.scroll)
-  }
-
-  private startEditing (pos: Vec2) {
-    const {document} = documentManager
-    const item = new PathItem(document)
-    item.fillEnabled = false
-    const parent = document.rootItem
-    parent.insertBefore(item, parent.childAt(0))
-    item.nodes.push({type: 'straight', position: pos, handle1: pos, handle2: pos})
-    this.editingInfo = {item, parent}
-    document.focusedItem = item
-  }
-
-  private endEditing () {
-    if (this.editingInfo) {
-      this.commit()
-      this.editingInfo = undefined
-    }
-  }
-
-  private setPreviewNode (node: PathNode) {
-    if (!this.editingInfo) {
-      return
-    }
-    if (this.editingInfo.hasPreviewNode) {
-      this.editingInfo.item.nodes.pop()
-    }
-    this.editingInfo.item.nodes.push(node)
-    this.editingInfo.hasPreviewNode = true
-  }
-
-  private removePreviewNode () {
-    if (!this.editingInfo) {
-      return
-    }
-    if (this.editingInfo.hasPreviewNode) {
-      this.editingInfo.item.nodes.pop()
-    }
-    this.editingInfo.hasPreviewNode = false
-  }
-
-  @action private commit () {
-    if (!this.editingInfo) {
-      return
-    }
-    const {item} = this.editingInfo
-    this.removePreviewNode()
-    const {document} = documentManager
-    document.versionControl.commit('Add Item')
-    document.selectedItems.replace([item])
-    document.focusedItem = undefined
+    this.item.document.versionControl.commit('Add Path Item')
+    this.item = undefined
     toolManager.currentId = undefined
   }
 }

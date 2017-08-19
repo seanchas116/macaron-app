@@ -20,11 +20,11 @@ function getInsertMode (item: PathItem) {
   if (item.closed) {
     return 'none'
   }
-  if (isOnlyFirstSelected(item)) {
-    return 'prepend'
-  }
   if (isOnlyLastSelected(item)) {
     return 'append'
+  }
+  if (isOnlyFirstSelected(item)) {
+    return 'prepend'
   }
   return 'none'
 }
