@@ -91,6 +91,13 @@ class GroupItem extends Item {
     }
   }
 
+  clearChildren () {
+    for (const child of this._children) {
+      child.parent = undefined
+    }
+    this._children.clear()
+  }
+
   insertBefore (item: Item, reference: Item|undefined) {
     if (reference && !this.children.includes(reference)) {
       throw new Error('reference item is not a child of the group')
