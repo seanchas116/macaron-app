@@ -58,7 +58,7 @@ export class DrawArea extends React.Component<{}, {}> {
   }
 
   @action private deselect = () => {
-    documentManager.document.deselectItems()
+    documentManager.document.selectedItems.clear()
   }
 
   @action private resizeSVG () {

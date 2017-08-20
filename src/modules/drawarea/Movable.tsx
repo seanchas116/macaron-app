@@ -39,7 +39,11 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
 
   @action private onPointerDown = (event: PointerEvent) => {
     const {document} = this.props.item
-    document.selectItem(this.props.item, event.shiftKey)
+    if (event.shiftKey) {
+      document.selectedItems.add(this.props.item)
+    } else {
+      document.selectedItems.replace([this.props.item])
+    }
     this.items = document.selectedItems.peek()
     for (const item of this.items) {
       this.originalRects.set(item, item.rect)
