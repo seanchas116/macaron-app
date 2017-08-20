@@ -58,7 +58,7 @@
     "webpack-node-externals": "^1.6.0"
   },
   "dependencies": {
-    "@types/classnames": "2.2.0",
+    "@types/classnames": "^2.2.0",
     "bezier-js": "^2.2.3",
     "bindings": "^1.3.0",
     "classnames": "^2.2.5",
