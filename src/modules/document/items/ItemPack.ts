@@ -3,7 +3,7 @@ import { RectItem } from './RectItem'
 import { OvalItem } from './OvalItem'
 import { TextItem } from './TextItem'
 import { PathItem } from './PathItem'
-import { GroupItem, GroupItemData } from './GroupItem'
+import { GroupItem } from './GroupItem'
 import { Document } from '../Document'
 
 export function createItem (document: Document, type: string, id?: string): Item {
@@ -33,9 +33,7 @@ export function packItems (items: ReadonlyArray<Item>): ItemData[] {
   const datas: ItemData[] = []
   for (const item of items) {
     const data = item.toData()
-    if (item instanceof GroupItem) {
-      datas.push(...packItems(item.children))
-    }
+    datas.push(...packItems(item.children))
     datas.push(data)
   }
   return datas
@@ -49,8 +47,8 @@ export function unpackItems (document: Document, datas: ReadonlyArray<ItemData>,
   }
   for (const data of datas) {
     const item = itemForDataId.get(data.id)
-    if (item instanceof GroupItem) {
-      item.loadChildren((data as GroupItemData).childIds)
+    if (item) {
+      item.loadChildren(data.childIds)
     }
   }
   const rootItems: Item[] = []

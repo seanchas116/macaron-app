@@ -3,7 +3,6 @@ import 'reflect-metadata'
 import * as uuid from 'uuid'
 import { Vec2, Rect } from 'paintvec'
 import { Document } from '../Document'
-import { GroupItem } from './GroupItem'
 
 export interface ItemData {
   id: string
@@ -171,19 +170,15 @@ abstract class Item {
 
   forEachDescendant (action: (item: Item) => void) {
     action(this)
-    if (this instanceof GroupItem) {
-      for (const child of this.children) {
-        child.forEachDescendant(action)
-      }
+    for (const child of this.children) {
+      child.forEachDescendant(action)
     }
   }
 
   get allDescendants (): ReadonlyArray<Item> {
     const descendants: Item[] = []
-    if (this instanceof GroupItem) {
-      for (const child of this.children) {
-        descendants.push(...child.allDescendants)
-      }
+    for (const child of this.children) {
+      descendants.push(...child.allDescendants)
     }
     descendants.push(this)
     return descendants
