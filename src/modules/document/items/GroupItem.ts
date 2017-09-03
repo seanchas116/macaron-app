@@ -20,6 +20,10 @@ class GroupItem extends Item {
     return Rect.union(...this.children.map(i => i.rect)) || new Rect()
   }
 
+  get canHaveChildren () {
+    return true
+  }
+
   constructor (document: Document, id?: string) {
     super(document, id)
   }

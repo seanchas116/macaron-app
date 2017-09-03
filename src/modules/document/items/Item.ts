@@ -61,6 +61,10 @@ abstract class Item {
     return this._children.peek()
   }
 
+  get canHaveChildren () {
+    return false
+  }
+
   constructor (public readonly document: Document, id?: string) {
     this.id = id || uuid()
     document.itemForId.set(this.id, this)
@@ -141,6 +145,10 @@ abstract class Item {
   }
 
   insertBefore (item: Item, reference: Item|undefined) {
+    if (!this.canHaveChildren) {
+      throw new Error('this item cannot have children')
+    }
+
     if (reference && !this.children.includes(reference)) {
       throw new Error('reference item is not a child of the group')
     }
