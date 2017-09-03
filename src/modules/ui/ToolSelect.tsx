@@ -11,8 +11,7 @@ const ToolSelectItem = observer((props: {tool: Tool}) => {
   }
   const current = toolManager.current === tool
   const style = {
-    // using absolute path as workaround of https://bugs.chromium.org/p/chromium/issues/detail?id=618165
-    '--icon': `url(http://${location.host}${tool.icon})`
+    '--icon': `url(${tool.icon})`
   }
   return <div className={classNames(styles.item, {[styles.itemCurrent]: current})} style={style} onClick={onClick} />
 })
