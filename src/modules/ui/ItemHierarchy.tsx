@@ -3,7 +3,7 @@ import { TreeView, TreeDelegate, TreeRowInfo } from 'react-draggable-tree'
 import { observer } from 'mobx-react'
 import * as classNames from 'classnames'
 
-import { Item, GroupItem, documentManager } from '../document'
+import { Item, GroupItem, documentManager, cloneItems } from '../document'
 
 const styles = require('./ItemHierarchy.css')
 require('react-draggable-tree/lib/index.css')
@@ -67,7 +67,8 @@ class ItemTreeDelegate implements TreeDelegate<Item> {
     }
     const beforeRef = parent.childAt(destIndex)
     for (const {item} of src) {
-      parent.insertBefore(item.clone(), beforeRef)
+      const cloned = cloneItems([item])[0]
+      parent.insertBefore(cloned, beforeRef)
     }
     parent.document.versionControl.commit('Copy Items')
   }

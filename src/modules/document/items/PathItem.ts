@@ -98,12 +98,6 @@ export class PathItem extends Item {
     return result || new Rect()
   }
 
-  clone () {
-    const item = new PathItem(this.document)
-    item.loadData(this.toData())
-    return item
-  }
-
   loadData (data: PathItemData) {
     super.loadData(data)
     this.offset = new Vec2(data.offsetX, data.offsetY)

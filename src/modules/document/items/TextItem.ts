@@ -12,12 +12,6 @@ class TextItem extends RectLikeItem {
   name = 'Text'
   @undoable @observable text = 'Text'
 
-  clone () {
-    const item = new TextItem(this.document)
-    item.loadData(this.toData())
-    return item
-  }
-
   loadData (data: TextItemData) {
     super.loadData(data)
     this.text = data.text

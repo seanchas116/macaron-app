@@ -1,4 +1,4 @@
-import { observable, observe, IObjectChange } from 'mobx'
+import { observable, observe, IObjectChange, IObservableArray } from 'mobx'
 import 'reflect-metadata'
 import * as uuid from 'uuid'
 import { Vec2, Rect } from 'paintvec'
@@ -9,6 +9,8 @@ export interface ItemData {
   id: string
   type: string
   name: string
+  collapsed: boolean
+  childIds: string[]
   fill: string
   fillEnabled: boolean
   stroke: string
@@ -36,12 +38,16 @@ abstract class Item {
   @undoable @observable stroke = '#000000'
   @undoable @observable strokeEnabled = true
   @undoable @observable strokeWidth = 1
-  @observable parent: GroupItem|undefined
+  @observable collapsed = false
+  @observable parent: Item|undefined
+
   readonly id: string
   isDirty = false
 
   abstract position: Vec2
   abstract size: Vec2
+
+  private readonly _children: IObservableArray<Item> = undoableArray<Item>(this, [])
 
   get rect () {
     return Rect.fromSize(this.position, this.size)
@@ -49,6 +55,10 @@ abstract class Item {
   set rect (rect: Rect) {
     this.position = rect.topLeft
     this.size = rect.size
+  }
+
+  get children (): ReadonlyArray<Item> {
+    return this._children.peek()
   }
 
   constructor (public readonly document: Document, id?: string) {
@@ -69,8 +79,6 @@ abstract class Item {
     this.document.itemForId.delete(this.id)
   }
 
-  abstract clone (opts?: {shallow?: boolean}): Item
-
   loadData (data: ItemData) {
     this.name = data.name
     this.fill = data.fill
@@ -78,10 +86,12 @@ abstract class Item {
     this.stroke = data.stroke
     this.strokeWidth = data.strokeWidth
     this.strokeEnabled = data.strokeEnabled
+    this.collapsed = data.collapsed
   }
 
   toData (): ItemData {
-    const {id, name, fill, fillEnabled, stroke, strokeWidth, strokeEnabled} = this
+    const {id, name, fill, fillEnabled, stroke, strokeWidth, strokeEnabled, collapsed} = this
+    const childIds = this.children.map(c => c.id)
     return {
       type: 'none',
       id,
@@ -90,7 +100,64 @@ abstract class Item {
       fillEnabled,
       stroke,
       strokeWidth,
-      strokeEnabled
+      strokeEnabled,
+      collapsed,
+      childIds
+    }
+  }
+
+  loadChildren (childIds: string[]) {
+    this.clearChildren()
+    for (const childId of childIds) {
+      const item = this.document.itemForId.get(childId)
+      if (!item) {
+        throw new Error(`Child ${childId} is not found`)
+      }
+      this.appendChild(item)
+    }
+  }
+
+  childAt (i: number) {
+    if (0 <= i && i < this.children.length) {
+      return this._children[i]
+    }
+  }
+
+  removeChild (...items: Item[]) {
+    for (const item of items) {
+      const index = this.children.indexOf(item)
+      if (index >= 0) {
+        this._children.splice(index, 1)
+        item.parent = undefined
+      }
+    }
+  }
+
+  clearChildren () {
+    for (const child of this._children) {
+      child.parent = undefined
+    }
+    this._children.clear()
+  }
+
+  insertBefore (item: Item, reference: Item|undefined) {
+    if (reference && !this.children.includes(reference)) {
+      throw new Error('reference item is not a child of the group')
+    }
+
+    const oldParent = item.parent
+    if (oldParent) {
+      oldParent.removeChild(item)
+    }
+
+    const index = reference ? this.children.indexOf(reference) : this.children.length
+    this._children.splice(index, 0, item)
+    item.parent = this
+  }
+
+  appendChild (...items: Item[]) {
+    for (const item of items) {
+      this.insertBefore(item, undefined)
     }
   }
 

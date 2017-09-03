@@ -61,3 +61,8 @@ export function unpackItems (document: Document, datas: ReadonlyArray<ItemData>,
   }
   return rootItems
 }
+
+export function cloneItems (items: ReadonlyArray<Item>) {
+  const data = packItems(items)
+  return unpackItems(items[0].document, data, {newID: true})
+}
