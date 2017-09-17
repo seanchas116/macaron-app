@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { action } from 'mobx'
 import { Vec2, Rect } from 'paintvec'
-import { Document, documentManager, GroupItem, RectLikeItem, RectItem, TextItem, OvalItem } from '../document'
+import { Document, documentManager, Item, RectLikeItem, RectItem, TextItem, OvalItem } from '../document'
 import { toolManager, snapper } from '../drawarea'
 import { PointerEvents } from '../../util/components/PointerEvents'
 import { RectToolType } from './RectTool'
@@ -9,7 +9,7 @@ import { RectToolType } from './RectTool'
 export
 class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, {}> {
   startPos: Vec2|undefined
-  parent: GroupItem|undefined
+  parent: Item|undefined
   item: RectLikeItem|undefined
 
   componentDidMount () {

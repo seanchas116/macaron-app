@@ -1,6 +1,6 @@
 import { computed, action } from 'mobx'
 import { Action, addAction } from '../menu'
-import { documentManager, Item, GroupItem } from '../document'
+import { documentManager, Item } from '../document'
 
 @addAction
 export class UngroupItemsAction extends Action {
@@ -19,19 +19,17 @@ export class UngroupItemsAction extends Action {
       return
     }
     for (const item of items) {
-      if (!(item instanceof GroupItem)) {
+      if (item.children.length === 0) {
         continue
       }
       const {parent} = item
       if (!parent) {
         continue
       }
-      const index = parent.children.indexOf(item)
-      parent.removeChild(item)
-      const beforeRef = parent.childAt(index)
-      for (const child of item.children) {
-        parent.insertBefore(child, beforeRef)
+      for (const child of [...item.children]) {
+        parent.insertBefore(child, item)
       }
+      parent.removeChild(item)
     }
     document.versionControl.commit('Ungroup Items')
     document.selectedItems.replace(newSelectedItems)

@@ -3,7 +3,7 @@ import { TreeView, TreeDelegate, TreeRowInfo } from 'react-draggable-tree'
 import { observer } from 'mobx-react'
 import * as classNames from 'classnames'
 
-import { Item, GroupItem, documentManager } from '../document'
+import { Item, documentManager, cloneItems } from '../document'
 
 const styles = require('./ItemHierarchy.css')
 require('react-draggable-tree/lib/index.css')
@@ -24,15 +24,10 @@ class ItemTreeDelegate implements TreeDelegate<Item> {
     return item.id
   }
   getChildren (item: Item) {
-    if (item instanceof GroupItem) {
-      return item.children as Item[]
-    }
+    return item.canHaveChildren ? item.children as Item[] : undefined
   }
   getCollapsed (item: Item) {
-    if (item instanceof GroupItem) {
-      return item.collapsed
-    }
-    return false
+    return item.collapsed
   }
   renderRow (info: TreeRowInfo<Item>) {
     return <ItemRow item={info.item} selected={info.selected} />
@@ -41,17 +36,14 @@ class ItemTreeDelegate implements TreeDelegate<Item> {
     documentManager.document.selectedItems.replace(selectedNodeInfos.map(info => info.item))
   }
   onCollapsedChange (info: TreeRowInfo<Item>, collapsed: boolean) {
-    const {item} = info
-    if (item instanceof GroupItem) {
-      item.collapsed = collapsed
-    }
+    info.item.collapsed = collapsed
   }
   onContextMenu (info: TreeRowInfo<Item>|undefined, ev: React.MouseEvent<HTMLElement>) {
     // TODO
   }
   onMove (src: TreeRowInfo<Item>[], dest: TreeRowInfo<Item>, destIndex: number, destIndexAfter: number) {
     const parent = dest.item
-    if (!(parent instanceof GroupItem)) {
+    if (!parent.canHaveChildren) {
       return
     }
     const beforeRef = parent.childAt(destIndex)
@@ -62,22 +54,21 @@ class ItemTreeDelegate implements TreeDelegate<Item> {
   }
   onCopy (src: TreeRowInfo<Item>[], dest: TreeRowInfo<Item>, destIndex: number) {
     const parent = dest.item
-    if (!(parent instanceof GroupItem)) {
+    if (!parent.canHaveChildren) {
       return
     }
     const beforeRef = parent.childAt(destIndex)
     for (const {item} of src) {
-      parent.insertBefore(item.clone(), beforeRef)
+      const cloned = cloneItems([item])[0]
+      parent.insertBefore(cloned, beforeRef)
     }
     parent.document.versionControl.commit('Copy Items')
   }
 }
 
-function peekAllItems (root: GroupItem) {
+function peekAllItems (root: Item) {
   for (const child of root.children) {
-    if (child instanceof GroupItem) {
-      peekAllItems(child)
-    }
+    peekAllItems(child)
   }
 }
 
