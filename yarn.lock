@@ -4374,9 +4374,9 @@ react-dom@^15.6.1:
     object-assign "^4.1.0"
     prop-types "^15.5.10"
 
-react-draggable-tree@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/react-draggable-tree/-/react-draggable-tree-0.2.0.tgz#f936fee8dc531d0016231ce091cd526e6c666900"
+react-draggable-tree@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/react-draggable-tree/-/react-draggable-tree-0.3.0.tgz#c5b5b01306a79e3c91a338fa3848c6007ec01e14"
   dependencies:
     classnames "^2.2.5"
 
