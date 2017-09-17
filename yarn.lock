@@ -4374,9 +4374,9 @@ react-dom@^15.6.1:
     object-assign "^4.1.0"
     prop-types "^15.5.10"
 
-react-draggable-tree@^0.2.0:
+"react-draggable-tree@github:sketchglass/react-draggable-tree#resimplify-api":
   version "0.2.0"
-  resolved "https://registry.yarnpkg.com/react-draggable-tree/-/react-draggable-tree-0.2.0.tgz#f936fee8dc531d0016231ce091cd526e6c666900"
+  resolved "https://codeload.github.com/sketchglass/react-draggable-tree/tar.gz/c5733173b6ad3753f6dc98931fb9bdcf46f537c7"
   dependencies:
     classnames "^2.2.5"
 
