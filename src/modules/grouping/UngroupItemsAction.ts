@@ -1,6 +1,6 @@
 import { computed, action } from 'mobx'
 import { Action, addAction } from '../menu'
-import { documentManager, Item} from '../document'
+import { documentManager, Item } from '../document'
 
 @addAction
 export class UngroupItemsAction extends Action {
