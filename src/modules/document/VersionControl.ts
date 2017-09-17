@@ -1,6 +1,5 @@
 import { Document } from './Document'
 import { ItemData } from './items/Item'
-import { GroupItemData } from './items/GroupItem'
 import { UndoStack, UndoCommand } from '../../util/UndoStack'
 import { itemFromData } from './items/ItemPack'
 
@@ -32,7 +31,7 @@ export class Commit implements UndoCommand {
     for (const addition of this.additions) {
       const item = this.document.itemForId.get(addition.id)
       if (item) {
-        item.loadChildren((addition as GroupItemData).childIds)
+        item.loadChildren(addition.childIds)
       }
     }
     for (const removal of this.removals) {
@@ -45,7 +44,7 @@ export class Commit implements UndoCommand {
       const item = this.document.itemForId.get(oldData.id)
       if (item) {
         item.loadData(newData)
-        item.loadChildren((newData as GroupItemData).childIds)
+        item.loadChildren(newData.childIds)
         this.document.versionControl.updateSnapshot(newData)
       }
     }
