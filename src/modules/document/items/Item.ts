@@ -3,6 +3,7 @@ import 'reflect-metadata'
 import * as uuid from 'uuid'
 import { Vec2, Rect } from 'paintvec'
 import { Document } from '../Document'
+import { Grouping } from './Grouping'
 
 export interface ItemData {
   id: string
@@ -29,6 +30,10 @@ export function undoableArray<T> (target: Item, array: T[]) {
   return observableArray
 }
 
+export interface GroupLikeItem extends Item {
+  grouping: Grouping
+}
+
 export
 abstract class Item {
   @undoable @observable name = 'Item'
@@ -37,32 +42,12 @@ abstract class Item {
   @undoable @observable stroke = '#000000'
   @undoable @observable strokeEnabled = true
   @undoable @observable strokeWidth = 1
-  @observable collapsed = false
-  @observable parent: Item|undefined
+  @observable parent: GroupLikeItem|undefined
+
+  grouping?: Grouping = undefined
 
   readonly id: string
   isDirty = false
-
-  abstract position: Vec2
-  abstract size: Vec2
-
-  private readonly _children: IObservableArray<Item> = undoableArray<Item>(this, [])
-
-  get rect () {
-    return Rect.fromSize(this.position, this.size)
-  }
-  set rect (rect: Rect) {
-    this.position = rect.topLeft
-    this.size = rect.size
-  }
-
-  get children (): ReadonlyArray<Item> {
-    return this._children.peek()
-  }
-
-  get canHaveChildren () {
-    return false
-  }
 
   constructor (public readonly document: Document, id?: string) {
     this.id = id || uuid()
@@ -73,7 +58,7 @@ abstract class Item {
 
   dispose () {
     if (this.parent) {
-      this.parent.removeChild(this)
+      this.parent.grouping.removeChild(this)
     }
     this.document.selectedItems.delete(this)
     if (this.document.focusedItem === this) {
@@ -109,93 +94,18 @@ abstract class Item {
     }
   }
 
-  loadChildren (childIds: string[]) {
-    this.clearChildren()
-    for (const childId of childIds) {
-      const item = this.document.itemForId.get(childId)
-      if (!item) {
-        throw new Error(`Child ${childId} is not found`)
-      }
-      this.appendChild(item)
-    }
-  }
-
-  childAt (i: number) {
-    if (0 <= i && i < this.children.length) {
-      return this._children[i]
-    }
-  }
-
-  removeChild (...items: Item[]) {
-    for (const item of items) {
-      const index = this.children.indexOf(item)
-      if (index >= 0) {
-        this._children.splice(index, 1)
-        item.parent = undefined
-      }
-    }
-  }
-
-  clearChildren () {
-    for (const child of this._children) {
-      child.parent = undefined
-    }
-    this._children.clear()
-  }
-
-  insertBefore (item: Item, reference: Item|undefined) {
-    if (!this.canHaveChildren) {
-      throw new Error('this item cannot have children')
-    }
-
-    if (reference && !this.children.includes(reference)) {
-      throw new Error('reference item is not a child of the group')
-    }
-
-    const oldParent = item.parent
-    if (oldParent) {
-      oldParent.removeChild(item)
-    }
-
-    const index = reference ? this.children.indexOf(reference) : this.children.length
-    this._children.splice(index, 0, item)
-    item.parent = this
-  }
-
-  appendChild (...items: Item[]) {
-    for (const item of items) {
-      this.insertBefore(item, undefined)
-    }
-  }
-
-  forEachDescendant (action: (item: Item) => void) {
-    action(this)
-    for (const child of this.children) {
-      child.forEachDescendant(action)
-    }
-  }
-
-  get allDescendants (): ReadonlyArray<Item> {
-    const descendants: Item[] = []
-    for (const child of this.children) {
-      descendants.push(...child.allDescendants)
-    }
-    descendants.push(this)
-    return descendants
-  }
-
-  get siblings (): ReadonlyArray<Item> {
-    if (this.parent) {
-      return this.parent.children
-    } else {
-      return []
-    }
-  }
-
   private onPropertyChange (change: IObjectChange) {
     const undoable = Reflect.getMetadata(metadataUndoable, this, change.name)
     if (undoable) {
       this.isDirty = true
+    }
+  }
+
+  get siblings (): ReadonlyArray<Item> {
+    if (this.parent) {
+      return this.parent.grouping.children
+    } else {
+      return []
     }
   }
 }
