@@ -1,26 +1,23 @@
-import { observable, observe, IObjectChange, IObservableArray } from 'mobx'
+import { observable, observe, IObjectChange } from 'mobx'
 import 'reflect-metadata'
 import * as uuid from 'uuid'
-import { Vec2, Rect } from 'paintvec'
 import { Document } from '../Document'
-import { Grouping } from './Grouping'
+import { Grouping, GroupingData } from './Grouping'
+import { Shape, ShapeData } from './Shape'
+import { Style, StyleData } from './Style'
 
 export interface ItemData {
   id: string
   type: string
   name: string
-  collapsed: boolean
-  childIds: string[]
-  fill: string
-  fillEnabled: boolean
-  stroke: string
-  strokeWidth: number
-  strokeEnabled: boolean
+  grouping?: GroupingData
+  style?: StyleData
+  shape?: ShapeData
 }
 
 const metadataUndoable = Symbol('Item.undoable')
 
-export function undoable (target: Item, key: string) {
+export function undoable (target: Item|ItemComponent, key: string) {
   Reflect.defineMetadata(metadataUndoable, true, target, key)
 }
 
@@ -30,21 +27,31 @@ export function undoableArray<T> (target: Item, array: T[]) {
   return observableArray
 }
 
+export abstract class ItemComponent {
+  constructor (public item: Item) {
+    observe(this, change => this.onPropertyChange(change))
+  }
+
+  private onPropertyChange (change: IObjectChange) {
+    const undoable = Reflect.getMetadata(metadataUndoable, this, change.name)
+    if (undoable) {
+      this.item.isDirty = true
+    }
+  }
+}
+
 export interface GroupLikeItem extends Item {
   grouping: Grouping
 }
 
 export
 abstract class Item {
-  @undoable @observable name = 'Item'
-  @undoable @observable fill = '#888888'
-  @undoable @observable fillEnabled = true
-  @undoable @observable stroke = '#000000'
-  @undoable @observable strokeEnabled = true
-  @undoable @observable strokeWidth = 1
   @observable parent: GroupLikeItem|undefined
+  @undoable @observable name = 'Item'
 
   grouping?: Grouping = undefined
+  style?: Style = undefined
+  shape?: Shape = undefined
 
   readonly id: string
   isDirty = false
@@ -69,28 +76,19 @@ abstract class Item {
 
   loadData (data: ItemData) {
     this.name = data.name
-    this.fill = data.fill
-    this.fillEnabled = data.fillEnabled
-    this.stroke = data.stroke
-    this.strokeWidth = data.strokeWidth
-    this.strokeEnabled = data.strokeEnabled
-    this.collapsed = data.collapsed
+    if (this.grouping && data.grouping) {
+      this.grouping.loadData(data.grouping)
+    }
   }
 
   toData (): ItemData {
-    const {id, name, fill, fillEnabled, stroke, strokeWidth, strokeEnabled, collapsed} = this
-    const childIds = this.children.map(c => c.id)
+    const {id, name} = this
     return {
+      id, name,
       type: 'none',
-      id,
-      name,
-      fill,
-      fillEnabled,
-      stroke,
-      strokeWidth,
-      strokeEnabled,
-      collapsed,
-      childIds
+      grouping: this.grouping && this.grouping.toData(),
+      style: this.style && this.style.toData(),
+      shape: this.shape && this.shape.toData()
     }
   }
 

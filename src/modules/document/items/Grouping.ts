@@ -1,16 +1,17 @@
 import { observable, IObservableArray } from 'mobx'
-import { Item, GroupLikeItem, undoableArray } from './Item'
+import { Item, ItemComponent, GroupLikeItem, undoableArray } from './Item'
 
 export interface GroupingData {
   collapsed: boolean
   childIds: string[]
 }
 
-export class Grouping {
+export class Grouping extends ItemComponent {
   @observable collapsed = false
   private readonly _children: IObservableArray<Item> = undoableArray<Item>(this, [])
 
   constructor (public item: GroupLikeItem) {
+    super(item)
   }
 
   get children (): ReadonlyArray<Item> {
