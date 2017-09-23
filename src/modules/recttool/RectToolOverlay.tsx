@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { action } from 'mobx'
 import { Vec2, Rect } from 'paintvec'
-import { Document, documentManager, Item, RectLikeItem, RectItem, TextItem, OvalItem } from '../document'
+import { Document, documentManager, Item, RectLikeItem, RectItem, TextItem, OvalItem, FrameItem } from '../document'
 import { toolManager, snapper } from '../drawarea'
 import { PointerEvents } from '../../util/components/PointerEvents'
 import { RectToolType } from './RectTool'
@@ -41,6 +41,8 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
         return new OvalItem(document)
       case 'text':
         return new TextItem(document)
+      case 'frame':
+        return new FrameItem(document)
       case 'rect':
       default:
         return new RectItem(document)
