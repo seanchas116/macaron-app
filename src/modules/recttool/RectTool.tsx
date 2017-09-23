@@ -3,7 +3,7 @@ import { Vec2 } from 'paintvec'
 import { Tool } from '../drawarea'
 import { RectToolOverlay } from './RectToolOverlay'
 
-export type RectToolType = 'rect' | 'oval' | 'text'
+export type RectToolType = 'rect' | 'oval' | 'text' | 'frame'
 
 export
 class RectTool extends Tool {
@@ -18,6 +18,8 @@ class RectTool extends Tool {
         return require('./oval.svg')
       case 'text':
         return require('./text.svg')
+      case 'frame':
+        return require('./frame.svg')
     }
   }
 
