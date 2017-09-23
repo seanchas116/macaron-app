@@ -15,7 +15,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
 
   render () {
     const child = React.Children.only(this.props.children)
-    const clickableBorder = React.cloneElement(child, {
+    const clickableBorder = this.props.item.strokeEnabled && React.cloneElement(child, {
       fill: 'none',
       stroke: 'transparent',
       strokeWidth: 6
