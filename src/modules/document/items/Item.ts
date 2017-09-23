@@ -21,7 +21,7 @@ export function undoable (target: Item|ItemComponent, key: string) {
   Reflect.defineMetadata(metadataUndoable, true, target, key)
 }
 
-export function undoableArray<T> (target: Item, array: T[]) {
+export function undoableArray<T> (target: Item|ItemComponent, array: T[]) {
   const observableArray = observable(array)
   observableArray.observe(() => target.isDirty = true)
   return observableArray
