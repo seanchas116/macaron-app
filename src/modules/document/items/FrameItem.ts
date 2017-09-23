@@ -8,6 +8,10 @@ export
 class FrameItem extends RectLikeItem {
   name = 'Frame'
 
+  get canHaveChildren () {
+    return true
+  }
+
   toData (): FrameItemData {
     return {
       ...super.toData(),
