@@ -40,9 +40,11 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
   }
 
   @action private onDoubleClick = (event: React.MouseEvent<SVGGElement>) => {
+    if (this.clickThrough) {
+      return
+    }
     this.cancel()
     const {item} = this.props
-    console.log(`Double click at ${item.name}`)
     const {document} = item
     document.selectedItems.replace([item])
     if (item.focusable) {
