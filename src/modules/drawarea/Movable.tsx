@@ -3,7 +3,7 @@ import { Vec2, Rect } from 'paintvec'
 import { computed, action } from 'mobx'
 import { PointerEvents } from '../../util/components/PointerEvents'
 import { Item, documentManager } from '../document'
-import { snapper } from './Snapper'
+import { itemSnapper } from './ItemSnapper'
 
 export
 class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
@@ -66,7 +66,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     }
     this.items = document.selectedItems.peek()
     for (const item of this.items) {
-      this.originalRects.set(item, item.rect)
+      this.originalRects.set(item, item.globalRect)
     }
     this.originalRect = Rect.union(...this.originalRects.values())
 
@@ -76,7 +76,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
       target.setPointerCapture(event.pointerId)
       this.dragOrigin = new Vec2(event.clientX, event.clientY)
       this.dragging = true
-      snapper.targets = this.props.item.parent!.children.filter(i => !this.items.has(i)).map(i => i.rect)
+      itemSnapper.setTargetItems([this.props.item])
     }
   }
   @action private onPointerMove = (event: PointerEvent) => {
@@ -89,11 +89,11 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     }
     const pos = new Vec2(event.clientX, event.clientY)
     const offset = pos.sub(this.dragOrigin)
-    const snappedRect = snapper.snapRect(this.originalRect.translate(offset))
+    const snappedRect = itemSnapper.snapRect(this.originalRect.translate(offset))
     const snappedOffset = snappedRect.topLeft.sub(this.originalRect.topLeft)
     for (const item of this.items) {
       const position = this.originalRects.get(item)!.topLeft.add(snappedOffset)
-      item.position = position
+      item.globalPosition = position
     }
   }
   @action private onPointerUp = (event: PointerEvent) => {
@@ -113,6 +113,6 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     this.items = new Set()
     this.originalRects = new Map()
     this.originalRect = undefined
-    snapper.clear()
+    itemSnapper.clear()
   }
 }

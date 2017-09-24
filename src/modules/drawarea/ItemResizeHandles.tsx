@@ -4,7 +4,7 @@ import { action, reaction, computed, observable } from 'mobx'
 import { Rect, Vec2 } from 'paintvec'
 import { ResizeHandles } from './ResizeHandles'
 import { Item, documentManager } from '../document'
-import { snapper } from './Snapper'
+import { itemSnapper } from './ItemSnapper'
 import { Alignment } from '../../util/Types'
 
 @observer
@@ -53,7 +53,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
 
   private snap = (pos: Vec2, xAlign: Alignment, yAlign: Alignment) => {
     if (this.rect) {
-      return snapper.snapPos(pos, xAlign, yAlign)
+      return itemSnapper.snapPos(pos, xAlign, yAlign)
     } else {
       return pos
     }
@@ -66,15 +66,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
     for (const item of this.items) {
       this.originalRects.set(item, item.globalRect)
     }
-    const snapTargets: Rect[] = []
-    for (const item of this.items) {
-      for (const sibling of item.siblings) {
-        if (!this.props.items.includes(sibling)) {
-          snapTargets.push(sibling.globalRect)
-        }
-      }
-    }
-    snapper.targets = snapTargets
+    itemSnapper.setTargetItems(this.items)
   }
 
   @action private onChange = (p1: Vec2, p2: Vec2) => {
@@ -103,7 +95,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
     this.originalRects = new Map()
 
     this.updatePositions()
-    snapper.clear()
+    itemSnapper.clear()
   }
 
   private updatePositions () {

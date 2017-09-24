@@ -143,5 +143,3 @@ export class Snapper {
     this.snappings.clear()
   }
 }
-
-export const snapper = new Snapper()

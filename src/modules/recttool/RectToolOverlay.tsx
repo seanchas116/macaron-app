@@ -2,7 +2,7 @@ import * as React from 'react'
 import { action } from 'mobx'
 import { Vec2, Rect } from 'paintvec'
 import { Document, documentManager, Item, RectLikeItem, RectItem, TextItem, OvalItem, FrameItem } from '../document'
-import { toolManager, snapper } from '../drawarea'
+import { toolManager, itemSnapper } from '../drawarea'
 import { PointerEvents } from '../../util/components/PointerEvents'
 import { RectToolType } from './RectTool'
 
@@ -17,11 +17,11 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     for (const item of documentManager.document.selectedItems) {
       targets.push(...item.siblings.map(s => s.rect))
     }
-    snapper.targets = targets
+    itemSnapper.targets = targets
   }
 
   componentWillUnmount () {
-    snapper.clear()
+    itemSnapper.clear()
   }
 
   render () {
@@ -84,6 +84,6 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
   private snap (pos: Vec2) {
     // snap twice to connect vertical & horizontal snap lines
     // TODO: pass correct x/y alignment
-    return snapper.snapPos(snapper.snapPos(pos, 'center', 'center'), 'center', 'center')
+    return itemSnapper.snapPos(itemSnapper.snapPos(pos, 'center', 'center'), 'center', 'center')
   }
 }
