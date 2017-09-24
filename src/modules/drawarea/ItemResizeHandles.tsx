@@ -18,7 +18,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
   private originalRects = new Map<Item, Rect>()
 
   @computed get rect () {
-    return Rect.union(...this.props.items.map(i => i.rect))
+    return Rect.union(...this.props.items.map(i => i.globalRect))
   }
 
   componentDidMount () {
@@ -64,13 +64,13 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
     this.originalPositions = this.positions
     this.items = this.props.items
     for (const item of this.items) {
-      this.originalRects.set(item, item.rect)
+      this.originalRects.set(item, item.globalRect)
     }
     const snapTargets: Rect[] = []
     for (const item of this.items) {
       for (const sibling of item.siblings) {
         if (!this.props.items.includes(sibling)) {
-          snapTargets.push(sibling.rect)
+          snapTargets.push(sibling.globalRect)
         }
       }
     }
@@ -88,7 +88,7 @@ class ItemResizeHandles extends React.Component<{items: Item[]}, {}> {
       const topLeft = origRect.topLeft.sub(origP1).mul(ratio).add(p1)
       const bottomRight = origRect.bottomRight.sub(origP1).mul(ratio).add(p1)
       const rect = Rect.fromTwoPoints(topLeft, bottomRight)
-      item.rect = rect
+      item.globalRect = rect
     }
 
     this.positions = [p1, p2]

@@ -48,11 +48,26 @@ abstract class Item {
 
   private readonly _children: IObservableArray<Item> = undoableArray<Item>(this, [])
 
+  get globalPosition () {
+    return this.position.add(this.origin)
+  }
+  set globalPosition (pos: Vec2) {
+    this.position = pos.sub(this.origin)
+  }
+
   get rect () {
     return Rect.fromSize(this.position, this.size)
   }
   set rect (rect: Rect) {
     this.position = rect.topLeft
+    this.size = rect.size
+  }
+
+  get globalRect () {
+    return Rect.fromSize(this.globalPosition, this.size)
+  }
+  set globalRect (rect: Rect) {
+    this.globalPosition = rect.topLeft
     this.size = rect.size
   }
 
@@ -69,11 +84,10 @@ abstract class Item {
   }
 
   get origin (): Vec2 {
-    const offset = this.originOffset
     if (this.parent) {
-      return offset.add(this.parent.origin)
+      return this.parent.origin.add(this.parent.originOffset)
     } else {
-      return offset
+      return new Vec2(0)
     }
   }
 
