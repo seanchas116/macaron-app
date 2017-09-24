@@ -21,9 +21,9 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
       strokeWidth: 6
     })
     return <PointerEvents
-      onPointerDown={this.onPointerDown}
-      onPointerMove={this.onPointerMove}
-      onPointerUp={this.onPointerUp}
+      onPointerDownCapture={this.onPointerDown}
+      onPointerMoveCapture={this.onPointerMove}
+      onPointerUpCapture={this.onPointerUp}
       >
       <g onDoubleClick={this.onDoubleClick}>
         {clickableBorder}
@@ -38,6 +38,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
   }
 
   @action private onPointerDown = (event: PointerEvent) => {
+    event.stopPropagation()
     const {document} = this.props.item
     if (event.shiftKey) {
       document.selectedItems.add(this.props.item)
@@ -60,6 +61,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     }
   }
   @action private onPointerMove = (event: PointerEvent) => {
+    event.stopPropagation()
     if (!this.dragging || !this.originalRect) {
       return
     }
@@ -73,6 +75,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     }
   }
   @action private onPointerUp = (event: PointerEvent) => {
+    event.stopPropagation()
     if (!this.dragging) {
       return
     }
