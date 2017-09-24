@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Vec2, Rect } from 'paintvec'
-import { action } from 'mobx'
+import { computed, action } from 'mobx'
 import { PointerEvents } from '../../util/components/PointerEvents'
 import { Item, documentManager } from '../document'
 import { snapper } from './Snapper'
@@ -12,6 +12,13 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
   private items = new Set<Item>()
   private originalRects = new Map<Item, Rect>()
   private originalRect: Rect|undefined
+
+  @computed get clickThrough () {
+    const {item} = this.props
+    const {document} = item
+
+    return [...document.selectedItems].some(selected => item.isAncestorOf(selected))
+  }
 
   render () {
     const child = React.Children.only(this.props.children)
@@ -38,6 +45,9 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
   }
 
   @action private onPointerDown = (event: PointerEvent) => {
+    if (this.clickThrough) {
+      return
+    }
     event.stopPropagation()
     const {document} = this.props.item
     if (event.shiftKey) {
@@ -61,6 +71,9 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     }
   }
   @action private onPointerMove = (event: PointerEvent) => {
+    if (this.clickThrough) {
+      return
+    }
     event.stopPropagation()
     if (!this.dragging || !this.originalRect) {
       return
@@ -75,6 +88,9 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     }
   }
   @action private onPointerUp = (event: PointerEvent) => {
+    if (this.clickThrough) {
+      return
+    }
     event.stopPropagation()
     if (!this.dragging) {
       return

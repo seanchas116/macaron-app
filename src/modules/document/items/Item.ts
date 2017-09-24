@@ -222,6 +222,19 @@ abstract class Item {
     }
   }
 
+  isAncestorOf (item: Item) {
+    if (this === item) {
+      return false
+    }
+    let result = false
+    this.forEachDescendant(desc => {
+      if (desc === item) {
+        result = true
+      }
+    })
+    return result
+  }
+
   private onPropertyChange (change: IObjectChange) {
     const undoable = Reflect.getMetadata(metadataUndoable, this, change.name)
     if (undoable) {
