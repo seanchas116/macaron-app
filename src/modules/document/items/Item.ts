@@ -64,6 +64,19 @@ abstract class Item {
     return false
   }
 
+  get originOffset () {
+    return new Vec2(0)
+  }
+
+  get origin (): Vec2 {
+    const offset = this.originOffset
+    if (this.parent) {
+      return offset.add(this.parent.origin)
+    } else {
+      return offset
+    }
+  }
+
   constructor (public readonly document: Document, id?: string) {
     this.id = id || uuid()
     document.itemForId.set(this.id, this)
@@ -156,6 +169,9 @@ abstract class Item {
     if (oldParent) {
       oldParent.removeChild(item)
     }
+
+    const posOffset = (oldParent ? oldParent.origin : new Vec2(0)).sub(this.origin)
+    item.position = item.position.add(posOffset)
 
     const index = reference ? this.children.indexOf(reference) : this.children.length
     this._children.splice(index, 0, item)

@@ -12,6 +12,10 @@ class FrameItem extends RectLikeItem {
     return true
   }
 
+  get originOffset () {
+    return this.position
+  }
+
   toData (): FrameItemData {
     return {
       ...super.toData(),
