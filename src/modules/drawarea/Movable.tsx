@@ -84,7 +84,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     const snappedOffset = snappedRect.topLeft.sub(this.originalRect.topLeft)
     for (const item of this.items) {
       const position = this.originalRects.get(item)!.topLeft.add(snappedOffset)
-      item.globalPosition = position
+      item.position = position
     }
   }
   @action private onPointerUp = (event: PointerEvent) => {
