@@ -183,17 +183,19 @@ abstract class Item {
       throw new Error('reference item is not a child of the group')
     }
 
+    const oldOrigin = item.origin
+
     const oldParent = item.parent
     if (oldParent) {
       oldParent.removeChild(item)
     }
 
-    const posOffset = (oldParent ? oldParent.origin : new Vec2(0)).sub(this.origin)
-    item.position = item.position.add(posOffset)
-
     const index = reference ? this.children.indexOf(reference) : this.children.length
     this._children.splice(index, 0, item)
     item.parent = this
+
+    const newOrigin = item.origin
+    item.position = item.position.add(oldOrigin.sub(newOrigin))
   }
 
   appendChild (...items: Item[]) {
