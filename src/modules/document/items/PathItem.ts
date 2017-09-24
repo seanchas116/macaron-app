@@ -67,6 +67,10 @@ export class PathItem extends Item {
     this.resizedSize = size
   }
 
+  get focusable () {
+    return true
+  }
+
   @computed get boundingRect () {
     const {nodes} = this
     let result: Rect|undefined

@@ -91,6 +91,10 @@ abstract class Item {
     }
   }
 
+  get focusable () {
+    return false
+  }
+
   constructor (public readonly document: Document, id?: string) {
     this.id = id || uuid()
     document.itemForId.set(this.id, this)

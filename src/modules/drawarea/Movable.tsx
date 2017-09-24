@@ -41,8 +41,9 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
 
   @action private onDoubleClick = () => {
     this.cancel()
-    const {document} = this.props.item
-    document.focusedItem = this.props.item
+    if (this.props.item.focusable) {
+      this.props.item.document.focusedItem = this.props.item
+    }
   }
 
   @action private onPointerDown = (event: PointerEvent) => {
