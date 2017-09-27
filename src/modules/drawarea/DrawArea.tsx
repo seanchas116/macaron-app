@@ -2,7 +2,7 @@ import * as React from 'react'
 import { observable, action } from 'mobx'
 import { observer } from 'mobx-react'
 import { Vec2 } from 'paintvec'
-import { documentManager, PathItem } from '../document'
+import { documentManager, PathItem, FrameItem } from '../document'
 import { toolManager } from './ToolManager'
 import { ItemResizeHandles } from './ItemResizeHandles'
 import { PathEditor } from './PathEditor'
@@ -42,10 +42,11 @@ export class DrawArea extends React.Component<{}, {}> {
     const {rootItem, selectedItems, scroll, focusedItem} = documentManager.document
     const currentTool = toolManager.current
     const {width, height} = this.size
+    const rootHasFrame = rootItem.children.some(c => c instanceof FrameItem)
     // TODO: improve scroll performance
     return <div className={styles.root} ref={e => this.root = e!}>
       <svg className={styles.svg} width={width + 'px'} height={height + 'px'} onWheel={this.onWheel} >
-        <rect x={0} y={0} width={width} height={height} onClick={this.deselect} fill='white' />
+        <rect x={0} y={0} width={width} height={height} onClick={this.deselect} fill={rootHasFrame ? '#DDD' : 'white'} />
         <g transform={`translate(${-scroll.x}, ${-scroll.y})`} >
           {renderItem(rootItem)}
           <SnapLines />
