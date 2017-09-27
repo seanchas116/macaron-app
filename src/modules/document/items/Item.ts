@@ -48,6 +48,13 @@ abstract class Item {
 
   private readonly _children: IObservableArray<Item> = undoableArray<Item>(this, [])
 
+  get globalPosition () {
+    return this.position.add(this.origin)
+  }
+  set globalPosition (pos: Vec2) {
+    this.position = pos.sub(this.origin)
+  }
+
   get rect () {
     return Rect.fromSize(this.position, this.size)
   }
@@ -56,11 +63,35 @@ abstract class Item {
     this.size = rect.size
   }
 
+  get globalRect () {
+    return Rect.fromSize(this.globalPosition, this.size)
+  }
+  set globalRect (rect: Rect) {
+    this.globalPosition = rect.topLeft
+    this.size = rect.size
+  }
+
   get children (): ReadonlyArray<Item> {
     return this._children.peek()
   }
 
   get canHaveChildren () {
+    return false
+  }
+
+  get originOffset () {
+    return new Vec2(0)
+  }
+
+  get origin (): Vec2 {
+    if (this.parent) {
+      return this.parent.origin.add(this.parent.originOffset)
+    } else {
+      return new Vec2(0)
+    }
+  }
+
+  get focusable () {
     return false
   }
 
@@ -152,6 +183,8 @@ abstract class Item {
       throw new Error('reference item is not a child of the group')
     }
 
+    const oldOrigin = item.origin
+
     const oldParent = item.parent
     if (oldParent) {
       oldParent.removeChild(item)
@@ -160,6 +193,9 @@ abstract class Item {
     const index = reference ? this.children.indexOf(reference) : this.children.length
     this._children.splice(index, 0, item)
     item.parent = this
+
+    const newOrigin = item.origin
+    item.position = item.position.add(oldOrigin.sub(newOrigin))
   }
 
   appendChild (...items: Item[]) {
@@ -190,6 +226,19 @@ abstract class Item {
     } else {
       return []
     }
+  }
+
+  isAncestorOf (item: Item) {
+    if (this === item) {
+      return false
+    }
+    let result = false
+    this.forEachDescendant(desc => {
+      if (desc === item) {
+        result = true
+      }
+    })
+    return result
   }
 
   private onPropertyChange (change: IObjectChange) {

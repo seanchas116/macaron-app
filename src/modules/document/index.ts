@@ -3,6 +3,7 @@ export {DocumentManager, documentManager} from './DocumentManager'
 
 export {Item, ItemData} from './items/Item'
 export {GroupItem, GroupItemData} from './items/GroupItem'
+export {FrameItem, FrameItemData} from './items/FrameItem'
 export {RectLikeItem, RectLikeItemData} from './items/RectLikeItem'
 export {RectItem, RectItemData} from './items/RectItem'
 export {OvalItem, OvalItemData} from './items/OvalItem'

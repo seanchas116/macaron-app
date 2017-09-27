@@ -1,6 +1,5 @@
 import { Rect } from 'paintvec'
 import { Item, ItemData } from './Item'
-import { Document } from '../Document'
 
 export interface GroupItemData extends ItemData {
   type: 'group'
@@ -22,10 +21,6 @@ class GroupItem extends Item {
 
   get canHaveChildren () {
     return true
-  }
-
-  constructor (document: Document, id?: string) {
-    super(document, id)
   }
 
   toData (): GroupItemData {

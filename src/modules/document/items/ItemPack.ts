@@ -4,6 +4,7 @@ import { OvalItem } from './OvalItem'
 import { TextItem } from './TextItem'
 import { PathItem } from './PathItem'
 import { GroupItem } from './GroupItem'
+import { FrameItem } from './FrameItem'
 import { Document } from '../Document'
 
 export function createItem (document: Document, type: string, id?: string): Item {
@@ -18,6 +19,8 @@ export function createItem (document: Document, type: string, id?: string): Item
       return new PathItem(document, id)
     case 'group':
       return new GroupItem(document, id)
+    case 'frame':
+      return new FrameItem(document, id)
     default:
       throw new Error('Cannot load item')
   }

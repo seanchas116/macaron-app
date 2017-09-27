@@ -12,6 +12,10 @@ class TextItem extends RectLikeItem {
   name = 'Text'
   @undoable @observable text = 'Text'
 
+  get focusable () {
+    return true
+  }
+
   loadData (data: TextItemData) {
     super.loadData(data)
     this.text = data.text
