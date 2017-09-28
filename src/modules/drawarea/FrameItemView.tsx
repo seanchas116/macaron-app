@@ -22,7 +22,7 @@ export class FrameItemView extends React.Component<{item: FrameItem}, {}> {
           x={0} y={0} width={item.size.x} height={item.size.y}
           fill='transparent' stroke='transparent'
         />
-        {[...item.children].reverse().map(renderItem)}
+        {item.children.map(renderItem)}
       </g>
     </Movable>
   }
