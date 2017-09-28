@@ -174,7 +174,7 @@ abstract class Item {
     this._children.clear()
   }
 
-  insertBefore (item: Item, reference: Item|undefined) {
+  insertBefore (item: Item, reference?: Item) {
     if (!this.canHaveChildren) {
       throw new Error('this item cannot have children')
     }
