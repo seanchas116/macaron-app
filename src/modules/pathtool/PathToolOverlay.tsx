@@ -28,7 +28,7 @@ class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
     const item = this.item = new PathItem(document)
     item.fillEnabled = false
     const parent = document.rootItem
-    parent.insertBefore(item, parent.childAt(0))
+    parent.insertBefore(item)
     item.nodes.push({type: 'straight', position: pos, handle1: pos, handle2: pos})
     item.selectedPathNodes.replace([0])
     document.focusedItem = item

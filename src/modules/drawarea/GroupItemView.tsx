@@ -9,7 +9,7 @@ export class GroupItemView extends React.Component<{item: GroupItem}, {}> {
   render () {
     const {item} = this.props
     return <g key={item.id}>
-      {[...item.children].reverse().map(renderItem)}
+      {item.children.map(renderItem)}
     </g>
   }
 }
