@@ -204,13 +204,6 @@ abstract class Item {
     }
   }
 
-  forEachDescendant (action: (item: Item) => void) {
-    action(this)
-    for (const child of this.children) {
-      child.forEachDescendant(action)
-    }
-  }
-
   get allDescendants (): ReadonlyArray<Item> {
     const descendants: Item[] = []
     for (const child of this.children) {
