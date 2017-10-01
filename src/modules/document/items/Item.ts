@@ -204,10 +204,10 @@ abstract class Item {
     }
   }
 
-  get allDescendants (): ReadonlyArray<Item> {
+  allDescendants (): ReadonlyArray<Item> {
     const descendants: Item[] = []
     for (const child of this.children) {
-      descendants.push(...child.allDescendants)
+      descendants.push(...child.allDescendants())
     }
     descendants.push(this)
     return descendants

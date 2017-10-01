@@ -28,7 +28,7 @@ export class Document {
   }
 
   disposeUnreferencedItems () {
-    const referencedItemIds = new Set(this.rootItem.allDescendants.map(item => item.id))
+    const referencedItemIds = new Set(this.rootItem.allDescendants().map(item => item.id))
     for (const item of this.itemForId.values()) {
       if (!referencedItemIds.has(item.id)) {
         item.dispose()
