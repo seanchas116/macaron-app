@@ -1,6 +1,5 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import * as qs from 'querystring'
-type BrowserWindow = Electron.BrowserWindow
 const argv = require('minimist')(process.argv.slice(2))
 
 let contentBase = argv.development ? 'http://localhost:23000' : `file://${app.getAppPath()}/dist`
