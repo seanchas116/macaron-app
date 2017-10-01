@@ -1,15 +1,15 @@
 import * as React from 'react'
 import { action } from 'mobx'
 import { Vec2, Rect } from 'paintvec'
-import { Document, documentManager, Item, RectLikeItem, RectItem, TextItem, OvalItem, FrameItem } from '../document'
+import { Document, documentManager, RectLikeItem, RectItem, TextItem, OvalItem, FrameItem } from '../document'
 import { toolManager, itemSnapper, DrawArea } from '../drawarea'
 import { PointerEvents } from '../../util/components/PointerEvents'
 import { RectToolType } from './RectTool'
 
 export
 class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, {}> {
-  startPos: Vec2|undefined
-  parent: Item|undefined
+  startPos = new Vec2()
+  offset = new Vec2()
   item: RectLikeItem|undefined
 
   componentDidMount () {
@@ -53,20 +53,23 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     const elem = event.currentTarget as SVGRectElement
     elem.setPointerCapture(event.pointerId)
 
+    const pos = this.startPos = this.snap(DrawArea.posFromEvent(event))
 
-    const pos = this.snap(DrawArea.posFromEvent(event))
-    this.startPos = pos
     const {document} = documentManager
-    this.parent = document.rootItem
+    const frame = document.frameAt(pos)
+    this.offset = frame ? frame.globalPosition : new Vec2()
+
     this.item = this.newItem(document)
-    this.item.rect = new Rect(this.startPos, this.startPos)
-    this.parent.insertBefore(this.item)
+    this.item.rect = new Rect(this.startPos, this.startPos).translate(this.offset.neg())
+
+    const parent = frame || document.rootItem
+    parent.appendChild(this.item)
   }
 
   @action private onPointerMove = (event: PointerEvent) => {
     const pos = this.snap(DrawArea.posFromEvent(event))
-    if (this.startPos && this.item) {
-      this.item.rect = Rect.fromTwoPoints(this.startPos, pos)
+    if (this.item) {
+      this.item.rect = Rect.fromTwoPoints(this.startPos, pos).translate(this.offset.neg())
     }
   }
 
@@ -76,7 +79,6 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     }
     documentManager.document.versionControl.commit('Add Item')
     documentManager.document.selectedItems.replace([this.item])
-    this.startPos = undefined
     this.item = undefined
     toolManager.currentId = undefined
   }
