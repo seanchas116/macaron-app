@@ -2,7 +2,7 @@ import * as React from 'react'
 import { action } from 'mobx'
 import { Vec2, Rect } from 'paintvec'
 import { Document, documentManager, Item, RectLikeItem, RectItem, TextItem, OvalItem, FrameItem } from '../document'
-import { toolManager, itemSnapper } from '../drawarea'
+import { toolManager, itemSnapper, DrawArea } from '../drawarea'
 import { PointerEvents } from '../../util/components/PointerEvents'
 import { RectToolType } from './RectTool'
 
@@ -53,20 +53,20 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     const elem = event.currentTarget as SVGRectElement
     elem.setPointerCapture(event.pointerId)
 
-    const pos = this.snap(new Vec2(event.offsetX, event.offsetY))
+
+    const pos = this.snap(DrawArea.posFromEvent(event))
     this.startPos = pos
     const {document} = documentManager
     this.parent = document.rootItem
     this.item = this.newItem(document)
-    this.item.rect = new Rect(this.startPos, this.startPos).translate(document.scroll)
+    this.item.rect = new Rect(this.startPos, this.startPos)
     this.parent.insertBefore(this.item)
   }
 
   @action private onPointerMove = (event: PointerEvent) => {
-    const pos = this.snap(new Vec2(event.offsetX, event.offsetY))
+    const pos = this.snap(DrawArea.posFromEvent(event))
     if (this.startPos && this.item) {
-      const {document} = documentManager
-      this.item.rect = Rect.fromTwoPoints(this.startPos, pos).translate(document.scroll)
+      this.item.rect = Rect.fromTwoPoints(this.startPos, pos)
     }
   }
 
