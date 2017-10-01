@@ -56,7 +56,7 @@ export class VersionControl {
   private itemSnapshots = new Map<string, ItemData>()
 
   constructor (public document: Document) {
-    for (const item of document.rootItem.allDescendants) {
+    for (const item of document.rootItem.allDescendants()) {
       this.updateSnapshot(item.toData())
     }
   }

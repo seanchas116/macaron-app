@@ -17,7 +17,7 @@ class Movable extends React.Component<{item: Item, movable?: boolean}, {}> {
     const {item} = this.props
     const {document} = item
 
-    return [...document.selectedItems].some(selected => item.isAncestorOf(selected))
+    return [...document.selectedItems].some(selected => item.includes(selected))
   }
 
   render () {
