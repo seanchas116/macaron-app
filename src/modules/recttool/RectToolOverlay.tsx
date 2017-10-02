@@ -9,7 +9,6 @@ import { RectToolType } from './RectTool'
 export
 class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, {}> {
   private startPos = new Vec2()
-  private offset = new Vec2()
   private item: RectLikeItem|undefined
 
   componentDidMount () {
@@ -57,19 +56,17 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
 
     const {document} = documentManager
     const frame = document.frameAt(pos)
-    this.offset = frame ? frame.globalPosition : new Vec2()
-
-    this.item = this.newItem(document)
-    this.item.rect = new Rect(this.startPos, this.startPos).translate(this.offset.neg())
-
     const parent = frame || document.rootItem
+    this.item = this.newItem(document)
     parent.appendChild(this.item)
+
+    this.item.rect = new Rect(this.startPos, this.startPos).translate(this.item.origin.neg())
   }
 
   @action private onPointerMove = (event: PointerEvent) => {
     const pos = this.snap(DrawArea.posFromEvent(event))
     if (this.item) {
-      this.item.rect = Rect.fromTwoPoints(this.startPos, pos).translate(this.offset.neg())
+      this.item.rect = Rect.fromTwoPoints(this.startPos, pos).translate(this.item.origin.neg())
     }
   }
 
