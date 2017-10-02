@@ -8,9 +8,9 @@ import { RectToolType } from './RectTool'
 
 export
 class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, {}> {
-  startPos = new Vec2()
-  offset = new Vec2()
-  item: RectLikeItem|undefined
+  private startPos = new Vec2()
+  private offset = new Vec2()
+  private item: RectLikeItem|undefined
 
   componentDidMount () {
     const targets: Rect[] = []
