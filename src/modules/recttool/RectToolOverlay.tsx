@@ -1,14 +1,12 @@
 import * as React from 'react'
 import { action } from 'mobx'
 import { Vec2, Rect } from 'paintvec'
-import { Document, documentManager, RectLikeItem, RectItem, TextItem, OvalItem, FrameItem } from '../document'
-import { toolManager, itemSnapper, DrawArea } from '../drawarea'
-import { PointerEvents } from '../../util/components/PointerEvents'
+import { documentManager, RectLikeItem, RectItem, TextItem, OvalItem, FrameItem } from '../document'
+import { toolManager, itemSnapper, InsertOverlay } from '../drawarea'
 import { RectToolType } from './RectTool'
 
 export
 class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, {}> {
-  private startPos = new Vec2()
   private item: RectLikeItem|undefined
 
   componentDidMount () {
@@ -24,17 +22,17 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
   }
 
   render () {
-    const {width, height} = this.props.size
-    return <PointerEvents
-      onPointerDown={this.onPointerDown}
-      onPointerMove={this.onPointerMove}
-      onPointerUp={this.onPointerUp}
-    >
-      <rect width={width} height={height} fill='transparent' />
-    </PointerEvents>
+    return <InsertOverlay
+      size={this.props.size}
+      commitTitle='Add Item'
+      onCreate={this.handleCreate}
+      onDrag={this.handleDrag}
+      onFinish={this.handleFinish}
+    />
   }
 
-  private newItem (document: Document) {
+  private newItem () {
+    const {document} = documentManager
     switch (this.props.type) {
       case 'oval':
         return new OvalItem(document)
@@ -48,41 +46,19 @@ class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, 
     }
   }
 
-  @action private onPointerDown = (event: PointerEvent) => {
-    const elem = event.currentTarget as SVGRectElement
-    elem.setPointerCapture(event.pointerId)
-
-    const pos = this.startPos = this.snap(DrawArea.posFromEvent(event))
-
-    const {document} = documentManager
-    const frame = document.frameAt(pos)
-    const parent = frame || document.rootItem
-    this.item = this.newItem(document)
-    parent.appendChild(this.item)
-
-    this.item.rect = new Rect(this.startPos, this.startPos).translate(this.item.origin.neg())
+  @action private handleCreate = (pos: Vec2) => {
+    this.item = this.newItem()
+    this.item.rect = new Rect(pos, pos)
+    return this.item
   }
 
-  @action private onPointerMove = (event: PointerEvent) => {
-    const pos = this.snap(DrawArea.posFromEvent(event))
+  @action private handleDrag = (startPos: Vec2, pos: Vec2) => {
     if (this.item) {
-      this.item.rect = Rect.fromTwoPoints(this.startPos, pos).translate(this.item.origin.neg())
+      this.item.rect = Rect.fromTwoPoints(startPos, pos)
     }
   }
 
-  @action private onPointerUp = (event: PointerEvent) => {
-    if (!this.item) {
-      return
-    }
-    documentManager.document.versionControl.commit('Add Item')
-    documentManager.document.selectedItems.replace([this.item])
-    this.item = undefined
+  @action private handleFinish = () => {
     toolManager.currentId = undefined
-  }
-
-  private snap (pos: Vec2) {
-    // snap twice to connect vertical & horizontal snap lines
-    // TODO: pass correct x/y alignment
-    return itemSnapper.snapPos(itemSnapper.snapPos(pos, 'center', 'center'), 'center', 'center')
   }
 }

@@ -8,9 +8,9 @@ import { PointerEvents } from '../../util/components/PointerEvents'
 interface InsertOverlayProps {
   size: Vec2
   commitTitle: string
-  create (pos: Vec2): Item
-  drag (startPos: Vec2, pos: Vec2): void
-  finish (): void
+  onCreate (pos: Vec2): Item
+  onDrag (startPos: Vec2, pos: Vec2): void
+  onFinish (): void
 }
 
 export class InsertOverlay extends React.Component<InsertOverlayProps, {}> {
@@ -49,17 +49,16 @@ export class InsertOverlay extends React.Component<InsertOverlayProps, {}> {
 
     const {document} = documentManager
     const frame = document.frameAt(globalPos)
-    const parent = frame || document.rootItem
-    this.offset = parent.origin
+    this.offset = frame ? frame.globalPosition : new Vec2()
     this.startPos = globalPos.sub(this.offset)
-    this.item = this.props.create(this.startPos)
-    parent.appendChild(this.item)
+    this.item = this.props.onCreate(this.startPos)
+    ;(frame || document.rootItem).appendChild(this.item)
   }
 
   @action private onPointerMove = (event: PointerEvent) => {
     const pos = this.snap(DrawArea.posFromEvent(event)).sub(this.offset)
     if (this.item) {
-      this.props.drag(this.startPos, pos)
+      this.props.onDrag(this.startPos, pos)
     }
   }
 
@@ -70,7 +69,7 @@ export class InsertOverlay extends React.Component<InsertOverlayProps, {}> {
     documentManager.document.versionControl.commit(this.props.commitTitle)
     documentManager.document.selectedItems.replace([this.item])
     this.item = undefined
-    this.props.finish()
+    this.props.onFinish()
   }
 
   private snap (pos: Vec2) {
