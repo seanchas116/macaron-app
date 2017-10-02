@@ -2,24 +2,12 @@ import * as React from 'react'
 import { action } from 'mobx'
 import { Vec2, Rect } from 'paintvec'
 import { documentManager, RectLikeItem, RectItem, TextItem, OvalItem, FrameItem } from '../document'
-import { toolManager, itemSnapper, InsertOverlay } from '../drawarea'
+import { toolManager, InsertOverlay } from '../drawarea'
 import { RectToolType } from './RectTool'
 
 export
 class RectToolOverlay extends React.Component<{size: Vec2, type: RectToolType}, {}> {
   private item: RectLikeItem|undefined
-
-  componentDidMount () {
-    const targets: Rect[] = []
-    for (const item of documentManager.document.selectedItems) {
-      targets.push(...item.siblings.map(s => s.rect))
-    }
-    itemSnapper.targets = targets
-  }
-
-  componentWillUnmount () {
-    itemSnapper.clear()
-  }
 
   render () {
     return <InsertOverlay
