@@ -19,6 +19,7 @@ export class InsertOverlay extends React.Component<InsertOverlayProps, {}> {
   private item: Item|undefined
 
   componentDidMount () {
+    // TODO: snap to hovered frame
     const targets: Rect[] = []
     for (const item of documentManager.document.selectedItems) {
       targets.push(...item.siblings.map(s => s.rect))
