@@ -19,7 +19,7 @@ export class FrameItemView extends React.Component<{item: FrameItem}, {}> {
             fill='white' stroke='#BBB' strokeWidth={1}
           />}
         <rect
-          x={0} y={0} width={item.size.x} height={item.size.y}
+          x={0} y={0} width={item.size.x} height={item.size.y} rx={item.radius} ry={item.radius}
           fill={item.fill} stroke={item.stroke} strokeWidth={item.strokeWidth}
         />
         {item.children.map(renderItem)}

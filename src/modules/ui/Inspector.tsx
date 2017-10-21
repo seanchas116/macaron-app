@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
 import { Rect } from 'paintvec'
-import { documentManager, Item, RectItem } from '../document'
+import { documentManager, Item, RectItem, RectLikeItem, FrameItem } from '../document'
 const styles = require('./Inspector.css')
 
 interface ValueInputProps {
@@ -80,7 +80,7 @@ const RectEdit = observer((props: {item: Item}) => {
   </div>
 })
 
-const RadiusEdit = observer((props: {item: RectItem}) => {
+const RadiusEdit = observer((props: {item: RectLikeItem}) => {
   const {item} = props
   const onChangeRadius = (radius: number) => {
     item.radius = radius
@@ -142,7 +142,7 @@ export class Inspector extends React.Component<{}, {}> {
 
     return <div className={styles.root}>
       <RectEdit item={item} />
-      {item instanceof RectItem && <RadiusEdit item={item} />}
+      {(item instanceof RectItem || item instanceof FrameItem) && <RadiusEdit item={item} />}
       <FillEdit item={item} />
       <StrokeEdit item={item} />
     </div>
