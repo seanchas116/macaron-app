@@ -2,67 +2,54 @@ import * as React from 'react'
 import { action } from 'mobx'
 import { Vec2 } from 'paintvec'
 import { PathItem, documentManager } from '../document'
-import { toolManager, DrawArea, PathEditor } from '../drawarea'
-import { PointerEvents } from '../../util/components/PointerEvents'
+import { toolManager, PathEditor, InsertOverlay } from '../drawarea'
 
 export
 class PathToolOverlay extends React.Component<{size: Vec2}, {}> {
-  private startPos = new Vec2()
   private item: PathItem|undefined = undefined
 
   render () {
-    const {width, height} = this.props.size
-    return <PointerEvents
-      onPointerDown={this.onPointerDown}
-      onPointerMove={this.onPointerMove}
-      onPointerUp={this.onPointerUp}
-    >
-      <rect width={width} height={height} fill='transparent' />
-    </PointerEvents>
+    return <InsertOverlay
+      size={this.props.size}
+      commitTitle='Add Path Item'
+      onCreate={this.handleCreate}
+      onDrag={this.handleDrag}
+      onFinish={this.handleFinish}
+    />
   }
 
-  @action private onPointerDown = (event: PointerEvent) => {
-    const pos = this.startPos = DrawArea.posFromEvent(event)
-
+  @action private handleCreate = (pos: Vec2) => {
     const {document} = documentManager
     const item = this.item = new PathItem(document)
     item.fillEnabled = false
-    const parent = document.rootItem
-    parent.insertBefore(item)
     item.nodes.push({type: 'straight', position: pos, handle1: pos, handle2: pos})
     item.selectedPathNodes.replace([0])
     document.focusedItem = item
+    return item
   }
 
-  @action private onPointerMove = (event: PointerEvent) => {
+  @action private handleDrag = (startPos: Vec2, pos: Vec2) => {
     if (!this.item) {
       return
     }
-    const pos = DrawArea.posFromEvent(event)
-
-    if (pos.sub(this.startPos).length() < PathEditor.snapDistance) {
+    if (pos.sub(startPos).length() < PathEditor.snapDistance) {
       this.item.nodes[0] = {
-        position: this.startPos,
-        handle1: this.startPos,
-        handle2: this.startPos,
+        position: startPos,
+        handle1: startPos,
+        handle2: startPos,
         type: 'straight'
       }
     } else {
       this.item.nodes[0] = {
-        position: this.startPos,
-        handle1: this.startPos.mulScalar(2).sub(pos),
+        position: startPos,
+        handle1: startPos.mulScalar(2).sub(pos),
         handle2: pos,
         type: 'symmetric'
       }
     }
   }
 
-  @action private onPointerUp = (event: PointerEvent) => {
-    if (!this.item) {
-      return
-    }
-    this.item.document.versionControl.commit('Add Path Item')
-    this.item = undefined
+  @action private handleFinish = () => {
     toolManager.currentId = undefined
   }
 }

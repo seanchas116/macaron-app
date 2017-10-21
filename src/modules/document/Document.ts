@@ -3,6 +3,7 @@ import { observable, computed } from 'mobx'
 import { Vec2 } from 'paintvec'
 import { Item } from './items/Item'
 import { GroupItem } from './items/GroupItem'
+import { FrameItem } from './items/FrameItem'
 import { VersionControl } from './VersionControl'
 import { ObservableSet } from '../../util/ObservableSet'
 
@@ -32,6 +33,15 @@ export class Document {
     for (const item of this.itemForId.values()) {
       if (!referencedItemIds.has(item.id)) {
         item.dispose()
+      }
+    }
+  }
+
+  frameAt (pos: Vec2) {
+    const items = Array.from(this.rootItem.allDescendants()).reverse()
+    for (const item of items) {
+      if (item instanceof FrameItem && item.globalRect.includes(pos)) {
+        return item
       }
     }
   }
