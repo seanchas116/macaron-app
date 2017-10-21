@@ -74,6 +74,7 @@ export class InsertOverlay extends React.Component<InsertOverlayProps, {}> {
   }
 
   private snap (pos: Vec2) {
+    pos = pos.round()
     // snap twice to connect vertical & horizontal snap lines
     // TODO: pass correct x/y alignment
     return itemSnapper.snapPos(itemSnapper.snapPos(pos, 'center', 'center'), 'center', 'center')
