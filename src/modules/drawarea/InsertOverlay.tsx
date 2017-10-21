@@ -46,7 +46,7 @@ export class InsertOverlay extends React.Component<InsertOverlayProps, {}> {
     const elem = event.currentTarget as SVGRectElement
     elem.setPointerCapture(event.pointerId)
 
-    const globalPos = this.snap(DrawArea.posFromEvent(event))
+    const globalPos = this.snap(DrawArea.documentPosFromEvent(event))
 
     const {document} = documentManager
     const frame = document.frameAt(globalPos)
@@ -57,7 +57,7 @@ export class InsertOverlay extends React.Component<InsertOverlayProps, {}> {
   }
 
   @action private onPointerMove = (event: PointerEvent) => {
-    const pos = this.snap(DrawArea.posFromEvent(event)).sub(this.offset)
+    const pos = this.snap(DrawArea.documentPosFromEvent(event)).sub(this.offset)
     if (this.item) {
       this.props.onDrag(this.startPos, pos)
     }

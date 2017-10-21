@@ -71,7 +71,7 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
 
     if (target === 'position' && item.isInsertingNode) {
       this.closingPathDrag = {
-        startPos: DrawArea.posFromEvent(event),
+        startPos: DrawArea.itemPosFromEvent(item, event),
         insertMode: getInsertMode(this.props.item)
       }
     } else {
@@ -107,18 +107,18 @@ class PathNodeHandle extends React.Component<{item: PathItem, index: number}, {}
       }
     }
 
-    const dragPos = DrawArea.posFromEvent(event)
+    const dragPos = DrawArea.itemPosFromEvent(item, event)
 
     if (this.closingPathDrag) {
       if (dragPos.sub(this.closingPathDrag.startPos).length() > PathEditor.snapDistance) {
         if (this.closingPathDrag.insertMode === 'prepend') {
           const index = item.nodes.length - 1
           item.nodes[index].type = 'symmetric'
-          item.nodes[index] = PathUtil.moveHandle(item.nodes[index], 'handle1', DrawArea.posFromEvent(event))
+          item.nodes[index] = PathUtil.moveHandle(item.nodes[index], 'handle1', DrawArea.itemPosFromEvent(item, event))
         } else {
           const index = 0
           item.nodes[index].type = 'symmetric'
-          item.nodes[index] = PathUtil.moveHandle(item.nodes[index], 'handle2', DrawArea.posFromEvent(event))
+          item.nodes[index] = PathUtil.moveHandle(item.nodes[index], 'handle2', DrawArea.itemPosFromEvent(item, event))
         }
       }
     }
@@ -165,7 +165,7 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
 
   @action private onPointerDown = (event: PointerEvent) => {
     const insertMode = this.dragInsertMode = getInsertMode(this.props.item)
-    this.dragStartPos = DrawArea.posFromEvent(event)
+    this.dragStartPos = DrawArea.itemPosFromEvent(this.props.item, event)
     if (insertMode !== 'none') {
       this.onInsertPointerDown(event)
     }
@@ -189,7 +189,7 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
   @action private onInsertPointerDown = (event: PointerEvent) => {
     (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
     const {item} = this.props
-    const pos = DrawArea.posFromEvent(event)
+    const pos = DrawArea.itemPosFromEvent(item, event)
     const node: PathNode = {type: 'straight', position: pos, handle1: pos, handle2: pos}
     if (getInsertMode(item) === 'prepend') {
       item.nodes.unshift(node)
@@ -203,7 +203,7 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
 
   @action private onInsertPointerDrag = (event: PointerEvent) => {
     const {item} = this.props
-    const pos = DrawArea.posFromEvent(event)
+    const pos = DrawArea.itemPosFromEvent(item, event)
     if (pos.sub(this.dragStartPos).length() <= PathEditor.snapDistance) {
       return
     }
@@ -235,7 +235,7 @@ class PathEditorBackground extends React.Component<{item: PathItem, width: numbe
   @action private onInsertPointerHover = (event: PointerEvent) => {
     const {item} = this.props
     const insertMode = getInsertMode(item)
-    const pos = DrawArea.posFromEvent(event)
+    const pos = DrawArea.itemPosFromEvent(item, event)
     const node: PathNode = {type: 'straight', position: pos, handle1: pos, handle2: pos}
     if (insertMode === 'prepend') {
       item.prependPreview = node
@@ -286,10 +286,11 @@ interface PathEditorProps {
   render () {
     const {item} = this.props
     const {scroll} = item.document
+    const offset = item.origin.sub(scroll)
 
     return <g>
       <PathEditorBackground item={item} width={this.props.width} height={this.props.height} />
-      <g transform={`translate(${-scroll.x}, ${-scroll.y})`}>
+      <g transform={`translate(${offset.x}, ${offset.y})`}>
         {item.nodes.map((n, i) => <PathNodeHandle item={item} index={i} key={i} />)}
       </g>
     </g>

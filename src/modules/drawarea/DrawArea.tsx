@@ -2,7 +2,7 @@ import * as React from 'react'
 import { observable, action } from 'mobx'
 import { observer } from 'mobx-react'
 import { Vec2 } from 'paintvec'
-import { documentManager, PathItem, FrameItem } from '../document'
+import { documentManager, Item, PathItem, FrameItem } from '../document'
 import { toolManager } from './ToolManager'
 import { ItemResizeHandles } from './ItemResizeHandles'
 import { PathEditor } from './PathEditor'
@@ -18,7 +18,11 @@ export class DrawArea extends React.Component<{}, {}> {
   private resizeObserver: any
   @observable private size = new Vec2(0, 0)
 
-  static posFromEvent (event: {clientX: number, clientY: number}) {
+  static itemPosFromEvent (item: Item, event: {clientX: number, clientY: number}) {
+    return this.documentPosFromEvent(event).sub(item.origin)
+  }
+
+  static documentPosFromEvent (event: {clientX: number, clientY: number}) {
     const {scroll} = documentManager.document
     if (this.clientRect) {
       return new Vec2(event.clientX - this.clientRect.left + scroll.x, event.clientY - this.clientRect.top + scroll.y)
